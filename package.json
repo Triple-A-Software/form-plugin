@@ -1,0 +1,14 @@
+{
+	"name": "form-plugin",
+	"version": "0.0.0",
+	"scripts": {
+          "build": "bun run build.js"
+	},
+	"dependencies": {
+        "@cms-local/plugin-interface": "link:@cms-local/plugin-interface",
+		"dayjs": "1.11.10"
+        },
+	"devDependencies": {
+          "@types/bun": "^1.0.8"
+        }
+}
