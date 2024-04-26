@@ -3,51 +3,44 @@ import dayjs from "dayjs";
 import { formOverviewPage } from "./settings/overview";
 import { formSubmissionsPage } from "./settings/submissions";
 import { createFormPage } from "./settings/form";
-import { textInput, checkboxInput, textAreaInput } from "./helper/utils";
+import { buildForm } from "./helper/utils";
 export default definePlugin(async (ctx) => {
-	const editHandler = ctx.registerHandler(
-		["POST", "GET"],
-		"/form",
-		async (req) => {
-			if (req.method === "POST") {
-				if (req.query.id) {
-					console.log("UPDATE", req.body);
-					await ctx.storage.updateOne(req.query.id, {
-						form: {
-							...req.body,
-						},
-					});
-				} else {
-					console.log("CREATE", req.body);
-
-					await ctx.storage.createOne({
-						form: {
-							...req.body,
-						},
-					});
-				}
-				// await hooks.trigger("render")
-				return new Response(null, {
-					status: 200,
+	ctx.registerHandler(["POST", "GET"], "/form", async (req) => {
+		if (req.method === "POST") {
+			if (req.query.id) {
+				await ctx.storage.updateOne(req.query.id, {
+					form: {
+						...req.body,
+					},
+				});
+			} else {
+				await ctx.storage.createOne({
+					form: {
+						...req.body,
+					},
 				});
 			}
-			if (req.method === "GET") {
-				if (req.query.id) {
-					const dbData = await ctx.storage.getOne(req.query.id);
-					return dbData.data.form;
-				}
-				return {};
+			// await hooks.trigger("render")
+			return new Response(null, {
+				status: 200,
+			});
+		}
+		if (req.method === "GET") {
+			if (req.query.id) {
+				const dbData = await ctx.storage.getOne(req.query.id);
+				return dbData.data.form;
 			}
-			throw Error(`Method not allowed ${req.method}`);
-		},
-	);
+			return {};
+		}
+		throw Error(`Method not allowed ${req.method}`);
+	});
 
 	const formHandler = ctx.registerHandler(
 		["GET", "DELETE"],
 		"/forms",
 		async (req) => {
 			if (req.method === "GET") {
-				const dbData = await ctx.storage.getAll();
+				const dbData = await ctx.storage.getAllWithFilter("form");
 				const allForms = dbData.map((item) => ({
 					...item.data.form,
 					id: item.id,
@@ -76,14 +69,13 @@ export default definePlugin(async (ctx) => {
 						status: 400,
 					});
 				}
-				await ctx.storage.createOne(
-					{
-						submission: {
-							...req.body,
-						},
+				await ctx.storage.createOne({
+					submission: {
+						...req.body,
+						// prefix with _ to ignore it in the Modalview for formtype 'list'
+						_formId: req.params.formId,
 					},
-					req.params.formId,
-				);
+				});
 				const form = await ctx.storage.getOne(req.params.formId);
 
 				ctx.sendMail(
@@ -122,8 +114,7 @@ export default definePlugin(async (ctx) => {
 			}
 			if (req.method === "DELETE") {
 				const res = await ctx.storage.deleteOne(
-					req.params.formId, //this is actually the submissionID
-					req.query.formId,
+					req.params.formId /*this is actually the submissionID*/,
 				);
 				if (res) {
 					return new Response(null, { status: 200 });
@@ -131,13 +122,13 @@ export default definePlugin(async (ctx) => {
 				throw Error("Error on Deleting Record");
 			}
 			if (req.method === "GET") {
-				const allForms = await ctx.storage.getAll();
+				const allForms = await ctx.storage.getAllWithFilter("form");
 				const allSubmissions = [];
 				for (let i = 0; i < allForms.length; i++) {
-					const submission = await ctx.storage.getAll(allForms[i].id);
+					const submission = await ctx.storage.getAllWithFilter("submission");
 					for (let k = 0; k < submission.length; k++) {
 						allSubmissions.push({
-							formId: allForms[i].id,
+							formId: submission[k]._formId,
 							id: submission[k].id,
 							pluginId: submission[k].pluginId,
 							name: allForms[i].data.form.name,
@@ -159,36 +150,27 @@ export default definePlugin(async (ctx) => {
 
 	ctx.registerSettingsPage("/submissions", formSubmissionsPage(submitHandler));
 	ctx.registerSettingsPage("/overview", formOverviewPage(formHandler));
-	ctx.registerSettingsPage("/create", createFormPage(editHandler));
+	ctx.registerSettingsPage("/create", createFormPage());
 
 	//TODO: Trigger hook to rerender form
 	//ctx.hooks.on("rerender", () => {});
 
 	ctx.onRewrite(async (rewriter) => {
-		const forms = await ctx.storage.getAll();
+		rewriter.on("form#form_draft", {
+			element(el) {
+				const builder = el.getAttribute("builder");
+				el.setInnerContent(`${buildForm(JSON.parse(builder))}`, { html: true });
+			},
+		});
+
+		const forms = await ctx.storage.getAllWithFilter("form");
 		if (!forms) return;
 		for (const form of forms) {
-			rewriter.on(`form[id='${form.id}']`, {
+			rewriter.on(`form#form_${form.id}`, {
 				element(el) {
-					el.setInnerContent(
-						`${form.data.form.builder
-							.map((input, index) => {
-								const { id, data } = input;
-								switch (id) {
-									case "text":
-										return textInput(data, index);
-									case "textarea":
-										return textAreaInput(data, index);
-									case "checkbox":
-										return checkboxInput(data, index);
-									//TODO: add new Elements for the Builder here
-									default:
-										return "";
-								}
-							})
-							.join("")}<button type="submit">Submit</button>`,
-						{ html: true },
-					);
+					el.setInnerContent(`${buildForm(form.data.form.builder)}`, {
+						html: true,
+					});
 				},
 			});
 		}
@@ -198,7 +180,7 @@ export default definePlugin(async (ctx) => {
 		name: "Form-Picker",
 		icon: "i-tabler-forms",
 		template:
-			"<form id='{{ data.select-form }}' action='/api/plugins/form-plugin/submit/{{ data.select-form }}' class='{{data.css-classes}}' method='POST'></form>",
+			"<form id='form_{{ data.select-form }}' action='/api/plugins/form-plugin/submit/{{ data.select-form }}' class='{{data.css-classes}}' method='POST'></form>",
 		style: "",
 		script: "",
 		form: {
@@ -210,7 +192,7 @@ export default definePlugin(async (ctx) => {
 				{
 					label: {
 						de: "Formular Auswählen",
-						end: "Select Form",
+						en: "Select Form",
 					},
 					id: "select-form",
 					type: "select",

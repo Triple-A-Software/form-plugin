@@ -1,7 +1,7 @@
 import type { SettingsPage } from "@cms-local/plugin-interface";
 import { formBuilderItems } from "../helper/formStructs";
 
-export function createFormPage(actionHandler): SettingsPage {
+export function createFormPage(): SettingsPage {
 	return {
 		type: "form",
 		getDataHandler: {

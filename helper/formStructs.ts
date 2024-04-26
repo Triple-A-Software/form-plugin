@@ -1,4 +1,21 @@
-import { checkboxInput } from "./utils";
+const commonProps = [
+	{
+		id: "label",
+		type: "text",
+		label: { de: "Label", en: "Label" },
+	},
+	{
+		id: "required",
+		type: "checkbox",
+		label: { de: "Pflichtfeld", en: "Required" },
+		defaultValue: false,
+	},
+	{
+		id: "class",
+		type: "text",
+		label: { de: "CSS Klassen", en: "CSS Classes" },
+	},
+];
 
 export const formBuilderItems = [
 	{
@@ -9,26 +26,11 @@ export const formBuilderItems = [
 		},
 		icon: "i-tabler-letter-case",
 		props: [
-			{
-				id: "label",
-				type: "text",
-				label: { de: "Label", en: "Label" },
-			},
+			...commonProps,
 			{
 				id: "placeholder",
 				type: "text",
 				label: { de: "Platzhalter", en: "Placeholder" },
-			},
-			{
-				id: "required",
-				type: "checkbox",
-				label: { de: "Pflichtfeld", en: "Required" },
-				defaultValue: false,
-			},
-			{
-				id: "class",
-				type: "text",
-				label: { de: "CSS Klassen", en: "CSS Classes" },
 			},
 		],
 		data: {
@@ -45,24 +47,7 @@ export const formBuilderItems = [
 			en: "Checkbox",
 		},
 		icon: "i-tabler-checkbox",
-		props: [
-			{
-				id: "label",
-				type: "text",
-				label: { de: "Label", en: "Label" },
-			},
-			{
-				id: "required",
-				type: "checkbox",
-				label: { de: "Pflichtfeld", en: "Required" },
-				defaultValue: false,
-			},
-			{
-				id: "class",
-				type: "text",
-				label: { de: "CSS Klassen", en: "CSS Classes" },
-			},
-		],
+		props: [...commonProps],
 		data: {
 			label: "",
 			placeholder: "",
@@ -76,24 +61,7 @@ export const formBuilderItems = [
 			de: "Textfeld",
 			en: "Textarea",
 		},
-		props: [
-			{
-				id: "label",
-				type: "text",
-				label: { de: "Label", en: "Label" },
-			},
-			{
-				id: "required",
-				type: "checkbox",
-				label: { de: "Pflichtfeld", en: "Required" },
-				defaultValue: false,
-			},
-			{
-				id: "class",
-				type: "text",
-				label: { de: "CSS Klassen", en: "CSS Classes" },
-			},
-		],
+		props: [...commonProps],
 		data: {
 			label: "",
 			placeholder: "",
@@ -102,38 +70,31 @@ export const formBuilderItems = [
 		},
 	},
 	{
-		id: "select",
+		id: "button",
 		label: {
-			de: "Auswahl",
-			en: "Select",
+			de: "Button",
+			en: "Button",
 		},
-		icon: "i-tabler-select",
+		icon: "i-tabler-square-arrow-down",
 		props: [
+			...commonProps,
 			{
-				id: "label",
-				type: "text",
-				label: { de: "Label", en: "Label" },
+				id: "type",
+				type: "buttongroup",
+				label: { de: "Buttontyp", en: "Button type" },
+				options: [
+					{ label: "Submit", value: "submit" },
+					{ label: "Reset", value: "reset" },
+					{ label: "Button", value: "button" },
+				],
 			},
 			{
-				id: "required",
-				type: "checkbox",
-				label: { de: "Pflichtfeld", en: "Required" },
-				defaultValue: false,
-			},
-			{
-				id: "class",
-				type: "text",
-				label: { de: "CSS Klassen", en: "CSS Classes" },
+				id: "onclick",
+				type: "code",
+				language: "js",
+				label: { de: "onClick Funktion", en: "onClick Function" },
 			},
 		],
-		data: {
-			label: "",
-			placeholder: "",
-			required: false,
-			class: "grid p-2",
-			options: [
-				/*TODO: How to Add Optiont here?*/
-			],
-		},
+		data: { label: "Submit", class: "", type: "submit", onClick: "" },
 	},
 ];

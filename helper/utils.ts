@@ -1,4 +1,4 @@
-export function textInput(data, index) {
+function textInput(data, index) {
 	return `
         <div class="${data.class}">
             <label htmlFor="${data.label + index}">
@@ -11,7 +11,7 @@ export function textInput(data, index) {
         </div>`;
 }
 
-export function checkboxInput(data, index) {
+function checkboxInput(data, index) {
 	return `
         <div class="${data.class}">
             <label htmlFor="${data.label + index}">
@@ -24,7 +24,7 @@ export function checkboxInput(data, index) {
         </div>`;
 }
 
-export function textAreaInput(data, index) {
+function textAreaInput(data, index) {
 	return `
         <div class="${data.class}">
             <label htmlFor="${data.label + index}">
@@ -38,7 +38,7 @@ export function textAreaInput(data, index) {
         </div>`;
 }
 
-export function selectInput(data, index) {
+function selectInput(data, index) {
 	const options = data.options.map(
 		(item, index) =>
 			`<option value=${item.value} key=${index}>${item.name}</option>`,
@@ -56,4 +56,32 @@ export function selectInput(data, index) {
 					${options}
 				   </select>
         </div>`;
+}
+
+function inputButton(data) {
+	return `
+        <button type="${data.type}" onclick="${data.onclick}" class="${data.class}">
+			${data.label}
+        </button>`;
+}
+
+export function buildForm(data) {
+	return data
+		.map((input, index) => {
+			const { id, data } = input;
+			switch (id) {
+				case "text":
+					return textInput(data, index);
+				case "textarea":
+					return textAreaInput(data, index);
+				case "checkbox":
+					return checkboxInput(data, index);
+				case "button":
+					return inputButton(data);
+				//TODO: add new Elements for the Builder here
+				default:
+					return "";
+			}
+		})
+		.join("");
 }
