@@ -1,4 +1,4 @@
-import { definePlugin } from "@cms-local/plugin-interface";
+import { definePlugin } from "@aaa-soft/plugin-interface";
 import dayjs from "dayjs";
 import { formOverviewPage } from "./settings/overview";
 import { formSubmissionsPage } from "./settings/submissions";
@@ -108,7 +108,7 @@ export default definePlugin(async (ctx) => {
 				return new Response(null, {
 					status: 302, // Statuscode für Redirect
 					headers: {
-						Location: "/",
+						location: "/",
 					},
 				});
 			}
@@ -201,7 +201,7 @@ export default definePlugin(async (ctx) => {
 				{
 					label: {
 						de: "CSS Klassen",
-						end: "CSS Classes",
+						en: "CSS Classes",
 					},
 					id: "css-classes",
 					type: "text",
