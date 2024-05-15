@@ -1,4 +1,4 @@
-import type { SettingsPage } from "@cms-local/plugin-interface";
+import type { SettingsPage } from "@aaa-soft/plugin-interface";
 import { formBuilderItems } from "../helper/formStructs";
 
 export function createFormPage(): SettingsPage {

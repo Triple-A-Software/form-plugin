@@ -21,8 +21,8 @@ export const formBuilderItems = [
 	{
 		id: "text",
 		label: {
-			de: "text",
-			en: "text",
+			de: "Text",
+			en: "Text",
 		},
 		icon: "i-tabler-letter-case",
 		props: [

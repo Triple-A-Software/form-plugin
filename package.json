@@ -2,13 +2,13 @@
 	"name": "form-plugin",
 	"version": "0.0.0",
 	"scripts": {
-          "build": "bun run build.js"
+		"build": "bun run build.js"
 	},
 	"dependencies": {
-        "@cms-local/plugin-interface": "link:@cms-local/plugin-interface",
+		"@aaa-soft/plugin-interface": "0.1.0-alpha.1",
 		"dayjs": "1.11.10"
-        },
+	},
 	"devDependencies": {
-          "@types/bun": "^1.0.8"
-        }
+		"@types/bun": "^1.0.8"
+	}
 }
