@@ -5,7 +5,7 @@ Plugin to Create and Manage Forms!
 # Installation
 
 1. Create a new Element Type using the Element Picker Template
-2. Create a Form (refer to [Create Forms](#create-form:) for Instructions)
+2. Create a Form (refer to [Create Forms](#create-form) for Instructions)
 3. Add the Form Picker Element to Your Page and select Your created Form
 
 For real-time updates to your forms as you make changes, it's recommended to set the page to 'dynamic'.
