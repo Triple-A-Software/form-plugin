@@ -38,8 +38,8 @@ export function createFormPage(): SettingsPage {
 					id: "builder",
 					type: "builder",
 					label: {
-						de: "Baue dein neues Formular",
-						en: "Build your new Form",
+						de: "Bearbeite dein Formular",
+						en: "Build your Form",
 					},
 					items: formBuilderItems,
 				},
@@ -52,6 +52,7 @@ export function createFormPage(): SettingsPage {
 				handler: {
 					method: "POST",
 					url: "/api/plugins/form-plugin/form?id={{id}}",
+					redirect: "/plugins/form-plugin/overview",
 				},
 			},
 		],

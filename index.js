@@ -78,12 +78,13 @@ export default definePlugin(async (ctx) => {
 				});
 				const form = await ctx.storage.getOne(req.params.formId);
 
-				ctx.sendMail(
-					`[Neue Einsendung] ${req.params.formId} vom ${dayjs(
-						new Date(),
-					).format("DD.MM.YYYY")}`,
-					form.data.email,
-					`<div style="padding:1rem;">
+				if (form.data.email) {
+					ctx.sendMail(
+						`[Neue Einsendung] ${req.params.formId} vom ${dayjs(
+							new Date(),
+						).format("DD.MM.YYYY")}`,
+						form.data.email,
+						`<div style="padding:1rem;">
                     <table style="width:100%;border: solid 1px;padding:1rem">
                         <tr style="border-bottom:solid 1px;text-align:center">
                             <th>Feld</th>
@@ -103,7 +104,8 @@ export default definePlugin(async (ctx) => {
 						)}
                     </table>
                 </div>`,
-				);
+					);
+				}
 
 				return new Response(null, {
 					status: 302, // Statuscode für Redirect
