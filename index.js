@@ -125,21 +125,25 @@ export default definePlugin(async (ctx) => {
 			}
 			if (req.method === "GET") {
 				const allForms = await ctx.storage.getAllWithFilter("form");
+				const submissions = await ctx.storage.getAllWithFilter("submission");
 				const allSubmissions = [];
-				for (let i = 0; i < allForms.length; i++) {
-					const submission = await ctx.storage.getAllWithFilter("submission");
-					for (let k = 0; k < submission.length; k++) {
+				for (const submission of submissions) {
+					const matchingForm = allForms.find(
+						(form) => form.id === Number(submission.data.submission._formId),
+					);
+					if (matchingForm) {
 						allSubmissions.push({
-							formId: submission[k]._formId,
-							id: submission[k].id,
-							pluginId: submission[k].pluginId,
-							name: allForms[i].data.form.name,
-							recipient: allForms[i].data.form.email,
-							date: dayjs(submission[k].createdAt).format("HH:mm, DD.MM.YYYY"),
-							data: submission[k].data.submission,
+							formId: submission._formId,
+							id: submission.id,
+							pluginId: submission.pluginId,
+							name: matchingForm.data.form.name,
+							recipient: matchingForm.data.form.email,
+							date: dayjs(submission.createdAt).format("HH:mm, DD.MM.YYYY"),
+							data: submission.data.submission,
 						});
 					}
 				}
+
 				return allSubmissions;
 			}
 		},
