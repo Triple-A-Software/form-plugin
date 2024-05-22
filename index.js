@@ -202,6 +202,7 @@ export default definePlugin(async (ctx) => {
 					},
 					id: "select-form",
 					type: "select",
+					dataType: "string",
 					options: "/api/plugins/form-plugin/forms",
 				},
 				{
