@@ -77,13 +77,12 @@ export default definePlugin(async (ctx) => {
 					},
 				});
 				const form = await ctx.storage.getOne(req.params.formId);
-
-				if (form.data.email) {
+				if (form.data.form.email) {
 					ctx.sendMail(
 						`[Neue Einsendung] ${req.params.formId} vom ${dayjs(
 							new Date(),
 						).format("DD.MM.YYYY")}`,
-						form.data.email,
+						form.data.form.email,
 						`<div style="padding:1rem;">
                     <table style="width:100%;border: solid 1px;padding:1rem">
                         <tr style="border-bottom:solid 1px;text-align:center">
