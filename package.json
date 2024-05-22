@@ -1,11 +1,11 @@
 {
 	"name": "form-plugin",
-	"version": "1.0.0",
+	"version": "1.0.10",
 	"scripts": {
 		"build": "bun run build.js"
 	},
 	"dependencies": {
-		"@aaa-soft/plugin-interface": "0.1.1-alpha.1",
+		"@aaa-soft/plugin-interface": "0.1.1-alpha.3",
 		"dayjs": "1.11.10"
 	},
 	"devDependencies": {
