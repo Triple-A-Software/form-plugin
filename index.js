@@ -164,7 +164,9 @@ export default definePlugin(async (ctx) => {
 		rewriter.on("form#form_draft", {
 			element(el) {
 				const builder = el.getAttribute("builder");
-				el.setInnerContent(`${buildForm(JSON.parse(builder))}`, { html: true });
+				el.setInnerContent(`${buildForm(JSON.parse(builder))}`, {
+					html: true,
+				});
 			},
 		});
 

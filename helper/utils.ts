@@ -1,11 +1,11 @@
 function textInput(data, index) {
 	return `
         <div class="${data.class}">
-            <label htmlFor="${data.label + index}">
+            <label htmlFor="text_${index}">
 			${data.label}
 			</label>
             <input type="text"
-				   name="${data.label + index}"
+				   name="text_${index}"
 				   required="${data.required}" 
 				   placeholder="${data.placeholder}" />
         </div>`;
@@ -14,11 +14,11 @@ function textInput(data, index) {
 function checkboxInput(data, index) {
 	return `
         <div class="${data.class}">
-            <label htmlFor="${data.label + index}">
+            <label htmlFor="checkbox_${index}">
 			${data.label}
 			</label>
             <input type="checkbox"
-				   name="${data.label + index}"
+				   name="checkbox_${index}"
 				   required="${data.required}" 
 				   />
         </div>`;
@@ -27,11 +27,11 @@ function checkboxInput(data, index) {
 function textAreaInput(data, index) {
 	return `
         <div class="${data.class}">
-            <label htmlFor="${data.label + index}">
+            <label htmlFor="textarea_${index}">
 			${data.label}
 			</label>
             <textarea 
-				name="${data.label + index}"
+				name="textarea_${index}"
 				required="${data.required}" 
 				placeholder="${data.placeholder}" >
 			</textarea>
