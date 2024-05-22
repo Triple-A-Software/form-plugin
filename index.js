@@ -186,7 +186,7 @@ export default definePlugin(async (ctx) => {
 		name: "Form-Picker",
 		icon: "i-tabler-forms",
 		template:
-			"<form id='form_{{ data.select-form }}' action='/api/plugins/form-plugin/submit/{{ data.select-form }}' class='{{data.css-classes}}' method='POST'></form>",
+			"<form id='form_{{ properties.select-form }}' action='/api/plugins/form-plugin/submit/{{ properties.select-form }}' class='{{properties.css-classes}}' method='POST'></form>",
 		style: "",
 		script: "",
 		form: {
