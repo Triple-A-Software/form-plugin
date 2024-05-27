@@ -1,6 +1,11 @@
-import type { SettingsPage } from "@cms-local/plugin-interface";
+import type {
+	RegisterHandlerReturn,
+	SettingsPage,
+} from "@aaa-soft/plugin-interface";
 
-export function formOverviewPage(actionHandler): SettingsPage {
+export function formOverviewPage(
+	actionHandler: RegisterHandlerReturn,
+): SettingsPage {
 	return {
 		label: { de: "Formulare", en: "Forms" },
 		type: "list",

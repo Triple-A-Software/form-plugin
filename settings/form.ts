@@ -1,46 +1,50 @@
-import type { SettingsPage } from "@aaa-soft/plugin-interface";
+import type {
+	RegisterHandlerReturn,
+	SettingsPage,
+} from "@aaa-soft/plugin-interface";
+import { label } from "@aaa-soft/plugin-interface/builder";
 import { formBuilderItems } from "../helper/formStructs";
 
-export function createFormPage(): SettingsPage {
+export function createFormPage(
+	formHandler: RegisterHandlerReturn,
+	formCreateUpdateHandler: RegisterHandlerReturn,
+): SettingsPage {
+	const dataHandler = formHandler.toActionHandler("GET");
+	const upsertHandler = formCreateUpdateHandler.toActionHandler("POST");
+
 	return {
 		type: "form",
 		getDataHandler: {
-			method: "GET",
-			url: "/api/plugins/form-plugin/form?id={{id}}",
+			method: dataHandler.method,
+			url: `${dataHandler.url}?id={{id}}`,
 		},
-		label: {
-			de: "Formular erstellen",
-			en: "Create Form",
-		},
+		label: label().en("Create Form").de("Formular erstellen").build(),
 		form: {
-			label: {
-				de: "Formular erstellen",
-				en: "Create Form",
-			},
+			label: label().en("Create Form").de("Formular erstellen").build(),
 			properties: [
 				{
 					id: "name",
 					type: "text",
-					label: {
-						de: "Name des Formulars",
-						en: "Name of the form",
-					},
+					label: label()
+						.en("Name of the form")
+						.de("Name des Formulars")
+						.build(),
 				},
 				{
 					id: "email",
 					type: "text",
-					label: {
-						de: "Empfänger E-Mail",
-						en: "Recipient",
-					},
+					label: label()
+						.en("Send submissions to this email")
+						.de("Formularergebnisse an diese Email schicken")
+						.build(),
 				},
 				{
 					id: "builder",
 					type: "builder",
-					label: {
-						de: "Bearbeite dein Formular",
-						en: "Build your Form",
-					},
+					label: label()
+						.en("Build your Form")
+						.de("Bearbeite dein Formular")
+						.build(),
 					items: formBuilderItems,
 				},
 			],
@@ -48,10 +52,10 @@ export function createFormPage(): SettingsPage {
 		actions: [
 			{
 				primary: true,
-				label: { de: "Speichern", en: "Save" },
+				label: label().en("Save").de("Speichern").build(),
 				handler: {
-					method: "POST",
-					url: "/api/plugins/form-plugin/form?id={{id}}",
+					method: upsertHandler.method,
+					url: `${upsertHandler.url}?id={{id}}`,
 					redirect: "/plugins/form-plugin/overview",
 				},
 			},

@@ -1,6 +1,11 @@
-import type { SettingsPage } from "@cms-local/plugin-interface";
+import type {
+	RegisterHandlerReturn,
+	SettingsPage,
+} from "@aaa-soft/plugin-interface";
 
-export function formSubmissionsPage(submissionHandler): SettingsPage {
+export function formSubmissionsPage(
+	submissionHandler: RegisterHandlerReturn,
+): SettingsPage {
 	return {
 		label: { de: "Einsendungen", en: "Submissions" },
 		type: "list",
