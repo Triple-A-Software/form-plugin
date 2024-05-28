@@ -152,9 +152,49 @@ export default definePlugin(async (ctx) => {
 		},
 	);
 
+	const submissionsListHandler = ctx.registerHandler(
+		["GET"],
+		"/submission",
+		async (req) => {
+			// list all submissions
+			const allForms = await ctx.storage.getAllWithFilter<Form>("form");
+			const submissions =
+				await ctx.storage.getAllWithFilter<Submission>("submission");
+			const allSubmissions: Array<
+				Submission["submission"] & {
+					id: number;
+					pluginId: string;
+					name: string;
+					recipient: string;
+					date: string;
+				}
+			> = [];
+			if (!submissions || !allForms) {
+				return [];
+			}
+			for (const submission of submissions) {
+				const matchingForm = allForms.find(
+					(form) => form.id === Number(submission.data.submission.formId),
+				);
+				if (matchingForm) {
+					allSubmissions.push({
+						formId: submission.data.submission.formId,
+						id: submission.id,
+						pluginId: submission.pluginId,
+						name: matchingForm.data.form.name,
+						recipient: matchingForm.data.form.email,
+						date: dayjs(submission.createdAt).format("HH:mm, DD.MM.YYYY"),
+						data: submission.data.submission,
+					});
+				}
+			}
+			return allSubmissions;
+		},
+	);
+
 	// The handler to list submissions and manage them from the admin-ui
-	const submissionsHandler = ctx.registerHandler(
-		["GET", "DELETE"],
+	const submissionsDeleteHandler = ctx.registerHandler(
+		["DELETE"],
 		"/submission/:formId",
 		async (req) => {
 			if (!req.params?.formId) {
@@ -162,51 +202,13 @@ export default definePlugin(async (ctx) => {
 					status: 400,
 				});
 			}
-			if (req.method === "DELETE") {
-				const res = await ctx.storage.deleteOne(
-					req.params.formId, // this is actually the submissionID
-				);
-				if (res) {
-					return new Response(null, { status: 200 });
-				}
-				throw Error("Error on Deleting Record");
+			const res = await ctx.storage.deleteOne(
+				req.params.formId, // this is actually the submissionID
+			);
+			if (res) {
+				return new Response(null, { status: 200 });
 			}
-			if (req.method === "GET") {
-				const allForms = await ctx.storage.getAllWithFilter<Form>("form");
-				const submissions =
-					await ctx.storage.getAllWithFilter<Submission>("submission");
-				const allSubmissions: Array<
-					Submission["submission"] & {
-						id: number;
-						pluginId: string;
-						name: string;
-						recipient: string;
-						date: string;
-					}
-				> = [];
-				if (!submissions || !allForms) {
-					return [];
-				}
-				for (const submission of submissions) {
-					const matchingForm = allForms.find(
-						(form) => form.id === Number(submission.data.submission.formId),
-					);
-					if (matchingForm) {
-						allSubmissions.push({
-							formId: submission.data.submission.formId,
-							id: submission.id,
-							pluginId: submission.pluginId,
-							name: matchingForm.data.form.name,
-							recipient: matchingForm.data.form.email,
-							date: dayjs(submission.createdAt).format("HH:mm, DD.MM.YYYY"),
-							data: submission.data.submission,
-						});
-					}
-				}
-
-				return allSubmissions;
-			}
-			throw new Error("Method not allowed");
+			throw Error("Error on Deleting Record");
 		},
 		{
 			allowedRoles: ["admin", "editor", "author", "developer"],
@@ -215,12 +217,12 @@ export default definePlugin(async (ctx) => {
 
 	ctx.registerWidget(
 		"formSubmissionsWidget",
-		formSubmissionsPage(submissionsHandler),
+		formSubmissionsPage(submissionsListHandler, submissionsDeleteHandler),
 	);
 
 	ctx.registerSettingsPage(
 		"/submissions",
-		formSubmissionsPage(submissionsHandler),
+		formSubmissionsPage(submissionsListHandler, submissionsDeleteHandler),
 	);
 	ctx.registerSettingsPage("/overview", formOverviewPage(formsHandler));
 	ctx.registerSettingsPage("/create", createFormPage(formCreateUpdateHandler));
@@ -234,7 +236,7 @@ export default definePlugin(async (ctx) => {
 		template: `<form 
     action="${submitHandler
 			.toActionHandler("POST")
-			.url.replace(":formId", "{{ properties.selectForm }}")}"
+			.url.replace(":formId", "{{ properties.selectForm.id }}")}"
     class="{{ properties.cssClasses }}"
     method="POST"
 >

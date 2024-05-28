@@ -2,20 +2,28 @@ import type {
 	RegisterHandlerReturn,
 	SettingsPage,
 } from "@aaa-soft/plugin-interface";
+import { label } from "@aaa-soft/plugin-interface/builder";
 
 export function formSubmissionsPage(
-	submissionHandler: RegisterHandlerReturn,
+	listHandler: RegisterHandlerReturn,
+	deleteHandler: RegisterHandlerReturn,
 ): SettingsPage {
 	return {
-		label: { de: "Einsendungen", en: "Submissions" },
+		label: label().de("Einsendungen").en("Submissions").build(),
 		type: "list",
-		getDataHandler: submissionHandler.toActionHandler("GET"),
+		getDataHandler: listHandler.toActionHandler("GET"),
 		columns: [
-			{ key: "id", label: { de: "ID", en: "ID" } },
-			{ key: "name", label: { de: "Formular", en: "Form" } },
-			{ key: "recipient", label: { de: "Empfänger", en: "Recipient" } },
-			{ key: "date", label: { de: "Gesendet am", en: "Recived at" } },
-			{ key: "actions", label: { de: "Aktionen", en: "Actions" } },
+			{ key: "id", label: label().de("ID").en("ID").build() },
+			{ key: "name", label: label().de("Formular").en("Form").build() },
+			{
+				key: "recipient",
+				label: label().de("Empfänger").en("Recipient").build(),
+			},
+			{
+				key: "date",
+				label: label().de("Gesendet am").en("Recived at").build(),
+			},
+			{ key: "actions", label: label().de("Aktionen").en("Actions").build() },
 		],
 		actions: [
 			{
@@ -25,7 +33,9 @@ export function formSubmissionsPage(
 			{
 				icon: "i-tabler-trash",
 				handler: {
-					url: "/api/plugins/form-plugin/submit/{{record.id}}?formId={{record.formId}}",
+					url: `${deleteHandler
+						.toActionHandler("DELETE")
+						.url.replace(":formId", "{{record.id}}")}?formId={{record.formId}}`,
 					method: "DELETE",
 				},
 			},
