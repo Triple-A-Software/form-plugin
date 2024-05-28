@@ -7,10 +7,9 @@ import { formBuilderItems } from "../helper/formStructs";
 
 export function createFormPage(
 	formHandler: RegisterHandlerReturn,
-	formCreateUpdateHandler: RegisterHandlerReturn,
 ): SettingsPage {
 	const dataHandler = formHandler.toActionHandler("GET");
-	const upsertHandler = formCreateUpdateHandler.toActionHandler("POST");
+	const upsertHandler = formHandler.toActionHandler("POST");
 
 	return {
 		type: "form",

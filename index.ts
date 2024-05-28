@@ -223,10 +223,7 @@ export default definePlugin(async (ctx) => {
 		formSubmissionsPage(submissionsHandler),
 	);
 	ctx.registerSettingsPage("/overview", formOverviewPage(formsHandler));
-	ctx.registerSettingsPage(
-		"/create",
-		createFormPage(formsHandler, formCreateUpdateHandler),
-	);
+	ctx.registerSettingsPage("/create", createFormPage(formCreateUpdateHandler));
 
 	//TODO: Trigger hook to rerender form
 	//ctx.hooks.on("rerender", () => {});
