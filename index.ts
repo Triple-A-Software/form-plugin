@@ -1,9 +1,8 @@
-import { definePlugin } from "@aaa-soft/plugin-interface";
+import { DataEntry, definePlugin } from "@aaa-soft/plugin-interface";
 import dayjs from "dayjs";
 import { formOverviewPage } from "./settings/overview";
 import { formSubmissionsPage } from "./settings/submissions";
 import { createFormPage } from "./settings/form";
-import { buildForm } from "./helper/utils";
 import { label } from "@aaa-soft/plugin-interface/builder";
 import { BuilderItem } from "@aaa-soft/plugin-interface/types/builder";
 
@@ -104,24 +103,20 @@ export default definePlugin(async (ctx) => {
 			const form = await ctx.storage.getOne<Form | Submission>(
 				req.params.formId,
 			);
-			if (!form || !("form" in form.data)) {
-				return new Response("Unknown FormID", {
-					status: 400,
+			if (dataentryIsForm(form)) {
+				await ctx.storage.createOne({
+					submission: {
+						data: req.body,
+						formId: req.params.formId,
+					},
 				});
-			}
-			await ctx.storage.createOne({
-				submission: {
-					data: req.body,
-					formId: req.params.formId,
-				},
-			});
-			if (form.data.form.email) {
-				ctx.sendMail(
-					`[Neue Einsendung] ${form.data.form.name} vom ${dayjs(
-						new Date(),
-					).format("DD.MM.YYYY")}`,
-					form.data.form.email,
-					`<div style="padding:1rem;">
+				if (form.data.form.email) {
+					ctx.sendMail(
+						`[Neue Einsendung] ${form.data.form.name} vom ${dayjs(
+							new Date(),
+						).format("DD.MM.YYYY")}`,
+						form.data.form.email,
+						`<div style="padding:1rem;">
                             <table style="width:100%;border: solid 1px;padding:1rem">
                                 <tr style="border-bottom:solid 1px;text-align:center">
                                     <th>Feld</th>
@@ -140,7 +135,12 @@ export default definePlugin(async (ctx) => {
 						)}
                     </table>
                 </div>`,
-				);
+					);
+				}
+			} else {
+				return new Response("Unknown FormID", {
+					status: 400,
+				});
 			}
 
 			return new Response(null, {
@@ -175,7 +175,15 @@ export default definePlugin(async (ctx) => {
 				const allForms = await ctx.storage.getAllWithFilter<Form>("form");
 				const submissions =
 					await ctx.storage.getAllWithFilter<Submission>("submission");
-				const allSubmissions: Submission["submission"][] = [];
+				const allSubmissions: Array<
+					Submission["submission"] & {
+						id: number;
+						pluginId: string;
+						name: string;
+						recipient: string;
+						date: string;
+					}
+				> = [];
 				if (!submissions || !allForms) {
 					return [];
 				}
@@ -223,34 +231,10 @@ export default definePlugin(async (ctx) => {
 	//TODO: Trigger hook to rerender form
 	//ctx.hooks.on("rerender", () => {});
 
-	ctx.onRewrite(async (rewriter) => {
-		rewriter.on("form#form_draft", {
-			element(el) {
-				const builder = el.getAttribute("builder");
-				el.setInnerContent(`${buildForm(JSON.parse(builder))}`, {
-					html: true,
-				});
-			},
-		});
-
-		const forms = await ctx.storage.getAllWithFilter<Form>("form");
-		if (!forms) return;
-		for (const form of forms) {
-			rewriter.on(`form#form_${form.id}`, {
-				element(el) {
-					el.setInnerContent(`${buildForm(form.data.form.builder)}`, {
-						html: true,
-					});
-				},
-			});
-		}
-	});
-
 	ctx.registerElementType({
 		name: "Form-Picker",
 		icon: "i-tabler-forms",
 		template: `<form 
-    id="form_{{ properties.selectForm }}"
     action="${submitHandler
 			.toActionHandler("POST")
 			.url.replace(":formId", "{{ properties.selectForm }}")}"
@@ -271,7 +255,7 @@ export default definePlugin(async (ctx) => {
 					pluginId: ctx.pluginId(),
 					filterByKey: "form",
 					labelKey: "form.name",
-					valueKey: "form.",
+					valueKey: "form.builder",
 				},
 				{
 					label: label().en("CSS Classes").de("CSS Klassen").build(),
@@ -282,3 +266,14 @@ export default definePlugin(async (ctx) => {
 		},
 	});
 });
+
+function dataentryIsForm(dataentry: unknown): dataentry is DataEntry<Form> {
+	return (
+		dataentry != null &&
+		typeof dataentry === "object" &&
+		"data" in dataentry &&
+		dataentry.data != null &&
+		typeof dataentry.data === "object" &&
+		"form" in dataentry.data
+	);
+}
