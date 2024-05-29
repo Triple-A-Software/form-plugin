@@ -38,6 +38,11 @@ export function createFormPage(
 						.build(),
 				},
 				{
+					label: label().en("CSS Classes").de("CSS Klassen").build(),
+					id: "classes",
+					type: "text",
+				},
+				{
 					id: "builder",
 					type: "builder",
 					label: label()
