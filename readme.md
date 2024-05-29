@@ -23,4 +23,4 @@ The Create Form tab is where you can design new forms. You can specify recipient
 The Builder section offers a user-friendly interface where you can select predefined elements to include in your form. By clicking on the Edit button of each element, you can customize properties such as the label, placeholder text, or whether the field is required. Additionally, you have the flexibility to rearrange individual elements within the form. A real-time preview is available directly below the Builder, allowing you to visualize the changes as you make them.
 
 ### Builder (Addendum):
-It's important to note that before saving your form, ensure you include a submit button. This button is essential for users to submit their responses. Without it, the form won't function as intended. Remember to add this crucial element before finalizing and saving your form.
+It's important to note that before saving your form, ensure you include a submit button. This button is essential for users to submit their responses. Without it, the form won't function as intended.

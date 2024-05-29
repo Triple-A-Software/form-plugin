@@ -2,18 +2,19 @@ import type {
 	RegisterHandlerReturn,
 	SettingsPage,
 } from "@aaa-soft/plugin-interface";
+import { label } from "@aaa-soft/plugin-interface/builder";
 
 export function formOverviewPage(
 	actionHandler: RegisterHandlerReturn,
 ): SettingsPage {
 	return {
-		label: { de: "Formulare", en: "Forms" },
+		label: label().de("Formulare").en("Forms").build(),
 		type: "list",
 		getDataHandler: actionHandler.toActionHandler("GET"),
 		columns: [
-			{ key: "name", label: { de: "Name", en: "Name" } },
-			{ key: "email", label: { de: "Empfänger", en: "Recipient" } },
-			{ key: "actions", label: { de: "Aktionen", en: "Actions" } },
+			{ key: "name", label: label().de("Name").en("Name").build() },
+			{ key: "email", label: label().de("Empfänger").en("Recipient").build() },
+			{ key: "actions", label: label().de("Aktionen").en("Actions").build() },
 		],
 		actions: [
 			{
@@ -23,7 +24,9 @@ export function formOverviewPage(
 			{
 				icon: "i-tabler-trash",
 				handler: {
-					url: "/api/plugins/form-plugin/forms?id={{record.id}}",
+					url: `${
+						actionHandler.toActionHandler("DELETE").url
+					}?id={{ record.id }}`,
 					method: "DELETE",
 				},
 			},

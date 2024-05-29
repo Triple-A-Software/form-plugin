@@ -33,9 +33,9 @@ export function formSubmissionsPage(
 			{
 				icon: "i-tabler-trash",
 				handler: {
-					url: `${deleteHandler
+					url: deleteHandler
 						.toActionHandler("DELETE")
-						.url.replace(":formId", "{{record.id}}")}?formId={{record.formId}}`,
+						.url.replace(":submissionId", "{{ record.id }}"),
 					method: "DELETE",
 				},
 			},

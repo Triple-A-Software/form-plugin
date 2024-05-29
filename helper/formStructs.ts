@@ -45,13 +45,14 @@ export const formBuilderItems: BuilderItem[] = [
 			label: "",
 			placeholder: "",
 			required: false,
+			name: "",
 			class: "grid p-2",
 		},
-		template: `<div class="{{data.class}}">
-            <label htmlFor="text_{{index}}">
-                {{data.label}}
+		template: `<div class="{{ data.class }}">
+            <label for="{{ data.label }}">
+                {{ data.label }}
             </label>
-            <input type="text" name="text_{{index}}" required="{{data.required}}" placeholder="{{data.placeholder}}" />
+            <input type="text" name="{{ data.name }}" required="{{ data.required }}" placeholder="{{ data.placeholder }}" />
         </div>`,
 	}),
 	builderItem({
@@ -61,15 +62,16 @@ export const formBuilderItems: BuilderItem[] = [
 		props: [...commonProps],
 		data: {
 			label: "",
+			name: "",
 			placeholder: "",
 			required: false,
 			class: "p-2",
 		},
-		template: `<div class="{{data.class}}">
-            <label htmlFor="checkbox_{{index}}">
-                {{data.label}}
+		template: `<div class="{{ data.class }}">
+            <label for="{{ data.label }}">
+                {{ data.label }}
             </label>
-            <input type="checkbox" name="checkbox_{{index}}" required="{{data.required}}" />
+            <input type="checkbox" name="{{ data.name }}" required="{{ data.required }}" />
         </div>`,
 	}),
 	builderItem({
@@ -79,15 +81,16 @@ export const formBuilderItems: BuilderItem[] = [
 		props: [...commonProps],
 		data: {
 			label: "",
+			name: "",
 			placeholder: "",
 			required: false,
 			class: "grid p-2",
 		},
-		template: `<div class="{{data.class}}">
-            <label htmlFor="textarea_{{index}}">
-                {{data.label}}
+		template: `<div class="{{ data.class }}">
+            <label for="{{ data.label }}">
+                {{ data.label }}
             </label>
-            <textarea name="textarea_{{index}}" required="{{data.required}}" placeholder="{{data.placeholder}}"></textarea>
+            <textarea name="{{ data.name }}" required="{{ data.required }}" placeholder="{{ data.placeholder }}"></textarea>
         </div>`,
 	}),
 	builderItem({
@@ -119,7 +122,14 @@ export const formBuilderItems: BuilderItem[] = [
 				label: label().en("onClick Function").de("onClick Funktion").build(),
 			},
 		],
-		data: { label: "Submit", class: "", type: "submit", onClick: "" },
-		template: `<button type="{{data.type}}" onclick="{{data.onclick}}" class="{{data.class}}"> {{data.label}} </button>`,
+		data: {
+			label: "Submit",
+			class: "",
+			type: "submit",
+			onClick: "",
+		},
+		template: `<button type="{{ data.type }}" onclick="{{ data.onclick }}" class="{{ data.class }}">
+            {{ data.label }}
+        </button>`,
 	}),
 ];
