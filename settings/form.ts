@@ -50,6 +50,13 @@ export function createFormPage(
 						.de("Bearbeite dein Formular")
 						.build(),
 					items: formBuilderItems,
+					previewTemplate: `<form 
+    action=""
+    class="{{ properties.cssClasses }}"
+    method="POST"
+>
+    {{ render_builder properties.selectForm }}
+</form>`,
 				},
 			],
 		},
