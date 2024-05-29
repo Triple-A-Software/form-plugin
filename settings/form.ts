@@ -55,7 +55,7 @@ export function createFormPage(
     class="{{ properties.cssClasses }}"
     method="POST"
 >
-    {{ render_builder properties.selectForm }}
+    {{ render_builder properties.builder }}
 </form>`,
 				},
 			],
