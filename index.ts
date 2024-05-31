@@ -33,6 +33,49 @@ export default definePlugin(async (ctx) => {
 		);
 	}
 
+	function getMailContent(title, body){
+		return (
+		`
+		<html lang="de">
+		<head>
+			<meta charset="utf-8"/>
+			<style>
+        		table, th, td {
+            		padding: 5px 10px;
+            		text-align: left;
+        		}
+    		</style>
+		</head>
+		<body>
+			<b>${title}</b>
+			<br/>
+			<table> 
+				<thead>
+					<tr>
+						<th>Feld</th>
+						<th>Inhalt</th>
+					</tr>
+				</thead>
+				<tbody>
+				${Object.entries(body).map(
+					([key, value]) => `
+					<tr>
+						<td>
+							${String(key).slice(0, -1)}
+						</td>
+						<td>
+							${value}
+						</td>
+					</tr>`,
+				)}
+				</tbody>
+			</table>
+			<br/>
+		</body>
+		</html>`
+		)
+	}
+
 	const formCreateUpdateHandler = ctx.registerHandler(
 		["POST", "GET"],
 		"/form",
@@ -134,31 +177,14 @@ export default definePlugin(async (ctx) => {
 						formId: req.params.formId,
 					},
 				});
+				const title = `[Neue Einsendung] ${form.data.form.name} vom ${dayjs(
+					new Date(),
+				).format("DD.MM.YYYY")}`
 				if (form.data.form.email) {
 					ctx.sendMail(
-						`[Neue Einsendung] ${form.data.form.name} vom ${dayjs(
-							new Date(),
-						).format("DD.MM.YYYY")}`,
+						title,
 						form.data.form.email,
-						`<div style="padding:1rem;">
-                            <table style="width:100%;border: solid 1px;padding:1rem">
-                                <tr style="border-bottom:solid 1px;text-align:center">
-                                    <th>Feld</th>
-                                    <th></th>
-                                </tr>
-						${Object.entries(req.body).map(
-							([key, value]) => `
-						<tr>
-                            <td style="border-right:solid 1px;padding:1rem">
-                                ${String(key).slice(0, -1)}
-                            </td>
-                            <td style="padding:1rem">
-                                ${value}
-                            </td>
-                        </tr>`,
-						)}
-                    </table>
-                </div>`,
+						getMailContent(title, req.body)
 					);
 				}
 			} else {
@@ -212,7 +238,7 @@ export default definePlugin(async (ctx) => {
 					});
 				}
 			}
-			return allSubmissions;
+			return allSubmissions.sort((a,b) => (a.id > b.id ? -1 : 1));
 		},
 	);
 
