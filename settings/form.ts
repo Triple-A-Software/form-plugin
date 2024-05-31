@@ -39,7 +39,7 @@ export function createFormPage(
 				},
 				{
 					label: label().en("CSS Classes").de("CSS Klassen").build(),
-					id: "classes",
+					id: "cssClasses",
 					type: "text",
 				},
 				{
