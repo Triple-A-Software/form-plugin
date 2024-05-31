@@ -61,7 +61,7 @@ export default definePlugin(async (ctx) => {
 					([key, value]) => `
 					<tr>
 						<td>
-							${String(key).slice(0, -1)}
+							${key}
 						</td>
 						<td>
 							${value}
