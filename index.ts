@@ -5,6 +5,7 @@ import { formSubmissionsPage } from "./settings/submissions";
 import { createFormPage } from "./settings/form";
 import { label } from "@aaa-soft/plugin-interface/builder";
 import type { BuilderItem } from "@aaa-soft/plugin-interface/types/builder";
+import { HookName } from "@aaa-soft/cms-hooks";
 
 type Form = {
 	form: {
@@ -50,7 +51,7 @@ export default definePlugin(async (ctx) => {
 						},
 					});
 				}
-				// await hooks.trigger("render")
+				await ctx.hooks.callHook(HookName.PAGE_CACHE_UPDATE_ALL);
 				return new Response(null, {
 					status: 200,
 				});
@@ -249,9 +250,6 @@ export default definePlugin(async (ctx) => {
 	);
 	ctx.registerSettingsPage("/overview", formOverviewPage(formsHandler));
 	ctx.registerSettingsPage("/create", createFormPage(formCreateUpdateHandler));
-
-	//TODO: Trigger hook to rerender form
-	//ctx.hooks.on("rerender", () => {});
 
 	ctx.registerElementType({
 		name: "Form-Picker",
