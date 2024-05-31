@@ -67,7 +67,7 @@ export default definePlugin(async (ctx) => {
 							${value}
 						</td>
 					</tr>`
-				).join()}
+				).join("")}
 				</tbody>
 			</table>
 			<br/>
