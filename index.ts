@@ -258,10 +258,10 @@ export default definePlugin(async (ctx) => {
     action="${submitHandler
 			.toActionHandler("POST")
 			.url.replace(":formId", "{{ properties.selectForm.id }}")}"
-    class="{{ properties.cssClasses }}"
+    class="{{ relations.selectForm.cssClasses }}"
     method="POST"
 >
-    {{ render_builder relations.selectForm }}
+    {{ render_builder relations.selectForm.builder }}
 </form>`,
 		style: "",
 		script: "",
@@ -275,7 +275,7 @@ export default definePlugin(async (ctx) => {
 					pluginId: ctx.pluginId(),
 					filterByKey: "form",
 					labelKey: "form.name",
-					valueKey: "form.builder",
+					valueKey: "form",
 				},
 				{
 					label: label().en("CSS Classes").de("CSS Klassen").build(),
