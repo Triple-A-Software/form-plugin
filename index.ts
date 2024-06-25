@@ -280,6 +280,7 @@ export default definePlugin(async (ctx) => {
 	ctx.registerElementType({
 		name: "Form-Picker",
 		icon: "i-tabler-forms",
+		category: "misc",
 		template: `<form 
     action="${submitHandler
 			.toActionHandler("POST")
