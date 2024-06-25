@@ -30,6 +30,68 @@ const commonProps: BuilderItemProp[] = [
 
 export const formBuilderItems: BuilderItem[] = [
 	builderItem({
+		id: "select",
+		label: label().en("Select").de("Auswahl").build(),
+		icon: "i-tabler-select",
+		props: [
+			...commonProps,
+			{
+				id: "placeholder",
+				type: "text",
+				label: label().en("Placeholder").de("Platzhalter").build(),
+			},
+			{
+				id: "options",
+				type: "builder",
+				label: label().en("Options").de("Optionen").build(),
+				items: [
+					builderItem({
+						id: "option",
+						label: label().en("Option").de("Option").build(),
+						icon: "i-tabler-select",
+						props: [
+							{
+								id: "label",
+								type: "text",
+								label: label().en("Label").de("Label").build(),
+							}, {
+								id: "value",
+								type: "text",
+								label: label().en("Value").de("Value").build(),
+							}
+						],
+						data: {
+							label: "",
+							value: "",
+						},
+						template: `<option value="{{ this.data.value }}">{{ this.data.label }}</option>`,
+					})
+				],
+			},
+		],
+		data: {
+			label: "",
+			placeholder: "",
+			required: false,
+			name: "",
+			class: "grid p-2",
+			options: []
+		},
+		template: `<div class="{{ data.class }}">
+            <label for="{{ data.label }}">
+                {{ data.label }}
+            </label>
+            <select type="text" name="{{ data.name }}" required="{{ data.required }}" placeholder="{{ data.placeholder }}" >
+			<option selected disabled value="{{data.placeholder}}">{{ data.placeholder }}</option>
+			  	{{#each data.options}}
+				<option value="{{ this.data.value }}">{{ this.data.label }}</option>
+  				{{/each}}
+			</select>
+        </div>`,
+
+
+	}),
+	builderItem({
 		id: "text",
 		label: label().en("Text").de("Text").build(),
 		icon: "i-tabler-letter-case",
