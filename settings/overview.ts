@@ -19,7 +19,7 @@ export function formOverviewPage(
 		actions: [
 			{
 				icon: "i-tabler-edit",
-				to: "/form-plugin/create?id={{record.id}}",
+				to: "/form-plugin/create?id={{ record.id }}",
 			},
 			{
 				icon: "i-tabler-trash",
