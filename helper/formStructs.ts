@@ -234,7 +234,11 @@ export const formBuilderItems: BuilderItem[] = [
 		 <script src="https://www.google.com/recaptcha/api.js"></script>
 		  <script>
    function onSubmit(token) {
-     document.getElementById("{{ data.formId }}").submit();
+     const form = document.getElementById("{{ data.formId }}");
+	 if(form.reportValidity()){
+	 form.submit();
+	 }
+
    }
  </script>
 		`,
