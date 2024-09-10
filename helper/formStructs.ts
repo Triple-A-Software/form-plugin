@@ -3,8 +3,6 @@ import type {
 	BuilderItem,
 	BuilderItemProp,
 } from "@aaa-soft/plugin-interface/types/builder";
-
-import { load } from 'recaptcha-v3';
 const commonProps: BuilderItemProp[] = [
 	{
 		id: "label",
@@ -172,6 +170,14 @@ export const formBuilderItems: BuilderItem[] = [
 				id: "dataSitekey",
 				type: "text",
 				label: label().en("CAPTCHA Key").de("CAPTCHA Key").build(),
+			}, {
+				id: "dataAction",
+				type: "text",
+				label: label().en("data-action").de("data-action").build(),
+			}, {
+				id: "dataCallback",
+				type: "text",
+				label: label().en("data-callback").de("data-callback").build(),
 			},
 			{
 				id: "type",
@@ -201,9 +207,11 @@ export const formBuilderItems: BuilderItem[] = [
 			class: "",
 			type: "submit",
 			dataSitekey: "",
+			dataCallback: "",
+			dataAction: "",
 			onClick: "",
 		},
-		template: `<button type="{{ data.type }}" data-sitekey="{{ data.dataSitekey }}" onclick="{{ data.onclick }}" class="{{ data.class }}">
+		template: `<button type="{{ data.type }}" data-action="" data-callback="" data-sitekey="{{ data.dataSitekey }}" onclick="{{ data.onclick }}" class="{{ data.class }}">
             {{ data.label }}
         </button>`,
 	}),
@@ -211,10 +219,24 @@ export const formBuilderItems: BuilderItem[] = [
 		id: "captcha",
 		label: label().en("CAPTCHA").de("CAPTCHA").build(),
 		icon: "i-tabler-robot-off",
-		props: [],
-		data: {},
+		props: [
+			{
+				id: "formId",
+				type: "text",
+				label: label().en("Form Id").de("Formular Id").build(),
+
+			}
+		],
+		data: {
+			formId: ""
+		},
 		template: `
 		 <script src="https://www.google.com/recaptcha/api.js"></script>
+		  <script>
+   function onSubmit(token) {
+     document.getElementById("").submit();
+   }
+ </script>
 		`,
 	})
 ];

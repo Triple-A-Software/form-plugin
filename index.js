@@ -277,6 +277,7 @@ export default definePlugin(async (ctx) => {
 		icon: "i-tabler-forms",
 		category: "misc",
 		template: `<form 
+		id="{{ properties.selectForm.id }}"
     action="${submitHandler
 			.toActionHandler("POST")
 			.url.replace(":formId", "{{ properties.selectForm.id }}")}"
