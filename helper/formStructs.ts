@@ -80,7 +80,7 @@ export const formBuilderItems: BuilderItem[] = [
             <label for="{{ data.label }}">
                 {{ data.label }}
             </label>
-            <select type="text" name="{{ data.name }}" required="{{ data.required }}" placeholder="{{ data.placeholder }}" >
+            <select type="text" name="{{ data.name }}" {{#if data.required }}required{{/if}} placeholder="{{ data.placeholder }}" >
 			<option selected disabled value="{{data.placeholder}}">{{ data.placeholder }}</option>
 			  	{{#each data.options}}
 				<option value="{{ this.data.value }}">{{ this.data.label }}</option>
@@ -119,7 +119,7 @@ export const formBuilderItems: BuilderItem[] = [
             <label for="{{ data.label }}">
                 {{ data.label }}
             </label>
-            <input type="{{ data.type }}" name="{{ data.name }}" required="{{ data.required }}" placeholder="{{ data.placeholder }}" />
+            <input type="{{ data.type }}" name="{{ data.name }}" {{#if data.required }}required{{/if}} placeholder="{{ data.placeholder }}" />
         </div>`,
 	}),
 	builderItem({
@@ -138,7 +138,7 @@ export const formBuilderItems: BuilderItem[] = [
             <label for="{{ data.label }}">
                 {{ data.label }}
             </label>
-            <input type="checkbox" name="{{ data.name }}" required="{{ data.required }}" />
+            <input type="checkbox" name="{{ data.name }}" {{#if data.required }}required{{/if}} />
         </div>`,
 	}),
 	builderItem({
@@ -157,7 +157,7 @@ export const formBuilderItems: BuilderItem[] = [
             <label for="{{ data.label }}">
                 {{ data.label }}
             </label>
-            <textarea name="{{ data.name }}" required="{{ data.required }}" placeholder="{{ data.placeholder }}"></textarea>
+            <textarea name="{{ data.name }}" {{#if data.required }}required{{/if}} placeholder="{{ data.placeholder }}"></textarea>
         </div>`,
 	}),
 	builderItem({
@@ -236,6 +236,7 @@ export const formBuilderItems: BuilderItem[] = [
    function onSubmit(token) {
      const form = document.getElementById("{{ data.formId }}");
 	 if(form.reportValidity()){
+
 	 form.submit();
 	 }
 
