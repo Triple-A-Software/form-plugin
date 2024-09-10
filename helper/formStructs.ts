@@ -207,11 +207,11 @@ export const formBuilderItems: BuilderItem[] = [
 			class: "",
 			type: "submit",
 			dataSitekey: "",
-			dataCallback: "",
-			dataAction: "",
+			dataCallback: "onSubmit",
+			dataAction: "submit",
 			onClick: "",
 		},
-		template: `<button type="{{ data.type }}" data-action="" data-callback="" data-sitekey="{{ data.dataSitekey }}" onclick="{{ data.onclick }}" class="{{ data.class }}">
+		template: `<button type="{{ data.type }}" data-action="{{ data.dataAction }}" data-callback="{{ data.dataCallback }}" data-sitekey="{{ data.dataSitekey }}" onclick="{{ data.onclick }}" class="{{ data.class }}">
             {{ data.label }}
         </button>`,
 	}),
@@ -234,7 +234,7 @@ export const formBuilderItems: BuilderItem[] = [
 		 <script src="https://www.google.com/recaptcha/api.js"></script>
 		  <script>
    function onSubmit(token) {
-     document.getElementById("").submit();
+     document.getElementById("{{ data.formId }}").submit();
    }
  </script>
 		`,
