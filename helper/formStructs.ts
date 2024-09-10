@@ -4,6 +4,7 @@ import type {
 	BuilderItemProp,
 } from "@aaa-soft/plugin-interface/types/builder";
 
+import { load } from 'recaptcha-v3';
 const commonProps: BuilderItemProp[] = [
 	{
 		id: "label",
@@ -102,19 +103,25 @@ export const formBuilderItems: BuilderItem[] = [
 				type: "text",
 				label: label().en("Placeholder").de("Platzhalter").build(),
 			},
+			{
+				id: "type",
+				type: "text",
+				label: label().en("Type").de("Typ").build(),
+			},
 		],
 		data: {
 			label: "",
 			placeholder: "",
 			required: false,
 			name: "",
+			type: "text",
 			class: "grid p-2",
 		},
 		template: `<div class="{{ data.class }}">
             <label for="{{ data.label }}">
                 {{ data.label }}
             </label>
-            <input type="text" name="{{ data.name }}" required="{{ data.required }}" placeholder="{{ data.placeholder }}" />
+            <input type="{{ data.type }}" name="{{ data.name }}" required="{{ data.required }}" placeholder="{{ data.placeholder }}" />
         </div>`,
 	}),
 	builderItem({
@@ -162,6 +169,11 @@ export const formBuilderItems: BuilderItem[] = [
 		props: [
 			...commonProps,
 			{
+				id: "dataSitekey",
+				type: "text",
+				label: label().en("CAPTCHA Key").de("CAPTCHA Key").build(),
+			},
+			{
 				id: "type",
 				type: "buttongroup",
 				label: label().en("Button type").de("Buttontyp").build(),
@@ -188,10 +200,21 @@ export const formBuilderItems: BuilderItem[] = [
 			label: "Submit",
 			class: "",
 			type: "submit",
+			dataSitekey: "",
 			onClick: "",
 		},
-		template: `<button type="{{ data.type }}" onclick="{{ data.onclick }}" class="{{ data.class }}">
+		template: `<button type="{{ data.type }}" data-sitekey="{{ data.dataSitekey }}" onclick="{{ data.onclick }}" class="{{ data.class }}">
             {{ data.label }}
         </button>`,
 	}),
+	builderItem({
+		id: "captcha",
+		label: label().en("CAPTCHA").de("CAPTCHA").build(),
+		icon: "i-tabler-robot-off",
+		props: [],
+		data: {},
+		template: `
+		 <script src="https://www.google.com/recaptcha/api.js"></script>
+		`,
+	})
 ];
