@@ -123,6 +123,31 @@ export const formBuilderItems: BuilderItem[] = [
         </div>`,
 	}),
 	builderItem({
+		id: "label",
+		label: label().en("Label").de("Anzeige").build(),
+		icon: "i-tabler-letter-case",
+		props: [
+			
+			{
+				id: "class",
+				type: "text",
+				label: label().en("CSS-Classes").de("CSS-Klasses").build(),
+			},
+			{
+				id: "text",
+				type: "text",
+				label: label().en("Text").de("Text").build(),
+			},
+		],
+		data: {
+			text: "text",
+			class: "p-2",
+		},
+		template: `<div class="{{ data.class }}">
+		{{ data.text }}
+        </div>`,
+	}),
+	builderItem({
 		id: "checkbox",
 		label: label().en("Checkbox").de("Kontrollkästchen").build(),
 		icon: "i-tabler-checkbox",
