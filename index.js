@@ -2,6 +2,8 @@ import { /*type DataEntry,*/ definePlugin } from "@aaa-soft/plugin-interface";
 import { formOverviewPage } from "./settings/overview";
 import { formSubmissionsPage } from "./settings/submissions";
 import { createFormPage } from "./settings/form";
+import { cleverReachConfig } from "./settings/cleverreach";
+import {createReceiver} from "./helper/cleverReach";
 import { label } from "@aaa-soft/plugin-interface/builder";
 // import type { BuilderItem } from "@aaa-soft/plugin-interface/types/builder";
 import { HookName } from "@aaa-soft/cms-hooks";
@@ -35,9 +37,8 @@ export default definePlugin(async (ctx) => {
 		);
 	}
 
-	function getMailContent(title, body){
-		return (
-		`
+	function getMailContent(title, body) {
+		return `
 		<html lang="de">
 		<head>
 			<meta charset="utf-8"/>
@@ -59,8 +60,9 @@ export default definePlugin(async (ctx) => {
 					</tr>
 				</thead>
 				<tbody>
-				${Object.entries(body).map(
-					([key, value]) => `
+				${Object.entries(body)
+					.map(
+						([key, value]) => `
 					<tr>
 						<td>
 							${key}
@@ -68,15 +70,55 @@ export default definePlugin(async (ctx) => {
 						<td>
 							${value}
 						</td>
-					</tr>`
-				).join("")}
+					</tr>`,
+					)
+					.join("")}
 				</tbody>
 			</table>
 			<br/>
 		</body>
-		</html>`
-		)
+		</html>`;
 	}
+
+	const cleverReachUpsertHandler = ctx.registerHandler(
+		["POST", "GET"],
+		"/form/cleverreach",
+		async (req) => {
+			const config = await ctx.storage.getAllWithFilter("clever_reach");
+			if (req.method === "POST") {
+				if (config[0]) {
+					await ctx.storage.updateOne(config[0].id, {
+						clever_reach: {
+							...req.body,
+						},
+					});
+				} else {
+					await ctx.storage.createOne({
+						clever_reach: {
+							...req.body,
+						},
+					});
+				}
+				await ctx.hooks.callHook(HookName.PAGE_CACHE_UPDATE_ALL);
+				return new Response(null, {
+					status: 200,
+				});
+			}
+			if (req.method === "GET") {
+				if (!config[0])
+					return new Response("Clever reach config not found", {
+						status: 404,
+					});
+				return config[0].data.clever_reach;
+			}
+			return new Response(`Method not allowed ${req.method}`, {
+				status: 405,
+			});
+		},
+		{
+			allowedRoles: ["admin", "editor", "developer"],
+		},
+	);
 
 	const formCreateUpdateHandler = ctx.registerHandler(
 		["POST", "GET"],
@@ -169,9 +211,7 @@ export default definePlugin(async (ctx) => {
 					status: 400,
 				});
 			}
-			const form = await ctx.storage.getOne(
-				req.params.formId,
-			);
+			const form = await ctx.storage.getOne(req.params.formId);
 			if (dataentryIsForm(form)) {
 				await ctx.storage.createOne({
 					submission: {
@@ -181,13 +221,29 @@ export default definePlugin(async (ctx) => {
 				});
 				const title = `[Neue Einsendung] ${form.data.form.name} vom ${dayjs(
 					new Date(),
-				).format("DD.MM.YYYY")}`
+				).format("DD.MM.YYYY")}`;
 				if (form.data.form.email) {
 					ctx.sendMail(
 						title,
 						form.data.form.email,
-						getMailContent(title, req.body)
+						getMailContent(title, req.body),
 					);
+				}
+				if (form.data.form["cleverreach-active"]) {
+					try {
+						const config = await ctx.storage.getAllWithFilter("clever_reach");
+						await createReceiver(
+							config[0].data.clever_reach.client_id,
+							config[0].data.clever_reach.login_password,
+							form.data.form.cleverreach_group_id,
+							req.body.email ?? "",
+							req.body.firstName ?? "",
+							req.body.lastName ?? "",
+							req.body.salutation ?? "",
+						);
+					} catch (e) {
+						console.log("error on subscribing newsletter", e);
+					}
 				}
 			} else {
 				return new Response("Unknown FormID", {
@@ -210,11 +266,10 @@ export default definePlugin(async (ctx) => {
 		async (req) => {
 			// list all submissions
 			const allForms = await ctx.storage.getAllWithFilter("form");
-			const submissions =
-				await ctx.storage.getAllWithFilter("submission");
+			const submissions = await ctx.storage.getAllWithFilter("submission");
 			const allSubmissions = [];
 			if (!submissions || !allForms) {
-				console.error("No Form or Submissions Found!")
+				console.error("No Form or Submissions Found!");
 				return [];
 			}
 			for (const submission of submissions) {
@@ -233,7 +288,7 @@ export default definePlugin(async (ctx) => {
 					});
 				}
 			}
-			return allSubmissions.sort((a,b) => (a.id > b.id ? -1 : 1));
+			return allSubmissions.sort((a, b) => (a.id > b.id ? -1 : 1));
 		},
 	);
 
@@ -271,6 +326,10 @@ export default definePlugin(async (ctx) => {
 	);
 	ctx.registerSettingsPage("/overview", formOverviewPage(formsHandler));
 	ctx.registerSettingsPage("/create", createFormPage(formCreateUpdateHandler));
+	ctx.registerSettingsPage(
+		"/cleverreach",
+		cleverReachConfig(cleverReachUpsertHandler),
+	);
 
 	ctx.registerElementType({
 		name: "Form-Picker",

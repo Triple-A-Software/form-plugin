@@ -38,6 +38,16 @@ export function createFormPage(
 						.build(),
 				},
 				{
+					label: label().en("Activate Cleverreach").de("Aktivere Cleverreach").build(),
+					id: "cleverreach-active",
+					type: "checkbox",
+				},
+				{
+					label: label().en("Group Ids").de("Group Ids").build(),
+					id: "cleverreach_group_id",
+					type: "text",
+				},
+				{
 					label: label().en("CSS Classes").de("CSS Klassen").build(),
 					id: "cssClasses",
 					type: "text",
@@ -49,7 +59,8 @@ export function createFormPage(
 						.en("Build your Form")
 						.de("Bearbeite dein Formular")
 						.build(),
-					items: formBuilderItems,
+
+					items: formBuilderItems as [],
 					previewTemplate: `<form 
     action=""
     class="{{ properties.cssClasses }}"

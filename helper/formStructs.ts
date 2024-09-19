@@ -1,6 +1,5 @@
 import { builderItem, label } from "@aaa-soft/plugin-interface/builder";
 import type {
-	BuilderItem,
 	BuilderItemProp,
 } from "@aaa-soft/plugin-interface/types/builder";
 const commonProps: BuilderItemProp[] = [
@@ -27,7 +26,7 @@ const commonProps: BuilderItemProp[] = [
 	},
 ];
 
-export const formBuilderItems: BuilderItem[] = [
+export const formBuilderItems = [
 	builderItem({
 		id: "select",
 		label: label().en("Select").de("Auswahl").build(),
@@ -64,7 +63,7 @@ export const formBuilderItems: BuilderItem[] = [
 							value: "",
 						},
 						template: `<option value="{{ this.data.value }}">{{ this.data.label }}</option>`,
-					})
+					}) as BuilderItemProp
 				],
 			},
 		],

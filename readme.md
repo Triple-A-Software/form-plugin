@@ -16,6 +16,14 @@ The Submissions tab allows you to view and delete the entries of various forms s
 ## Forms:
 In the Forms tab, you can access all the forms you've created. This section enables you to edit or delete existing forms as needed. It provides a centralized location to manage the forms' content and settings efficiently.
 
+## Newsletter
+
+Damit das Newsletter gut funktioniert, braucht man folgende inputs mit name
+- email
+- firstName
+- lastName
+- salutation
+
 ## Create Form:
 The Create Form tab is where you can design new forms. You can specify recipients for the form submissions and get a preview of how the form will appear to users. This feature streamlines the process of creating customized forms tailored to your specific needs.
 
@@ -24,3 +32,4 @@ The Builder section offers a user-friendly interface where you can select predef
 
 ### Builder (Addendum):
 It's important to note that before saving your form, ensure you include a submit button. This button is essential for users to submit their responses. Without it, the form won't function as intended.
+
