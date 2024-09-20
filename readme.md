@@ -18,11 +18,13 @@ In the Forms tab, you can access all the forms you've created. This section enab
 
 ## Newsletter
 
-Damit das Newsletter gut funktioniert, braucht man folgende inputs mit name
+Damit das Newsletter funktioniert, braucht man folgende inputs mit name
 - email
 - firstName
 - lastName
 - salutation
+
+Erstellt man eine Checkbox mit dem name = "subscribe_newsletter" kann man sich auch zum newsletter subscriben, sofern die checkbox gechecked ist
 
 ## Create Form:
 The Create Form tab is where you can design new forms. You can specify recipients for the form submissions and get a preview of how the form will appear to users. This feature streamlines the process of creating customized forms tailored to your specific needs.
