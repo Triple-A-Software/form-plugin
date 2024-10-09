@@ -3,7 +3,7 @@ import type {
 	SettingsPage,
 } from "@aaa-soft/plugin-interface";
 import { label } from "@aaa-soft/plugin-interface/builder";
-import { formBuilderItems } from "../helper/formStructs";
+import  formBuilderItems  from "../helper/formStructs";
 
 export function createFormPage(
 	formHandler: RegisterHandlerReturn,

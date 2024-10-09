@@ -3,7 +3,7 @@ import { formOverviewPage } from "./settings/overview";
 import { formSubmissionsPage } from "./settings/submissions";
 import { createFormPage } from "./settings/form";
 import { cleverReachConfig } from "./settings/cleverreach";
-import {createReceiver} from "./helper/cleverReach";
+import { createReceiver } from "./helper/cleverReach";
 import { label } from "@aaa-soft/plugin-interface/builder";
 // import type { BuilderItem } from "@aaa-soft/plugin-interface/types/builder";
 import { HookName } from "@aaa-soft/cms-hooks";
@@ -229,7 +229,11 @@ export default definePlugin(async (ctx) => {
 						getMailContent(title, req.body),
 					);
 				}
-				if (form.data.form["cleverreach-active"]) {
+
+				if (
+					form.data.form["cleverreach-active"] ||
+					req.body.subscribe_newsletter
+				) {
 					try {
 						const config = await ctx.storage.getAllWithFilter("clever_reach");
 						await createReceiver(

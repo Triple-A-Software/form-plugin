@@ -26,7 +26,7 @@ const commonProps: BuilderItemProp[] = [
 	},
 ];
 
-export const formBuilderItems = [
+const formBuilderItems = [
 	builderItem({
 		id: "select",
 		label: label().en("Select").de("Auswahl").build(),
@@ -126,7 +126,7 @@ export const formBuilderItems = [
 		label: label().en("Label").de("Anzeige").build(),
 		icon: "i-tabler-letter-case",
 		props: [
-			
+
 			{
 				id: "class",
 				type: "text",
@@ -255,7 +255,7 @@ export const formBuilderItems = [
 			formId: ""
 		},
 		template: `
-		 <script src="https://www.google.com/recaptcha/api.js"></script>
+		 <script src="https://www.google.com/recaptcha/api.js" defer></script>
 		  <script>
    function onSubmit(token) {
      const form = document.getElementById("{{ data.formId }}");
@@ -269,3 +269,34 @@ export const formBuilderItems = [
 		`,
 	})
 ];
+
+
+const builderItemsWithLayout = [...formBuilderItems, builderItem({
+	id: "layout",
+	label: label().en("Layout").de("Layout").build(),
+	icon: "i-tabler-layout-grid",
+	props: [
+		...commonProps,
+		{
+			id: "children",
+			type: "builder",
+			label: label().en("Child elements").de("Kind Elemente").build(),
+			items: formBuilderItems as BuilderItemProp[],
+		}
+	],
+	data: {
+		label: "",
+		placeholder: "",
+		required: false,
+		name: "",
+		class: "grid p-2",
+		children: []
+
+	},
+	template: `<div class="{{ data.class }}">
+ {{ render_builder data.children }}
+        </div>`,
+})]
+
+
+export default builderItemsWithLayout;

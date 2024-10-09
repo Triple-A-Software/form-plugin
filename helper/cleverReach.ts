@@ -45,5 +45,4 @@ export const createReceiver = async (client_id: string, client_secret: string, g
             })
         }
     );
-    console.log("RES", await res.json(), res.status)
 };
