@@ -62,7 +62,7 @@ const formBuilderItems = [
 							label: "",
 							value: "",
 						},
-						template: `<option value="{{ this.data.value }}">{{ this.data.label }}</option>`,
+						template: `<option value="{{ this.data.value }}">{{ render this.data.label }}</option>`,
 					}) as BuilderItemProp
 				],
 			},
@@ -76,13 +76,13 @@ const formBuilderItems = [
 			options: []
 		},
 		template: `<div class="{{ data.class }}">
-            <label for="{{ data.label }}">
-                {{ data.label }}
+            <label for="{{ data.name }}">
+                {{ render data.label }}
             </label>
             <select type="text" name="{{ data.name }}" {{#if data.required }}required{{/if}} placeholder="{{ data.placeholder }}" >
 			<option selected disabled value="{{data.placeholder}}">{{ data.placeholder }}</option>
 			  	{{#each data.options}}
-				<option value="{{ this.data.value }}">{{ this.data.label }}</option>
+				<option value="{{ this.data.value }}">{{ render this.data.label }}</option>
   				{{/each}}
 			</select>
         </div>`,
@@ -115,8 +115,8 @@ const formBuilderItems = [
 			class: "grid p-2",
 		},
 		template: `<div class="{{ data.class }}">
-            <label for="{{ data.label }}">
-                {{ data.label }}
+            <label for="{{ data.name }}">
+                {{ render data.label }}
             </label>
             <input type="{{ data.type }}" name="{{ data.name }}" {{#if data.required }}required{{/if}} placeholder="{{ data.placeholder }}" />
         </div>`,
@@ -159,8 +159,8 @@ const formBuilderItems = [
 			class: "p-2",
 		},
 		template: `<div class="{{ data.class }}">
-            <label for="{{ data.label }}">
-                {{ data.label }}
+            <label for="{{ data.name }}">
+                {{ render data.label }}
             </label>
             <input type="checkbox" name="{{ data.name }}" {{#if data.required }}required{{/if}} />
         </div>`,
@@ -178,8 +178,8 @@ const formBuilderItems = [
 			class: "grid p-2",
 		},
 		template: `<div class="{{ data.class }}">
-            <label for="{{ data.label }}">
-                {{ data.label }}
+            <label for="{{ data.name }}">
+                {{ render data.label }}
             </label>
             <textarea name="{{ data.name }}" {{#if data.required }}required{{/if}} placeholder="{{ data.placeholder }}"></textarea>
         </div>`,
@@ -236,7 +236,7 @@ const formBuilderItems = [
 			onClick: "",
 		},
 		template: `<button type="{{ data.type }}" data-action="{{ data.dataAction }}" data-callback="{{ data.dataCallback }}" data-sitekey="{{ data.dataSitekey }}" onclick="{{ data.onclick }}" class="{{ data.class }}">
-            {{ data.label }}
+            {{ render data.label }}
         </button>`,
 	}),
 	builderItem({
