@@ -79,8 +79,8 @@ const formBuilderItems = [
             <label for="{{ data.name }}">
                 {{ render data.label }}
             </label>
-            <select type="text" name="{{ data.name }}" {{#if data.required }}required{{/if}} placeholder="{{ data.placeholder }}" >
-			<option selected disabled value="{{data.placeholder}}">{{ data.placeholder }}</option>
+            <select type="text" name="{{ data.name }}" {{#if data.required }}required{{/if}} placeholder="{{ render data.placeholder }}" >
+			<option selected disabled value="{{render data.placeholder}}">{{ render data.placeholder }}</option>
 			  	{{#each data.options}}
 				<option value="{{ this.data.value }}">{{ render this.data.label }}</option>
   				{{/each}}
@@ -118,7 +118,7 @@ const formBuilderItems = [
             <label for="{{ data.name }}">
                 {{ render data.label }}
             </label>
-            <input type="{{ data.type }}" name="{{ data.name }}" {{#if data.required }}required{{/if}} placeholder="{{ data.placeholder }}" />
+            <input type="{{ data.type }}" name="{{ data.name }}" {{#if data.required }}required{{/if}} placeholder="{{ render data.placeholder }}" />
         </div>`,
 	}),
 	builderItem({
@@ -181,7 +181,7 @@ const formBuilderItems = [
             <label for="{{ data.name }}">
                 {{ render data.label }}
             </label>
-            <textarea name="{{ data.name }}" {{#if data.required }}required{{/if}} placeholder="{{ data.placeholder }}"></textarea>
+            <textarea name="{{ data.name }}" {{#if data.required }}required{{/if}} placeholder="{{ render data.placeholder }}"></textarea>
         </div>`,
 	}),
 	builderItem({
