@@ -143,7 +143,7 @@ const formBuilderItems = [
 			class: "p-2",
 		},
 		template: `<div class="{{ data.class }}">
-		{{ data.text }}
+		{{render data.text }}
         </div>`,
 	}),
 	builderItem({
