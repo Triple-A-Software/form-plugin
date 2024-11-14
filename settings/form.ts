@@ -38,6 +38,11 @@ export function createFormPage(
 						.build(),
 				},
 				{
+					label: label().en("Activate ReCaptcha").de("Aktivere ReCaptcha").build(),
+					id: "recaptcha-active",
+					type: "checkbox",
+				},
+				{
 					label: label().en("Activate Cleverreach").de("Aktivere Cleverreach").build(),
 					id: "cleverreach-active",
 					type: "checkbox",

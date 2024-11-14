@@ -3,6 +3,7 @@ import { formOverviewPage } from "./settings/overview";
 import { formSubmissionsPage } from "./settings/submissions";
 import { createFormPage } from "./settings/form";
 import { cleverReachConfig } from "./settings/cleverreach";
+import { recaptchaConfig } from "./settings/recaptcha";
 import { createReceiver } from "./helper/cleverReach";
 import { label } from "@aaa-soft/plugin-interface/builder";
 // import type { BuilderItem } from "@aaa-soft/plugin-interface/types/builder";
@@ -120,6 +121,46 @@ export default definePlugin(async (ctx) => {
 		},
 	);
 
+	const recaptchaUpsertHandler = ctx.registerHandler(
+		["POST", "GET"],
+		"/form/recaptcha",
+		async (req) => {
+			const config = await ctx.storage.getAllWithFilter("recaptcha");
+			if (req.method === "POST") {
+				if (config[0]) {
+					await ctx.storage.updateOne(config[0].id, {
+						recaptcha: {
+							...req.body,
+						},
+					});
+				} else {
+					await ctx.storage.createOne({
+						recaptcha: {
+							...req.body,
+						},
+					});
+				}
+				await ctx.hooks.callHook(HookName.PAGE_CACHE_UPDATE_ALL);
+				return new Response(null, {
+					status: 200,
+				});
+			}
+			if (req.method === "GET") {
+				if (!config[0])
+					return new Response("Recaptcha config not found", {
+						status: 404,
+					});
+				return config[0].data.recaptcha;
+			}
+			return new Response(`Method not allowed ${req.method}`, {
+				status: 405,
+			});
+		},
+		{
+			allowedRoles: ["admin", "editor", "developer"],
+		},
+	);
+
 	const formCreateUpdateHandler = ctx.registerHandler(
 		["POST", "GET"],
 		"/form",
@@ -213,40 +254,73 @@ export default definePlugin(async (ctx) => {
 			}
 			const form = await ctx.storage.getOne(req.params.formId);
 			if (dataentryIsForm(form)) {
-				await ctx.storage.createOne({
-					submission: {
-						data: req.body,
-						formId: req.params.formId,
-					},
-				});
-				const title = `[Neue Einsendung] ${form.data.form.name} vom ${dayjs(
-					new Date(),
-				).format("DD.MM.YYYY")}`;
-				if (form.data.form.email) {
-					ctx.sendMail(
-						title,
-						form.data.form.email,
-						getMailContent(title, req.body),
-					);
-				}
+				let recaptchaSucess = true;
+				if (form.data.form["recaptcha-active"]) {
+					const recaptchaResponse = req.body["g-recaptcha-response"];
 
-				if (
-					form.data.form["cleverreach-active"] ||
-					req.body.subscribe_newsletter
-				) {
+					if (!recaptchaResponse) {
+						console.log("kein Recaptcha gefunden !");
+					}
 					try {
-						const config = await ctx.storage.getAllWithFilter("clever_reach");
-						await createReceiver(
-							config[0].data.clever_reach.client_id,
-							config[0].data.clever_reach.login_password,
-							form.data.form.cleverreach_group_id,
-							req.body.email ?? "",
-							req.body.firstName ?? "",
-							req.body.lastName ?? "",
-							req.body.salutation ?? "",
+						const SECRET_KEY = await ctx.storage.getAllWithFilter("recaptcha");
+						const response = await fetch(
+							"https://www.google.com/recaptcha/api/siteverify",
+							{
+								method: "POST",
+								headers: {
+									"Content-Type": "application/x-www-form-urlencoded",
+								},
+								body: `secret=${SECRET_KEY[0].data.recaptcha.secretKey}&response=${recaptchaResponse}`,
+							},
 						);
-					} catch (e) {
-						console.log("error on subscribing newsletter", e);
+
+						const data = await response.json();
+
+						if (!data.success) {
+							recaptchaSucess = false;
+							console.log("Recaptcha Fehlgeschlagen");
+						}
+					} catch (error) {
+						console.error("Fehler bei der reCAPTCHA-Überprüfung:", error);
+					}
+				}
+				if (recaptchaSucess) {
+					await ctx.storage.createOne({
+						submission: {
+							data: req.body,
+							formId: req.params.formId,
+						},
+					});
+					if (form.data.form.email) {
+						const title = `[Neue Einsendung] ${form.data.form.name} vom ${dayjs(
+							new Date(),
+						).format("DD.MM.YYYY")}`;
+
+						ctx.sendMail(
+							title,
+							form.data.form.email,
+							getMailContent(title, req.body),
+						);
+					}
+
+					if (
+						form.data.form["cleverreach-active"] ||
+						req.body.subscribe_newsletter
+					) {
+						try {
+							const config = await ctx.storage.getAllWithFilter("clever_reach");
+							await createReceiver(
+								config[0].data.clever_reach.client_id,
+								config[0].data.clever_reach.login_password,
+								form.data.form.cleverreach_group_id,
+								req.body.email ?? "",
+								req.body.firstName ?? "",
+								req.body.lastName ?? "",
+								req.body.salutation ?? "",
+							);
+						} catch (e) {
+							console.log("error on subscribing newsletter", e);
+						}
 					}
 				}
 			} else {
@@ -333,6 +407,10 @@ export default definePlugin(async (ctx) => {
 	ctx.registerSettingsPage(
 		"/cleverreach",
 		cleverReachConfig(cleverReachUpsertHandler),
+	);
+	ctx.registerSettingsPage(
+		"/recaptcha",
+		recaptchaConfig(recaptchaUpsertHandler),
 	);
 
 	ctx.registerElementType({

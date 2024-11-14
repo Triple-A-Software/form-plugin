@@ -191,17 +191,14 @@ const formBuilderItems = [
 		props: [
 			...commonProps,
 			{
-				id: "dataSitekey",
+				id: "disabled",
+				type: "checkbox",
+				label: label().en("Disabled").de("Deaktiviert").build(),
+			},
+			{
+				id: "id",
 				type: "text",
-				label: label().en("CAPTCHA Key").de("CAPTCHA Key").build(),
-			}, {
-				id: "dataAction",
-				type: "text",
-				label: label().en("data-action").de("data-action").build(),
-			}, {
-				id: "dataCallback",
-				type: "text",
-				label: label().en("data-callback").de("data-callback").build(),
+				label: label().en("Id").de("Id").build(),
 			},
 			{
 				id: "type",
@@ -230,12 +227,11 @@ const formBuilderItems = [
 			label: "Submit",
 			class: "",
 			type: "submit",
-			dataSitekey: "",
-			dataCallback: "onSubmit",
-			dataAction: "submit",
+			id: "submit-btn",
 			onClick: "",
+			disabled: false,
 		},
-		template: `<button type="{{ data.type }}" data-action="{{ data.dataAction }}" data-callback="{{ data.dataCallback }}" data-sitekey="{{ data.dataSitekey }}" onclick="{{ data.onclick }}" class="{{ data.class }}">
+		template: `<button name="{{ data.name }}" id="{{data.id}}" type="{{ data.type }}" onclick="{{ data.onclick }}" class="{{ data.class }}" {{#if data.disabled}}disabled{{/if}}>
             {{ render data.label }}
         </button>`,
 	}),
@@ -245,27 +241,37 @@ const formBuilderItems = [
 		icon: "i-tabler-robot-off",
 		props: [
 			{
-				id: "formId",
+				id: "classes",
 				type: "text",
-				label: label().en("Form Id").de("Formular Id").build(),
+				label: label().en("CSS Klassen").de("CSS Klassen").build(),
+
+			}, {
+				id: "dataSitekey",
+				type: "text",
+				label: label().en("data-sitekey").de("data-sitekey").build(),
+
+			}, {
+				id: "callback",
+				type: "text",
+				label: label().en("data-callback").de("data-callback").build(),
+
+			}, {
+				id: "expiredCallback",
+				type: "text",
+				label: label().en("data-expired-callback").de("data-expired-callback").build(),
 
 			}
 		],
 		data: {
-			formId: ""
+			dataSitekey: "",
+			classes: "grid p-2",
+			callback: "",
+			expiredCallback: "",
 		},
 		template: `
-		 <script src="https://www.google.com/recaptcha/api.js" defer></script>
-		  <script>
-   function onSubmit(token) {
-     const form = document.getElementById("{{ data.formId }}");
-	 if(form.reportValidity()){
-
-	 form.submit();
-	 }
-
-   }
- </script>
+		<div class="{{ data.classes }}">
+          <div class="g-recaptcha" data-sitekey="{{ data.dataSitekey }}" data-callback="{{ data.callback }}"  data-expired-callback="{{ data.expiredCallback }}"></div>
+		</div>
 		`,
 	})
 ];
