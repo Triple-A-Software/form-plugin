@@ -254,10 +254,10 @@ export default definePlugin(async (ctx) => {
 			}
 			const form = await ctx.storage.getOne(req.params.formId);
 			if (dataentryIsForm(form)) {
-				let recaptchaSucess = true;
+				let recaptchaSuccess = true;
 				if (form.data.form["recaptcha-active"]) {
-					const recaptchaResponse = req.body["g-recaptcha-response"];
-
+					const { "g-recaptcha-response": recaptchaResponse, ...formData } =
+						req.body;
 					if (!recaptchaResponse) {
 						console.log("kein Recaptcha gefunden !");
 					}
@@ -277,17 +277,17 @@ export default definePlugin(async (ctx) => {
 						const data = await response.json();
 
 						if (!data.success) {
-							recaptchaSucess = false;
+							recaptchaSuccess = false;
 							console.log("Recaptcha Fehlgeschlagen");
 						}
 					} catch (error) {
 						console.error("Fehler bei der reCAPTCHA-Überprüfung:", error);
 					}
 				}
-				if (recaptchaSucess) {
+				if (recaptchaSuccess) {
 					await ctx.storage.createOne({
 						submission: {
-							data: req.body,
+							data: formData,
 							formId: req.params.formId,
 						},
 					});
@@ -296,27 +296,20 @@ export default definePlugin(async (ctx) => {
 							new Date(),
 						).format("DD.MM.YYYY")}`;
 
-						ctx.sendMail(
-							title,
-							form.data.form.email,
-							getMailContent(title, req.body),
-						);
+						ctx.sendMail(title, form.data.form.email, getMailContent(title, formData));
 					}
 
-					if (
-						form.data.form["cleverreach-active"] ||
-						req.body.subscribe_newsletter
-					) {
+					if (form.data.form["cleverreach-active"] || formData.subscribe_newsletter) {
 						try {
 							const config = await ctx.storage.getAllWithFilter("clever_reach");
 							await createReceiver(
 								config[0].data.clever_reach.client_id,
 								config[0].data.clever_reach.login_password,
 								form.data.form.cleverreach_group_id,
-								req.body.email ?? "",
-								req.body.firstName ?? "",
-								req.body.lastName ?? "",
-								req.body.salutation ?? "",
+								formData.email ?? "",
+								formData.firstName ?? "",
+								formData.lastName ?? "",
+								formData.salutation ?? "",
 							);
 						} catch (e) {
 							console.log("error on subscribing newsletter", e);
