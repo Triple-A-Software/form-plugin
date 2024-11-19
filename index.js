@@ -254,10 +254,12 @@ export default definePlugin(async (ctx) => {
 			}
 			const form = await ctx.storage.getOne(req.params.formId);
 			if (dataentryIsForm(form)) {
+				let formData = req.body;
 				let recaptchaSuccess = true;
 				if (form.data.form["recaptcha-active"]) {
-					const { "g-recaptcha-response": recaptchaResponse, ...formData } =
+					const { "g-recaptcha-response": recaptchaResponse, ...data } =
 						req.body;
+					formData = data;
 					if (!recaptchaResponse) {
 						console.log("kein Recaptcha gefunden !");
 					}
@@ -296,10 +298,17 @@ export default definePlugin(async (ctx) => {
 							new Date(),
 						).format("DD.MM.YYYY")}`;
 
-						ctx.sendMail(title, form.data.form.email, getMailContent(title, formData));
+						ctx.sendMail(
+							title,
+							form.data.form.email,
+							getMailContent(title, formData),
+						);
 					}
 
-					if (form.data.form["cleverreach-active"] || formData.subscribe_newsletter) {
+					if (
+						form.data.form["cleverreach-active"] ||
+						formData.subscribe_newsletter
+					) {
 						try {
 							const config = await ctx.storage.getAllWithFilter("clever_reach");
 							await createReceiver(

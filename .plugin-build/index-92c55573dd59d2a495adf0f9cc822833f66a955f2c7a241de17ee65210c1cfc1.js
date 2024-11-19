@@ -1068,11 +1068,13 @@ var form_plugin_default = definePlugin(async (ctx) => {
         status: 400
       });
     }
-    const form2 = await ctx.storage.getOne(req.params.formId);
-    if (dataentryIsForm(form2)) {
-      let recaptchaSucess = true;
-      if (form2.data.form["recaptcha-active"]) {
-        const recaptchaResponse = req.body["g-recaptcha-response"];
+    const form = await ctx.storage.getOne(req.params.formId);
+    if (dataentryIsForm(form)) {
+      let formData = req.body;
+      let recaptchaSuccess = true;
+      if (form.data.form["recaptcha-active"]) {
+        const { "g-recaptcha-response": recaptchaResponse, ...data } = req.body;
+        formData = data;
         if (!recaptchaResponse) {
           console.log("kein Recaptcha gefunden !");
         }
@@ -1085,30 +1087,30 @@ var form_plugin_default = definePlugin(async (ctx) => {
             },
             body: `secret=${SECRET_KEY[0].data.recaptcha.secretKey}&response=${recaptchaResponse}`
           });
-          const data = await response.json();
-          if (!data.success) {
-            recaptchaSucess = false;
+          const data2 = await response.json();
+          if (!data2.success) {
+            recaptchaSuccess = false;
             console.log("Recaptcha Fehlgeschlagen");
           }
         } catch (error) {
           console.error("Fehler bei der reCAPTCHA-\xDCberpr\xFCfung:", error);
         }
       }
-      if (recaptchaSucess) {
+      if (recaptchaSuccess) {
         await ctx.storage.createOne({
           submission: {
-            data: req.body,
+            data: formData,
             formId: req.params.formId
           }
         });
-        if (form2.data.form.email) {
-          const title = `[Neue Einsendung] ${form2.data.form.name} vom ${import_dayjs.default(new Date).format("DD.MM.YYYY")}`;
-          ctx.sendMail(title, form2.data.form.email, getMailContent(title, req.body));
+        if (form.data.form.email) {
+          const title = `[Neue Einsendung] ${form.data.form.name} vom ${import_dayjs.default(new Date).format("DD.MM.YYYY")}`;
+          ctx.sendMail(title, form.data.form.email, getMailContent(title, formData));
         }
-        if (form2.data.form["cleverreach-active"] || req.body.subscribe_newsletter) {
+        if (form.data.form["cleverreach-active"] || formData.subscribe_newsletter) {
           try {
             const config = await ctx.storage.getAllWithFilter("clever_reach");
-            await createReceiver(config[0].data.clever_reach.client_id, config[0].data.clever_reach.login_password, form2.data.form.cleverreach_group_id, req.body.email ?? "", req.body.firstName ?? "", req.body.lastName ?? "", req.body.salutation ?? "");
+            await createReceiver(config[0].data.clever_reach.client_id, config[0].data.clever_reach.login_password, form.data.form.cleverreach_group_id, formData.email ?? "", formData.firstName ?? "", formData.lastName ?? "", formData.salutation ?? "");
           } catch (e) {
             console.log("error on subscribing newsletter", e);
           }
@@ -1128,14 +1130,14 @@ var form_plugin_default = definePlugin(async (ctx) => {
   });
   const submissionsListHandler = ctx.registerHandler(["GET"], "/submission", async (req) => {
     const allForms = await ctx.storage.getAllWithFilter("form");
-    const submissions2 = await ctx.storage.getAllWithFilter("submission");
+    const submissions = await ctx.storage.getAllWithFilter("submission");
     const allSubmissions = [];
-    if (!submissions2 || !allForms) {
+    if (!submissions || !allForms) {
       console.error("No Form or Submissions Found!");
       return [];
     }
-    for (const submission of submissions2) {
-      const matchingForm = allForms.find((form2) => form2.id === Number(submission.data.submission.formId));
+    for (const submission of submissions) {
+      const matchingForm = allForms.find((form) => form.id === Number(submission.data.submission.formId));
       if (matchingForm) {
         allSubmissions.push({
           formId: submission.data.submission.formId,
