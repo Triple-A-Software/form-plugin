@@ -226,9 +226,10 @@ const formBuilderItems = [
 		data: {
 			label: "Submit",
 			class: "",
+			name: "",
 			type: "submit",
 			id: "submit-btn",
-			onClick: "",
+			onclick: "",
 			disabled: false,
 		},
 		template: `<button name="{{ data.name }}" id="{{data.id}}" type="{{ data.type }}" onclick="{{ data.onclick }}" class="{{ data.class }}" {{#if data.disabled}}disabled{{/if}}>
