@@ -616,9 +616,10 @@ var formBuilderItems = [
     data: {
       label: "Submit",
       class: "",
+      name: "",
       type: "submit",
       id: "submit-btn",
-      onClick: "",
+      onclick: "",
       disabled: false
     },
     template: `<button name="{{ data.name }}" id="{{data.id}}" type="{{ data.type }}" onclick="{{ data.onclick }}" class="{{ data.class }}" {{#if data.disabled}}disabled{{/if}}>
@@ -662,6 +663,44 @@ var formBuilderItems = [
           <div class="g-recaptcha" data-sitekey="{{ data.dataSitekey }}" data-callback="{{ data.callback }}"  data-expired-callback="{{ data.expiredCallback }}"></div>
 		</div>
 		`
+  }),
+  builderItem({
+    id: "hCaptcha",
+    label: label().en("hCaptcha").de("hCaptcha").build(),
+    icon: "i-tabler-robot-off",
+    props: [
+      {
+        id: "classes",
+        type: "text",
+        label: label().en("CSS Klassen").de("CSS Klassen").build()
+      },
+      {
+        id: "dataSitekey",
+        type: "text",
+        label: label().en("data-sitekey").de("data-sitekey").build()
+      },
+      {
+        id: "callback",
+        type: "text",
+        label: label().en("data-callback").de("data-callback").build()
+      },
+      {
+        id: "expiredCallback",
+        type: "text",
+        label: label().en("data-expired-callback").de("data-expired-callback").build()
+      }
+    ],
+    data: {
+      dataSitekey: "",
+      classes: "grid p-2",
+      callback: "",
+      expiredCallback: ""
+    },
+    template: `
+		<div class="{{ data.classes }}">
+          <div class="h-captcha" data-sitekey="{{ data.dataSitekey }}" data-callback="{{ data.callback }}"  data-expired-callback="{{ data.expiredCallback }}"></div>
+		</div>
+		`
   })
 ];
 var builderItemsWithLayout = [...formBuilderItems, builderItem({
@@ -686,7 +725,7 @@ var builderItemsWithLayout = [...formBuilderItems, builderItem({
     children: []
   },
   template: `<div class="{{ data.class }}">
- {{ render_builder data.children }}
+ {{ render_builder(data.children) }}
         </div>`
 })];
 var formStructs_default = builderItemsWithLayout;
@@ -716,9 +755,10 @@ function createFormPage(formHandler) {
           label: label().en("Send submissions to this email").de("Formularergebnisse an diese Email schicken").build()
         },
         {
-          label: label().en("Activate ReCaptcha").de("Aktivere ReCaptcha").build(),
-          id: "recaptcha-active",
-          type: "checkbox"
+          label: label().en("Select Captcha").de("Captcha ausw\xE4hlen").build(),
+          id: "captcha-select",
+          type: "select",
+          options: [{ label: { de: "reCAPTCHA", en: "reCAPTCHA" }, value: "recaptcha" }, { label: { de: "h-Captcha", en: "h-Captcha" }, value: "hcaptcha" }]
         },
         {
           label: label().en("Activate Cleverreach").de("Aktivere Cleverreach").build(),
@@ -803,7 +843,7 @@ function cleverReachConfig(formHandler) {
   };
 }
 
-// settings/recaptcha.ts
+// settings/captcha.ts
 function recaptchaConfig(formHandler) {
   const dataHandler = formHandler.toActionHandler("GET");
   const upsertHandler = formHandler.toActionHandler("POST");
@@ -813,9 +853,9 @@ function recaptchaConfig(formHandler) {
       method: dataHandler.method,
       url: `${dataHandler.url}`
     },
-    label: label().en("ReCaptcha Settings").de("ReCaptcha Einstellungen").build(),
+    label: label().en("Captcha Settings").de("Captcha Einstellungen").build(),
     form: {
-      label: label().en("ReCaptcha Settings").de("ReCaptcha Einstellungen").build(),
+      label: label().en("Captcha Settings").de("Captcha Einstellungen").build(),
       properties: [
         {
           label: label().en("Secret Key").de("Secret Key").build(),
@@ -882,6 +922,63 @@ var createReceiver = async (client_id, client_secret, groupId, email, firstName,
 
 // index.js
 var import_dayjs = __toESM(require_dayjs_min(), 1);
+
+// helper/captcha.ts
+async function handleCaptcha(body, type, secret) {
+  switch (type) {
+    case "recaptcha": {
+      const { "g-recaptcha-response": recaptchaResponse, ...data } = body;
+      if (!recaptchaResponse) {
+        console.info("kein Recaptcha gefunden !");
+      }
+      try {
+        const response = await fetch("https://www.google.com/recaptcha/api/siteverify", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: `secret=${secret}&response=${recaptchaResponse}`
+        });
+        const data2 = await response.json();
+        if (!data2.success) {
+          console.info("Recaptcha Fehlgeschlagen");
+          return { captchaSuccess: false, data: data2 };
+        }
+      } catch (error) {
+        console.error("Fehler bei der reCAPTCHA-\xDCberpr\xFCfung:", error);
+      }
+      return { captchaSuccess: true, data };
+    }
+    case "hcaptcha": {
+      const { "h-captcha-response": recaptchaResponse, ...data } = body;
+      if (!recaptchaResponse) {
+        console.info("kein h-captcha gefunden !");
+      }
+      try {
+        const response = await fetch("https://api.hcaptcha.com/siteverify", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/x-www-form-urlencoded"
+          },
+          body: `secret=${secret}&response=${recaptchaResponse}`
+        });
+        const data2 = await response.json();
+        if (!data2.success) {
+          console.info("h-captcha Fehlgeschlagen");
+          return { captchaSuccess: false, data: data2 };
+        }
+      } catch (error) {
+        console.error("Fehler bei der h-captcha-\xDCberpr\xFCfung:", error);
+      }
+      return { captchaSuccess: true, data };
+    }
+    default: {
+      return { captchaSuccess: true, data: body };
+    }
+  }
+}
+
+// index.js
 var form_plugin_default = definePlugin(async (ctx) => {
   function dataentryIsForm(dataentry) {
     return dataentry != null && typeof dataentry === "object" && "data" in dataentry && dataentry.data != null && typeof dataentry.data === "object" && "form" in dataentry.data;
@@ -1071,32 +1168,9 @@ var form_plugin_default = definePlugin(async (ctx) => {
     const form = await ctx.storage.getOne(req.params.formId);
     if (dataentryIsForm(form)) {
       let formData = req.body;
-      let recaptchaSuccess = true;
-      if (form.data.form["recaptcha-active"]) {
-        const { "g-recaptcha-response": recaptchaResponse, ...data } = req.body;
-        formData = data;
-        if (!recaptchaResponse) {
-          console.log("kein Recaptcha gefunden !");
-        }
-        try {
-          const SECRET_KEY = await ctx.storage.getAllWithFilter("recaptcha");
-          const response = await fetch("https://www.google.com/recaptcha/api/siteverify", {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/x-www-form-urlencoded"
-            },
-            body: `secret=${SECRET_KEY[0].data.recaptcha.secretKey}&response=${recaptchaResponse}`
-          });
-          const data2 = await response.json();
-          if (!data2.success) {
-            recaptchaSuccess = false;
-            console.log("Recaptcha Fehlgeschlagen");
-          }
-        } catch (error) {
-          console.error("Fehler bei der reCAPTCHA-\xDCberpr\xFCfung:", error);
-        }
-      }
-      if (recaptchaSuccess) {
+      let captchaSuccess = true;
+      ({ captchaSuccess, data: formData } = await handleCaptcha(req.body, form.data.form["recaptcha-select"], (await ctx.storage.getAllWithFilter("captcha"))[0].data.recaptcha.secretKey));
+      if (captchaSuccess) {
         await ctx.storage.createOne({
           submission: {
             data: formData,

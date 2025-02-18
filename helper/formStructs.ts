@@ -274,6 +274,45 @@ const formBuilderItems = [
           <div class="g-recaptcha" data-sitekey="{{ data.dataSitekey }}" data-callback="{{ data.callback }}"  data-expired-callback="{{ data.expiredCallback }}"></div>
 		</div>
 		`,
+	}),
+	builderItem({
+		id: "hCaptcha",
+		label: label().en("hCaptcha").de("hCaptcha").build(),
+		icon: "i-tabler-robot-off",
+		props: [
+			{
+				id: "classes",
+				type: "text",
+				label: label().en("CSS Klassen").de("CSS Klassen").build(),
+
+			}, {
+				id: "dataSitekey",
+				type: "text",
+				label: label().en("data-sitekey").de("data-sitekey").build(),
+
+			}, {
+				id: "callback",
+				type: "text",
+				label: label().en("data-callback").de("data-callback").build(),
+
+			}, {
+				id: "expiredCallback",
+				type: "text",
+				label: label().en("data-expired-callback").de("data-expired-callback").build(),
+
+			}
+		],
+		data: {
+			dataSitekey: "",
+			classes: "grid p-2",
+			callback: "",
+			expiredCallback: "",
+		},
+		template: `
+		<div class="{{ data.classes }}">
+          <div class="h-captcha" data-sitekey="{{ data.dataSitekey }}" data-callback="{{ data.callback }}"  data-expired-callback="{{ data.expiredCallback }}"></div>
+		</div>
+		`,
 	})
 ];
 
@@ -301,7 +340,7 @@ const builderItemsWithLayout = [...formBuilderItems, builderItem({
 
 	},
 	template: `<div class="{{ data.class }}">
- {{ render_builder data.children }}
+ {{ render_builder(data.children) }}
         </div>`,
 })]
 

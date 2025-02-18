@@ -16,9 +16,9 @@ export function recaptchaConfig(
             method: dataHandler.method,
             url: `${dataHandler.url}`,
         },
-        label: label().en("ReCaptcha Settings").de("ReCaptcha Einstellungen").build(),
+        label: label().en("Captcha Settings").de("Captcha Einstellungen").build(),
         form: {
-            label: label().en("ReCaptcha Settings").de("ReCaptcha Einstellungen").build(),
+            label: label().en("Captcha Settings").de("Captcha Einstellungen").build(),
             properties: [
                 {
                     label: label().en("Secret Key").de("Secret Key").build(),

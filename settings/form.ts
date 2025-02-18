@@ -3,7 +3,7 @@ import type {
 	SettingsPage,
 } from "@aaa-soft/plugin-interface";
 import { label } from "@aaa-soft/plugin-interface/builder";
-import  formBuilderItems  from "../helper/formStructs";
+import formBuilderItems from "../helper/formStructs";
 
 export function createFormPage(
 	formHandler: RegisterHandlerReturn,
@@ -38,9 +38,10 @@ export function createFormPage(
 						.build(),
 				},
 				{
-					label: label().en("Activate ReCaptcha").de("Aktivere ReCaptcha").build(),
-					id: "recaptcha-active",
-					type: "checkbox",
+					label: label().en("Select Captcha").de("Captcha auswählen").build(),
+					id: "captcha-select",
+					type: "select",
+					options: [{ label: { de: "reCAPTCHA", en: "reCAPTCHA" }, value: "recaptcha" }, { label: { de: "h-Captcha", en: "h-Captcha" }, value: "hcaptcha" }]
 				},
 				{
 					label: label().en("Activate Cleverreach").de("Aktivere Cleverreach").build(),

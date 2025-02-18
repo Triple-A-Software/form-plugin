@@ -3,13 +3,14 @@ import { formOverviewPage } from "./settings/overview";
 import { formSubmissionsPage } from "./settings/submissions";
 import { createFormPage } from "./settings/form";
 import { cleverReachConfig } from "./settings/cleverreach";
-import { recaptchaConfig } from "./settings/recaptcha";
+import { recaptchaConfig } from "./settings/captcha";
 import { createReceiver } from "./helper/cleverReach";
 import { label } from "@aaa-soft/plugin-interface/builder";
 // import type { BuilderItem } from "@aaa-soft/plugin-interface/types/builder";
 import { HookName } from "@aaa-soft/cms-hooks";
 //@ts-ignore
 import dayjs from "dayjs";
+import { handleCaptcha } from "./helper/captcha";
 /*
 type Form = {
 	form: {
@@ -255,38 +256,15 @@ export default definePlugin(async (ctx) => {
 			const form = await ctx.storage.getOne(req.params.formId);
 			if (dataentryIsForm(form)) {
 				let formData = req.body;
-				let recaptchaSuccess = true;
-				if (form.data.form["recaptcha-active"]) {
-					const { "g-recaptcha-response": recaptchaResponse, ...data } =
-						req.body;
-					formData = data;
-					if (!recaptchaResponse) {
-						console.log("kein Recaptcha gefunden !");
-					}
-					try {
-						const SECRET_KEY = await ctx.storage.getAllWithFilter("recaptcha");
-						const response = await fetch(
-							"https://www.google.com/recaptcha/api/siteverify",
-							{
-								method: "POST",
-								headers: {
-									"Content-Type": "application/x-www-form-urlencoded",
-								},
-								body: `secret=${SECRET_KEY[0].data.recaptcha.secretKey}&response=${recaptchaResponse}`,
-							},
-						);
+				let captchaSuccess = true;
+				({ captchaSuccess, data: formData } = await handleCaptcha(
+					req.body,
+					form.data.form["recaptcha-select"],
+					(await ctx.storage.getAllWithFilter("captcha"))[0].data.recaptcha
+						.secretKey,
+				));
 
-						const data = await response.json();
-
-						if (!data.success) {
-							recaptchaSuccess = false;
-							console.log("Recaptcha Fehlgeschlagen");
-						}
-					} catch (error) {
-						console.error("Fehler bei der reCAPTCHA-Überprüfung:", error);
-					}
-				}
-				if (recaptchaSuccess) {
+				if (captchaSuccess) {
 					await ctx.storage.createOne({
 						submission: {
 							data: formData,
