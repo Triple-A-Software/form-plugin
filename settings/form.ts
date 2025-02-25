@@ -41,7 +41,7 @@ export function createFormPage(
 					label: label().en("Select Captcha").de("Captcha auswählen").build(),
 					id: "captcha-select",
 					type: "select",
-					options: [{ label: { de: "reCAPTCHA", en: "reCAPTCHA" }, value: "recaptcha" }, { label: { de: "h-Captcha", en: "h-Captcha" }, value: "hcaptcha" }]
+					options: [{ label: { de: "Ohne Captcha", en: "None" }, value: "none" }, { label: { de: "reCAPTCHA", en: "reCAPTCHA" }, value: "recaptcha" }, { label: { de: "h-Captcha", en: "h-Captcha" }, value: "hcaptcha" }]
 				},
 				{
 					label: label().en("Activate Cleverreach").de("Aktivere Cleverreach").build(),

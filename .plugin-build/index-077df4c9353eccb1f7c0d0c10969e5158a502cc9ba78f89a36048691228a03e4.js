@@ -758,7 +758,7 @@ function createFormPage(formHandler) {
           label: label().en("Select Captcha").de("Captcha ausw\xE4hlen").build(),
           id: "captcha-select",
           type: "select",
-          options: [{ label: { de: "reCAPTCHA", en: "reCAPTCHA" }, value: "recaptcha" }, { label: { de: "h-Captcha", en: "h-Captcha" }, value: "hcaptcha" }]
+          options: [{ label: { de: "Ohne Captcha", en: "None" }, value: "none" }, { label: { de: "reCAPTCHA", en: "reCAPTCHA" }, value: "recaptcha" }, { label: { de: "h-Captcha", en: "h-Captcha" }, value: "hcaptcha" }]
         },
         {
           label: label().en("Activate Cleverreach").de("Aktivere Cleverreach").build(),
@@ -844,7 +844,7 @@ function cleverReachConfig(formHandler) {
 }
 
 // settings/captcha.ts
-function recaptchaConfig(formHandler) {
+function captchaConfig(formHandler) {
   const dataHandler = formHandler.toActionHandler("GET");
   const upsertHandler = formHandler.toActionHandler("POST");
   return {
@@ -972,9 +972,10 @@ async function handleCaptcha(body, type, secret) {
       }
       return { captchaSuccess: true, data };
     }
-    default: {
+    case "none":
       return { captchaSuccess: true, data: body };
-    }
+    default:
+      return { captchaSuccess: true, data: body };
   }
 }
 
@@ -1055,18 +1056,18 @@ var form_plugin_default = definePlugin(async (ctx) => {
   }, {
     allowedRoles: ["admin", "editor", "developer"]
   });
-  const recaptchaUpsertHandler = ctx.registerHandler(["POST", "GET"], "/form/recaptcha", async (req) => {
-    const config = await ctx.storage.getAllWithFilter("recaptcha");
+  const captchaUpsertHandler = ctx.registerHandler(["POST", "GET"], "/form/captcha", async (req) => {
+    const config = await ctx.storage.getAllWithFilter("captcha");
     if (req.method === "POST") {
       if (config[0]) {
         await ctx.storage.updateOne(config[0].id, {
-          recaptcha: {
+          captcha: {
             ...req.body
           }
         });
       } else {
         await ctx.storage.createOne({
-          recaptcha: {
+          captcha: {
             ...req.body
           }
         });
@@ -1078,10 +1079,10 @@ var form_plugin_default = definePlugin(async (ctx) => {
     }
     if (req.method === "GET") {
       if (!config[0])
-        return new Response("Recaptcha config not found", {
+        return new Response("captcha config not found", {
           status: 404
         });
-      return config[0].data.recaptcha;
+      return config[0].data.captcha;
     }
     return new Response(`Method not allowed ${req.method}`, {
       status: 405
@@ -1169,7 +1170,7 @@ var form_plugin_default = definePlugin(async (ctx) => {
     if (dataentryIsForm(form)) {
       let formData = req.body;
       let captchaSuccess = true;
-      ({ captchaSuccess, data: formData } = await handleCaptcha(req.body, form.data.form["recaptcha-select"], (await ctx.storage.getAllWithFilter("captcha"))[0].data.recaptcha.secretKey));
+      ({ captchaSuccess, data: formData } = await handleCaptcha(req.body, form.data.form["captcha-select"], (await ctx.storage.getAllWithFilter("captcha"))[0].data.captcha.secretKey));
       if (captchaSuccess) {
         await ctx.storage.createOne({
           submission: {
@@ -1246,7 +1247,7 @@ var form_plugin_default = definePlugin(async (ctx) => {
   ctx.registerSettingsPage("/overview", formOverviewPage(formsHandler));
   ctx.registerSettingsPage("/create", createFormPage(formCreateUpdateHandler));
   ctx.registerSettingsPage("/cleverreach", cleverReachConfig(cleverReachUpsertHandler));
-  ctx.registerSettingsPage("/recaptcha", recaptchaConfig(recaptchaUpsertHandler));
+  ctx.registerSettingsPage("/captcha", captchaConfig(captchaUpsertHandler));
   ctx.registerElementType({
     name: "Form-Picker",
     icon: "i-tabler-forms",

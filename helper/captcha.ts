@@ -1,4 +1,6 @@
-export async function handleCaptcha(body: Record<string, unknown>, type: string, secret: string): Promise<{ captchaSuccess: boolean, data: Record<string, unknown> }> {
+type CaptchaTypes = "recaptcha" | "hcaptcha" | "none" | "" | null
+
+export async function handleCaptcha(body: Record<string, unknown>, type: CaptchaTypes, secret: string): Promise<{ captchaSuccess: boolean, data: Record<string, unknown> }> {
     switch (type) {
         case "recaptcha": {
             const { "g-recaptcha-response": recaptchaResponse, ...data } = body;
@@ -18,9 +20,9 @@ export async function handleCaptcha(body: Record<string, unknown>, type: string,
                     },
                 );
 
-                const data = await response.json();
+                const captchaData = await response.json();
 
-                if (!data.success) {
+                if (!captchaData.success) {
                     console.info("Recaptcha Fehlgeschlagen");
                     return { captchaSuccess: false, data };
                 }
@@ -47,9 +49,9 @@ export async function handleCaptcha(body: Record<string, unknown>, type: string,
                     },
                 );
 
-                const data = await response.json();
+                const captchaData = await response.json();
 
-                if (!data.success) {
+                if (!captchaData.success) {
                     console.info("h-captcha Fehlgeschlagen");
                     return { captchaSuccess: false, data };
                 }
@@ -58,8 +60,10 @@ export async function handleCaptcha(body: Record<string, unknown>, type: string,
             }
             return { captchaSuccess: true, data };
         }
-        default: {
+        case "none":
             return { captchaSuccess: true, data: body };
-        }
+        default:
+            return { captchaSuccess: true, data: body };
+
     }
 }

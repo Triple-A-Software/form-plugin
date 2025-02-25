@@ -3,7 +3,7 @@ import { formOverviewPage } from "./settings/overview";
 import { formSubmissionsPage } from "./settings/submissions";
 import { createFormPage } from "./settings/form";
 import { cleverReachConfig } from "./settings/cleverreach";
-import { recaptchaConfig } from "./settings/captcha";
+import { captchaConfig } from "./settings/captcha";
 import { createReceiver } from "./helper/cleverReach";
 import { label } from "@aaa-soft/plugin-interface/builder";
 // import type { BuilderItem } from "@aaa-soft/plugin-interface/types/builder";
@@ -63,6 +63,10 @@ export default definePlugin(async (ctx) => {
 				</thead>
 				<tbody>
 				${Object.entries(body)
+					.filter(
+						([key, value]) =>
+							key !== "h-captcha-response" || key !== "g-recaptcha-response",
+					)
 					.map(
 						([key, value]) => `
 					<tr>
@@ -122,21 +126,21 @@ export default definePlugin(async (ctx) => {
 		},
 	);
 
-	const recaptchaUpsertHandler = ctx.registerHandler(
+	const captchaUpsertHandler = ctx.registerHandler(
 		["POST", "GET"],
-		"/form/recaptcha",
+		"/form/captcha",
 		async (req) => {
-			const config = await ctx.storage.getAllWithFilter("recaptcha");
+			const config = await ctx.storage.getAllWithFilter("captcha");
 			if (req.method === "POST") {
 				if (config[0]) {
 					await ctx.storage.updateOne(config[0].id, {
-						recaptcha: {
+						captcha: {
 							...req.body,
 						},
 					});
 				} else {
 					await ctx.storage.createOne({
-						recaptcha: {
+						captcha: {
 							...req.body,
 						},
 					});
@@ -148,10 +152,10 @@ export default definePlugin(async (ctx) => {
 			}
 			if (req.method === "GET") {
 				if (!config[0])
-					return new Response("Recaptcha config not found", {
+					return new Response("captcha config not found", {
 						status: 404,
 					});
-				return config[0].data.recaptcha;
+				return config[0].data.captcha;
 			}
 			return new Response(`Method not allowed ${req.method}`, {
 				status: 405,
@@ -259,8 +263,8 @@ export default definePlugin(async (ctx) => {
 				let captchaSuccess = true;
 				({ captchaSuccess, data: formData } = await handleCaptcha(
 					req.body,
-					form.data.form["recaptcha-select"],
-					(await ctx.storage.getAllWithFilter("captcha"))[0].data.recaptcha
+					form.data.form["captcha-select"],
+					(await ctx.storage.getAllWithFilter("captcha"))[0].data.captcha
 						.secretKey,
 				));
 
@@ -388,10 +392,7 @@ export default definePlugin(async (ctx) => {
 		"/cleverreach",
 		cleverReachConfig(cleverReachUpsertHandler),
 	);
-	ctx.registerSettingsPage(
-		"/recaptcha",
-		recaptchaConfig(recaptchaUpsertHandler),
-	);
+	ctx.registerSettingsPage("/captcha", captchaConfig(captchaUpsertHandler));
 
 	ctx.registerElementType({
 		name: "Form-Picker",

@@ -1,6 +1,6 @@
 {
 	"name": "form-plugin",
-	"version": "2.1.0",
+	"version": "2.1.2",
 	"main": "index.js",
 	"type": "module",
 	"build": "bun run build"

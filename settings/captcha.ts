@@ -4,7 +4,7 @@ import type {
 } from "@aaa-soft/plugin-interface";
 import { label } from "@aaa-soft/plugin-interface/builder";
 
-export function recaptchaConfig(
+export function captchaConfig(
     formHandler: RegisterHandlerReturn,
 ): SettingsPage {
     const dataHandler = formHandler.toActionHandler("GET");
