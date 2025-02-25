@@ -939,10 +939,10 @@ async function handleCaptcha(body, type, secret) {
           },
           body: `secret=${secret}&response=${recaptchaResponse}`
         });
-        const data2 = await response.json();
-        if (!data2.success) {
+        const captchaData = await response.json();
+        if (!captchaData.success) {
           console.info("Recaptcha Fehlgeschlagen");
-          return { captchaSuccess: false, data: data2 };
+          return { captchaSuccess: false, data };
         }
       } catch (error) {
         console.error("Fehler bei der reCAPTCHA-\xDCberpr\xFCfung:", error);
@@ -962,10 +962,10 @@ async function handleCaptcha(body, type, secret) {
           },
           body: `secret=${secret}&response=${recaptchaResponse}`
         });
-        const data2 = await response.json();
-        if (!data2.success) {
+        const captchaData = await response.json();
+        if (!captchaData.success) {
           console.info("h-captcha Fehlgeschlagen");
-          return { captchaSuccess: false, data: data2 };
+          return { captchaSuccess: false, data };
         }
       } catch (error) {
         console.error("Fehler bei der h-captcha-\xDCberpr\xFCfung:", error);
@@ -1180,7 +1180,11 @@ var form_plugin_default = definePlugin(async (ctx) => {
         });
         if (form.data.form.email) {
           const title = `[Neue Einsendung] ${form.data.form.name} vom ${import_dayjs.default(new Date).format("DD.MM.YYYY")}`;
-          ctx.sendMail(title, form.data.form.email, getMailContent(title, formData));
+          const {
+            "g-recaptcha-response": g,
+            ...data
+          } = formData;
+          ctx.sendMail(title, form.data.form.email, getMailContent(title, data));
         }
         if (form.data.form["cleverreach-active"] || formData.subscribe_newsletter) {
           try {

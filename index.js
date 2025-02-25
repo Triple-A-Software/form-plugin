@@ -63,10 +63,6 @@ export default definePlugin(async (ctx) => {
 				</thead>
 				<tbody>
 				${Object.entries(body)
-					.filter(
-						([key, value]) =>
-							key !== "h-captcha-response" || key !== "g-recaptcha-response",
-					)
 					.map(
 						([key, value]) => `
 					<tr>
@@ -280,10 +276,14 @@ export default definePlugin(async (ctx) => {
 							new Date(),
 						).format("DD.MM.YYYY")}`;
 
+						const {
+							"g-recaptcha-response": g,
+							...data
+						} = formData;
 						ctx.sendMail(
 							title,
 							form.data.form.email,
-							getMailContent(title, formData),
+							getMailContent(title, data),
 						);
 					}
 
