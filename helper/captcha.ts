@@ -1,10 +1,10 @@
 type CaptchaTypes = "recaptcha" | "hcaptcha" | "none" | "" | null
 
-export async function handleCaptcha(body: Record<string, unknown>, type: CaptchaTypes, secret: string): Promise<{ captchaSuccess: boolean, data: Record<string, unknown> }> {
+export async function handleCaptcha(body: Record<string, unknown>, type: CaptchaTypes, secret?: string): Promise<{ captchaSuccess: boolean, data: Record<string, unknown> }> {
     switch (type) {
         case "recaptcha": {
             const { "g-recaptcha-response": recaptchaResponse, ...data } = body;
-
+            if (!secret) { return { captchaSuccess: false, data }; }
             if (!recaptchaResponse) {
                 console.info("kein Recaptcha gefunden !");
             }
@@ -33,7 +33,7 @@ export async function handleCaptcha(body: Record<string, unknown>, type: Captcha
         }
         case "hcaptcha": {
             const { "h-captcha-response": recaptchaResponse, ...data } = body;
-
+            if (!secret) { return { captchaSuccess: false, data }; }
             if (!recaptchaResponse) {
                 console.info("kein h-captcha gefunden !");
             }

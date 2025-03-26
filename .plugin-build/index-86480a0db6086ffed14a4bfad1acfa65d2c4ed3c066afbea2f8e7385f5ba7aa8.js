@@ -340,7 +340,7 @@ function formOverviewPage(actionHandler) {
     getDataHandler: actionHandler.toActionHandler("GET"),
     columns: [
       { key: "name", label: label().de("Name").en("Name").build() },
-      { key: "email", label: label().de("Empf\xE4nger").en("Recipient").build() },
+      { key: "email", label: label().de("Empfänger").en("Recipient").build() },
       { key: "actions", label: label().de("Aktionen").en("Actions").build() }
     ],
     actions: [
@@ -370,7 +370,7 @@ function formSubmissionsPage(listHandler, deleteHandler) {
       { key: "name", label: label().de("Formular").en("Form").build() },
       {
         key: "recipient",
-        label: label().de("Empf\xE4nger").en("Recipient").build()
+        label: label().de("Empfänger").en("Recipient").build()
       },
       {
         key: "date",
@@ -538,7 +538,7 @@ var formBuilderItems = [
   }),
   builderItem({
     id: "checkbox",
-    label: label().en("Checkbox").de("Kontrollk\xE4stchen").build(),
+    label: label().en("Checkbox").de("Kontrollkästchen").build(),
     icon: "i-tabler-checkbox",
     props: [...commonProps],
     data: {
@@ -600,7 +600,7 @@ var formBuilderItems = [
             value: "submit"
           },
           {
-            label: label().en("Reset").de("Zur\xFCcksetzen").build(),
+            label: label().en("Reset").de("Zurücksetzen").build(),
             value: "reset"
           },
           { label: label().en("Button").de("Button").build(), value: "button" }
@@ -755,7 +755,7 @@ function createFormPage(formHandler) {
           label: label().en("Send submissions to this email").de("Formularergebnisse an diese Email schicken").build()
         },
         {
-          label: label().en("Select Captcha").de("Captcha ausw\xE4hlen").build(),
+          label: label().en("Select Captcha").de("Captcha auswählen").build(),
           id: "captcha-select",
           type: "select",
           options: [{ label: { de: "Ohne Captcha", en: "None" }, value: "none" }, { label: { de: "reCAPTCHA", en: "reCAPTCHA" }, value: "recaptcha" }, { label: { de: "h-Captcha", en: "h-Captcha" }, value: "hcaptcha" }]
@@ -928,6 +928,9 @@ async function handleCaptcha(body, type, secret) {
   switch (type) {
     case "recaptcha": {
       const { "g-recaptcha-response": recaptchaResponse, ...data } = body;
+      if (!secret) {
+        return { captchaSuccess: false, data };
+      }
       if (!recaptchaResponse) {
         console.info("kein Recaptcha gefunden !");
       }
@@ -945,12 +948,15 @@ async function handleCaptcha(body, type, secret) {
           return { captchaSuccess: false, data };
         }
       } catch (error) {
-        console.error("Fehler bei der reCAPTCHA-\xDCberpr\xFCfung:", error);
+        console.error("Fehler bei der reCAPTCHA-Überprüfung:", error);
       }
       return { captchaSuccess: true, data };
     }
     case "hcaptcha": {
       const { "h-captcha-response": recaptchaResponse, ...data } = body;
+      if (!secret) {
+        return { captchaSuccess: false, data };
+      }
       if (!recaptchaResponse) {
         console.info("kein h-captcha gefunden !");
       }
@@ -968,7 +974,7 @@ async function handleCaptcha(body, type, secret) {
           return { captchaSuccess: false, data };
         }
       } catch (error) {
-        console.error("Fehler bei der h-captcha-\xDCberpr\xFCfung:", error);
+        console.error("Fehler bei der h-captcha-Überprüfung:", error);
       }
       return { captchaSuccess: true, data };
     }
@@ -1170,7 +1176,7 @@ var form_plugin_default = definePlugin(async (ctx) => {
     if (dataentryIsForm(form)) {
       let formData = req.body;
       let captchaSuccess = true;
-      ({ captchaSuccess, data: formData } = await handleCaptcha(req.body, form.data.form["captcha-select"], (await ctx.storage.getAllWithFilter("captcha"))[0].data.captcha.secretKey));
+      ({ captchaSuccess, data: formData } = await handleCaptcha(req.body, form.data.form["captcha-select"], (await ctx.storage.getAllWithFilter("captcha")).at(0)?.data.captcha.secretKey));
       if (captchaSuccess) {
         await ctx.storage.createOne({
           submission: {
@@ -1270,7 +1276,7 @@ var form_plugin_default = definePlugin(async (ctx) => {
       label: label().en("Form-Picker").de("Form-Picker").build(),
       properties: [
         {
-          label: label().en("Select Form").de("Formular Ausw\xE4hlen").build(),
+          label: label().en("Select Form").de("Formular Auswählen").build(),
           id: "selectForm",
           type: "pluginData",
           pluginId: ctx.pluginId(),

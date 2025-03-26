@@ -1,6 +1,6 @@
 {
     "name": "form-plugin",
-    "version": "2.1.3",
+    "version": "2.1.4",
     "scripts": {
         "build": "bun build ./index.js --outdir ./.plugin-build"
     },

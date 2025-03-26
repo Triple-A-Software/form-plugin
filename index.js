@@ -260,7 +260,7 @@ export default definePlugin(async (ctx) => {
 				({ captchaSuccess, data: formData } = await handleCaptcha(
 					req.body,
 					form.data.form["captcha-select"],
-					(await ctx.storage.getAllWithFilter("captcha"))[0].data.captcha
+					(await ctx.storage.getAllWithFilter("captcha")).at(0)?.data.captcha
 						.secretKey,
 				));
 
