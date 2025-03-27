@@ -118,7 +118,7 @@ const formBuilderItems = [
             <label for="{{ data.name }}">
                 {{ render data.label }}
             </label>
-            <input type="{{ data.type }}" name="{{ data.name }}" {{#if data.required }}required{{/if}} placeholder="{{ render data.placeholder }}" />
+            <input type="{{ data.type }}" name="{{ data.name }}" id="{{ data.name }}" {{#if data.required }}required{{/if}} placeholder="{{ render data.placeholder }}" />
         </div>`,
 	}),
 	builderItem({
@@ -162,14 +162,21 @@ const formBuilderItems = [
             <label for="{{ data.name }}">
                 {{ render data.label }}
             </label>
-            <input type="checkbox" name="{{ data.name }}" {{#if data.required }}required{{/if}} />
+            <input type="checkbox" name="{{ data.name }}" id="{{ data.name }}" {{#if data.required }}required{{/if}} />
         </div>`,
 	}),
 	builderItem({
 		id: "textarea",
 		label: label().en("Textarea").de("Textfeld").build(),
 		icon: "i-tabler-text-plus",
-		props: [...commonProps],
+		props: [
+			...commonProps,
+			{
+				id: "placeholder",
+				type: "text",
+				label: label().en("Placeholder").de("Platzhalter").build(),
+			},
+		],
 		data: {
 			label: "",
 			name: "",
@@ -181,7 +188,7 @@ const formBuilderItems = [
             <label for="{{ data.name }}">
                 {{ render data.label }}
             </label>
-            <textarea name="{{ data.name }}" {{#if data.required }}required{{/if}} placeholder="{{ render data.placeholder }}"></textarea>
+            <textarea name="{{ data.name }}" id="{{ data.name }}" {{#if data.required }}required{{/if}} placeholder="{{ render data.placeholder }}"></textarea>
         </div>`,
 	}),
 	builderItem({
