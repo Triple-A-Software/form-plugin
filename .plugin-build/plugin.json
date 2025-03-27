@@ -1,8 +1,0 @@
-{
-  "name": "form-plugin",
-  "version": "2.1.4",
-  "build": "bun run build",
-  "files": null,
-  "type": "module",
-  "main": "index-86480a0db6086ffed14a4bfad1acfa65d2c4ed3c066afbea2f8e7385f5ba7aa8.js"
-}
