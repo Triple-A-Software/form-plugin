@@ -11,6 +11,7 @@ import { HookName } from "@aaa-soft/cms-hooks";
 //@ts-ignore
 import dayjs from "dayjs";
 import { handleCaptcha } from "./helper/captcha";
+import { convertToCSV } from "./utils";
 /*
 type Form = {
 	form: {
@@ -276,10 +277,7 @@ export default definePlugin(async (ctx) => {
 							new Date(),
 						).format("DD.MM.YYYY")}`;
 
-						const {
-							"g-recaptcha-response": g,
-							...data
-						} = formData;
+						const { "g-recaptcha-response": g, ...data } = formData;
 						ctx.sendMail(
 							title,
 							form.data.form.email,
@@ -325,7 +323,7 @@ export default definePlugin(async (ctx) => {
 	const submissionsListHandler = ctx.registerHandler(
 		["GET"],
 		"/submission",
-		async (req) => {
+		async (_) => {
 			// list all submissions
 			const allForms = await ctx.storage.getAllWithFilter("form");
 			const submissions = await ctx.storage.getAllWithFilter("submission");
@@ -381,6 +379,26 @@ export default definePlugin(async (ctx) => {
 	// 	"formSubmissionsWidget",
 	// 	formSubmissionsPage(submissionsListHandler, submissionsDeleteHandler),
 	// );
+
+	ctx.registerHandler(
+		["GET"],
+		"/submissions/download",
+		async (_) => {
+			const submissions = await ctx.storage.getAllWithFilter("submission");
+			const headers = {
+				"Content-disposition": `Attachment;filename="submissions_export_${new Date().toDateString()}.csv"`,
+				"Content-type": "text/csv",
+			};
+			const csv = convertToCSV(submissions);
+			return new Response(csv, {
+				headers,
+				status: 200,
+			});
+		},
+		{
+			allowedRoles: ["admin", "developer"],
+		},
+	);
 
 	ctx.registerSettingsPage(
 		"/submissions",

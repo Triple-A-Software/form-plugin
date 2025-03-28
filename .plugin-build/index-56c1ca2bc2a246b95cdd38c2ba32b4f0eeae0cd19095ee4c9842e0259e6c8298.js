@@ -992,6 +992,40 @@ async function handleCaptcha(body, type, secret) {
   }
 }
 
+// utils.js
+function convertToCSV(arr) {
+  const allKeys = new Set;
+  function extractKeys(obj, prefix) {
+    Object.entries(obj).forEach(([key, value]) => {
+      let _key = key;
+      if (prefix) {
+        _key = `${prefix}.${key}`;
+      }
+      if (typeof value === "object" && value != null && !Array.isArray(value)) {
+        extractKeys(value, _key);
+      } else {
+        allKeys.add(_key);
+      }
+    });
+  }
+  arr.forEach((obj) => {
+    extractKeys(obj);
+  });
+  const headers = Array.from(allKeys);
+  const csvRows = [headers.join(",")];
+  for (const row of arr) {
+    const values = headers.map((header) => {
+      const headerPath = header.split(".");
+      const value = headerPath.reduce((obj, key) => obj[key], row);
+      const escapedValue = typeof value === "string" ? value.replace(/"/g, '""') : value;
+      return typeof value === "string" && (value.includes(",") || value.includes('"')) ? `"${escapedValue}"` : escapedValue;
+    });
+    csvRows.push(values.join(","));
+  }
+  return csvRows.join(`
+`);
+}
+
 // index.js
 var form_plugin_default = definePlugin(async (ctx) => {
   function dataentryIsForm(dataentry) {
@@ -1193,10 +1227,7 @@ var form_plugin_default = definePlugin(async (ctx) => {
         });
         if (form.data.form.email) {
           const title = `[Neue Einsendung] ${form.data.form.name} vom ${import_dayjs.default(new Date).format("DD.MM.YYYY")}`;
-          const {
-            "g-recaptcha-response": g,
-            ...data
-          } = formData;
+          const { "g-recaptcha-response": g, ...data } = formData;
           ctx.sendMail(title, form.data.form.email, getMailContent(title, data));
         }
         if (form.data.form["cleverreach-active"] || formData.subscribe_newsletter) {
@@ -1220,7 +1251,7 @@ var form_plugin_default = definePlugin(async (ctx) => {
       }
     });
   });
-  const submissionsListHandler = ctx.registerHandler(["GET"], "/submission", async (req) => {
+  const submissionsListHandler = ctx.registerHandler(["GET"], "/submission", async (_) => {
     const allForms = await ctx.storage.getAllWithFilter("form");
     const submissions = await ctx.storage.getAllWithFilter("submission");
     const allSubmissions = [];
@@ -1259,6 +1290,20 @@ var form_plugin_default = definePlugin(async (ctx) => {
     });
   }, {
     allowedRoles: ["admin", "editor", "author", "developer"]
+  });
+  ctx.registerHandler(["GET"], "/submissions/download", async (_) => {
+    const submissions = await ctx.storage.getAllWithFilter("submission");
+    const headers = {
+      "Content-disposition": `Attachment;filename="submissions_export_${new Date().toDateString()}.csv"`,
+      "Content-type": "text/csv"
+    };
+    const csv = convertToCSV(submissions);
+    return new Response(csv, {
+      headers,
+      status: 200
+    });
+  }, {
+    allowedRoles: ["admin", "developer"]
   });
   ctx.registerSettingsPage("/submissions", formSubmissionsPage(submissionsListHandler, submissionsDeleteHandler));
   ctx.registerSettingsPage("/overview", formOverviewPage(formsHandler));

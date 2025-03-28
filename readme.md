@@ -13,6 +13,9 @@ For real-time updates to your forms as you make changes, it's recommended to set
 ## Submissions:
 The Submissions tab allows you to view and delete the entries of various forms submitted by users. Here, you can review the information submitted through forms and manage them accordingly.
 
+### Submissions runterladen
+[Submissions runterladen (.csv, excel-kompatibel)](/api/plugins/form-plugin/submissions/download)
+
 ## Forms:
 In the Forms tab, you can access all the forms you've created. This section enables you to edit or delete existing forms as needed. It provides a centralized location to manage the forms' content and settings efficiently.
 
