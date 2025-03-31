@@ -1,23 +1,26 @@
 <template>
-    <UFormGroup :name="name">
+    <UFormField :name="name">
         <template #label>
-            <FormGroupLabel :label="label" :hint="hint" />
+            {{ label }}
+            <span v-if="required" class="ms-0.5 text-red-500 dark:text-red-400"> * </span>
+            <InfoPopover :text="hint" v-if="hint" />
         </template>
-        <InputBuilderTree :builderItems="builderItems" v-model="model" />
-    </UFormGroup>
+        <FormBuilderTree :builderItems="builderItems" v-model="model" />
+    </UFormField>
 </template>
 
 <script setup lang="ts">
-import type { Item } from "@/components/FormBuilderTree.vue";
+import type { BuilderItem } from "../../../bindings";
 
-const props = defineProps<{
-    builderItems: Array<Item>;
+defineProps<{
+    builderItems: Array<BuilderItem>;
     label?: string;
     name: string;
     hint?: string;
+    required?: boolean;
 }>();
 
-const model = defineModel<Array<Item>>({
+const model = defineModel<Array<BuilderItem>>({
     default: [],
 });
 </script>

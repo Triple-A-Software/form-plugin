@@ -1,6 +1,30 @@
-<script setup lang="ts"></script>
+<script setup lang="ts">
+import { useUrlSearchParams } from "@vueuse/core";
+import { onMounted, watch } from "vue";
+import { useI18n } from "vue-i18n";
+
+const searchParams = useUrlSearchParams();
+const { locale } = useI18n();
+function updateLocaleFromSearchParams() {
+    const lang = searchParams.lang;
+    if (lang && typeof lang === "string") {
+        locale.value = lang;
+    }
+}
+onMounted(() => {
+    updateLocaleFromSearchParams();
+});
+watch(
+    () => searchParams.lang,
+    () => {
+        updateLocaleFromSearchParams();
+    },
+);
+</script>
 
 <template>
-    <div class="text-red-400">Hello world</div>
-    <span class="bg-red-200"> dies das asdfasd </span>
+    <UApp>
+        <RouterView />
+        <FormBuilder name="form" :builder-items="[]" />
+    </UApp>
 </template>
