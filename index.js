@@ -119,7 +119,7 @@ export default definePlugin(async (ctx) => {
 			});
 		},
 		{
-			allowedRoles: ["admin", "editor", "developer"],
+			allowedRoles: ["admin", "developer"],
 		},
 	);
 
@@ -159,7 +159,7 @@ export default definePlugin(async (ctx) => {
 			});
 		},
 		{
-			allowedRoles: ["admin", "editor", "developer"],
+			allowedRoles: ["admin", "developer"],
 		},
 	);
 
@@ -204,7 +204,7 @@ export default definePlugin(async (ctx) => {
 			});
 		},
 		{
-			allowedRoles: ["admin", "editor", "author", "developer"],
+			allowedRoles: ["admin", "developer"],
 		},
 	);
 
@@ -240,7 +240,7 @@ export default definePlugin(async (ctx) => {
 			});
 		},
 		{
-			allowedRoles: ["admin", "developer", "author", "editor"],
+			allowedRoles: ["admin", "developer"],
 		},
 	);
 
@@ -350,6 +350,9 @@ export default definePlugin(async (ctx) => {
 			}
 			return allSubmissions.sort((a, b) => (a.id > b.id ? -1 : 1));
 		},
+		{
+			allowedRoles: ["admin", "developer"],
+		},
 	);
 
 	// The handler to list submissions and manage them from the admin-ui
@@ -371,7 +374,7 @@ export default definePlugin(async (ctx) => {
 			});
 		},
 		{
-			allowedRoles: ["admin", "editor", "author", "developer"],
+			allowedRoles: ["admin", "developer"],
 		},
 	);
 
