@@ -1101,7 +1101,7 @@ var form_plugin_default = definePlugin(async (ctx) => {
       status: 405
     });
   }, {
-    allowedRoles: ["admin", "editor", "developer"]
+    allowedRoles: ["admin", "developer"]
   });
   const captchaUpsertHandler = ctx.registerHandler(["POST", "GET"], "/form/captcha", async (req) => {
     const config = await ctx.storage.getAllWithFilter("captcha");
@@ -1135,7 +1135,7 @@ var form_plugin_default = definePlugin(async (ctx) => {
       status: 405
     });
   }, {
-    allowedRoles: ["admin", "editor", "developer"]
+    allowedRoles: ["admin", "developer"]
   });
   const formCreateUpdateHandler = ctx.registerHandler(["POST", "GET"], "/form", async (req) => {
     if (req.method === "POST") {
@@ -1174,7 +1174,7 @@ var form_plugin_default = definePlugin(async (ctx) => {
       status: 405
     });
   }, {
-    allowedRoles: ["admin", "editor", "author", "developer"]
+    allowedRoles: ["admin", "developer"]
   });
   const formsHandler = ctx.registerHandler(["GET", "DELETE"], "/forms", async (req) => {
     if (req.method === "GET") {
@@ -1205,7 +1205,7 @@ var form_plugin_default = definePlugin(async (ctx) => {
       status: 405
     });
   }, {
-    allowedRoles: ["admin", "developer", "author", "editor"]
+    allowedRoles: ["admin", "developer"]
   });
   const submitHandler = ctx.registerHandler(["POST"], "/submit/:formId", async (req) => {
     if (!req.params?.formId) {
@@ -1274,6 +1274,8 @@ var form_plugin_default = definePlugin(async (ctx) => {
       }
     }
     return allSubmissions.sort((a, b) => a.id > b.id ? -1 : 1);
+  }, {
+    allowedRoles: ["admin", "developer"]
   });
   const submissionsDeleteHandler = ctx.registerHandler(["DELETE"], "/submission/:submissionId", async (req) => {
     if (!req.params?.submissionId) {
@@ -1289,7 +1291,7 @@ var form_plugin_default = definePlugin(async (ctx) => {
       status: 500
     });
   }, {
-    allowedRoles: ["admin", "editor", "author", "developer"]
+    allowedRoles: ["admin", "developer"]
   });
   ctx.registerHandler(["GET"], "/submissions/download", async (_) => {
     const submissions = await ctx.storage.getAllWithFilter("submission");
