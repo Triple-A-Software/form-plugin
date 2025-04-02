@@ -63,24 +63,64 @@ function addElementToForm(element_type: Property["type"]) {
 }
 
 function deleteElementFromForm(index: number) {
-    model.value = model.value?.filter((_, _index) => index !== _index);
+    model.value.splice(index, 1);
 }
 
 const builderItems = computed<Array<Item>>(() => [
+    {
+        icon: "i-tabler-text-plus",
+        label: t("builder.item.label.textarea"),
+        type: "textarea",
+    },
     {
         icon: "i-tabler-text-size",
         label: t("builder.item.label.text"),
         type: "text",
     },
     {
-        icon: "i-tabler-click",
-        label: t("builder.item.label.button"),
-        type: "button",
+        icon: "i-tabler-markdown",
+        label: t("builder.item.label.markdown"),
+        type: "markdown",
     },
     {
-        icon: "i-tabler-click",
-        label: t("builder.item.label.textarea"),
-        type: "textarea",
+        icon: "i-tabler-text-grammar",
+        label: t("builder.item.label.richtext"),
+        type: "richtext",
+    },
+    {
+        icon: "i-tabler-check",
+        label: t("builder.item.label.checkbox"),
+        type: "checkbox",
+    },
+    {
+        icon: "i-tabler-number",
+        label: t("builder.item.label.number"),
+        type: "number",
+    },
+    {
+        icon: "i-tabler-select",
+        label: t("builder.item.label.select"),
+        type: "select",
+    },
+    {
+        icon: "i-tabler-code",
+        label: t("builder.item.label.code"),
+        type: "code",
+    },
+    {
+        icon: "i-tabler-number-123",
+        label: t("builder.item.label.range"),
+        type: "range",
+    },
+    {
+        icon: "i-tabler-hand-click",
+        label: t("builder.item.label.buttongroup"),
+        type: "buttongroup",
+    },
+    {
+        icon: "i-tabler-hand-click",
+        label: t("builder.item.label.button"),
+        type: "button",
     },
 ]);
 const currentlySelectedElement = ref<number | null>(null);

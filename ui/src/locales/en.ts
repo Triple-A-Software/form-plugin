@@ -2,6 +2,7 @@ export default {
 	action: {
 		create: {
 			field: "Create field",
+			option: "Create option",
 		},
 	},
 	modal: {
@@ -23,6 +24,13 @@ export default {
 			required: "Required",
 			name: "Name",
 			placeholder: "Placeholder",
+			min: "Min",
+			step: "Step",
+			value: "Value",
+			data_type: "Datatype",
+			multiple: "Multiple selectable",
+			options: "Options",
+			language: "Language",
 		},
 		option: {
 			type: {
@@ -35,14 +43,26 @@ export default {
 				color: "Color",
 				tel: "Tel",
 			},
+			data_type: {
+				string: "String",
+				number: "Number",
+			},
 		},
 	},
 	builder: {
 		item: {
 			label: {
 				text: "Textfield",
-				button: "Button",
 				textarea: "Textarea",
+				markdown: "Markdown",
+				richtext: "WYSIWYG",
+				checkbox: "Checkbox",
+				number: "Number",
+				select: "Select",
+				code: "Code",
+				range: "Range",
+				buttongroup: "Buttongroup",
+				button: "Button",
 			},
 		},
 	},

@@ -5,7 +5,7 @@
     >
         <UIcon :name="element.icon ?? fallbackIcon ?? ''" class="size-10 w-full"></UIcon>
         <template #footer>
-            <p>
+            <p class="text-center w-full">
                 {{ element.label }}
             </p>
         </template>

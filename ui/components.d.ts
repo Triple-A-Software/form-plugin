@@ -8,12 +8,15 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    ArrayInput: typeof import('./src/components/input/ArrayInput.vue')['default']
     BuilderItemSelectCard: typeof import('./src/components/BuilderItemSelectCard.vue')['default']
     Button: typeof import('./src/components/elementform/Button.vue')['default']
     ButtonElement: typeof import('./src/components/element/ButtonElement.vue')['default']
     ButtonForm: typeof import('./src/components/element/form/ButtonForm.vue')['default']
+    ButtongroupForm: typeof import('./src/components/element/form/ButtongroupForm.vue')['default']
     Checkbox: typeof import('./src/components/elementform/Checkbox.vue')['default']
-    CheckboxForm: typeof import('./src/components/elementform/CheckboxForm.vue')['default']
+    CheckboxForm: typeof import('./src/components/element/form/CheckboxForm.vue')['default']
+    CodeForm: typeof import('./src/components/element/form/CodeForm.vue')['default']
     Common: typeof import('./src/components/elementform/Common.vue')['default']
     CommonElementForm: typeof import('./src/components/element/form/CommonElementForm.vue')['default']
     Element: typeof import('./src/components/element/Element.vue')['default']
@@ -24,9 +27,14 @@ declare module 'vue' {
     FromFormInput: typeof import('./src/components/input/FromFormInput.vue')['default']
     InfoPopover: typeof import('./src/components/InfoPopover.vue')['default']
     LocalizedTextInput: typeof import('./src/components/input/LocalizedTextInput.vue')['default']
+    MarkdownForm: typeof import('./src/components/element/form/MarkdownForm.vue')['default']
     Number: typeof import('./src/components/elementform/Number.vue')['default']
+    NumberForm: typeof import('./src/components/element/form/NumberForm.vue')['default']
+    RangeForm: typeof import('./src/components/element/form/RangeForm.vue')['default']
+    RichtextForm: typeof import('./src/components/element/form/RichtextForm.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
+    SelectForm: typeof import('./src/components/element/form/SelectForm.vue')['default']
     Text: typeof import('./src/components/elementform/Text.vue')['default']
     Textarea: typeof import('./src/components/elementform/Textarea.vue')['default']
     TextareaForm: typeof import('./src/components/element/form/TextareaForm.vue')['default']
@@ -43,6 +51,7 @@ declare module 'vue' {
     ULinkBase: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/LinkBase.vue')['default']
     UPopover: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Popover.vue')['default']
     USelect: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Select.vue')['default']
+    USeparator: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Separator.vue')['default']
     USlideover: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Slideover.vue')['default']
   }
 }

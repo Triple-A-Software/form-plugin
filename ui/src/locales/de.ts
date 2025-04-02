@@ -4,6 +4,7 @@ export default {
 	action: {
 		create: {
 			field: "Feld erstellen",
+			option: "Option erstellen",
 		},
 	},
 	modal: {
@@ -25,6 +26,12 @@ export default {
 			required: "Benötigt",
 			name: "Name",
 			placeholder: "Platzhalter",
+			min: "Min",
+			step: "Schrittgröße",
+			value: "Wert",
+			data_type: "Datentyp",
+			multiple: "Mehrere auswählbar",
+			options: "Optionen",
 		},
 		option: {
 			type: {
@@ -37,14 +44,26 @@ export default {
 				color: "Farbe",
 				tel: "Tel",
 			},
+			data_type: {
+				string: "String",
+				number: "Zahl",
+			},
 		},
 	},
 	builder: {
 		item: {
 			label: {
 				text: "Textfeld",
+				textarea: "Großes Textfeld",
+				markdown: "Markdown",
+				richtext: "Formatiertes Textfeld",
+				checkbox: "Checkbox",
+				number: "Zahl",
+				select: "Auswahl",
+				code: "Code",
+				range: "Zahlen von-bis",
+				buttongroup: "Buttongroup",
 				button: "Button",
-				textarea: "Textarea",
 			},
 		},
 	},
