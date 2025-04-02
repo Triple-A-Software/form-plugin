@@ -8,7 +8,19 @@ import VueRouter from "unplugin-vue-router/vite";
 
 // https://vite.dev/config/
 export default defineConfig({
-	plugins: [VueRouter(), vue(), ui(), Layouts()],
+	plugins: [
+		VueRouter(),
+		vue(),
+		ui({
+			ui: {
+				colors: {
+					primary: "orange",
+					neutral: "zinc",
+				},
+			},
+		}),
+		Layouts(),
+	],
 	resolve: {
 		alias: {
 			"@": fileURLToPath(new URL("./src", import.meta.url)),

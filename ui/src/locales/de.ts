@@ -67,4 +67,9 @@ export default {
 			},
 		},
 	},
+	pages: {
+		home: "Home",
+		forms: "Formulare",
+		submissions: "Einsendungen",
+	},
 } satisfies typeof en;

@@ -66,4 +66,9 @@ export default {
 			},
 		},
 	},
+	pages: {
+		home: "Home",
+		forms: "Forms",
+		submissions: "Submissions",
+	},
 };
