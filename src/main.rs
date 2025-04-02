@@ -7,6 +7,7 @@ use axum::Router;
 use tokio::net::TcpListener;
 use tower_http::{normalize_path::NormalizePathLayer, services::ServeDir};
 
+mod date;
 mod model;
 
 #[derive(Clone)]

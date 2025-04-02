@@ -12,6 +12,9 @@ export default {
 			field: {
 				title: "Feld bearbeiten: {type}",
 			},
+			form: {
+				title: "Formular bearbeiten",
+			},
 		},
 	},
 	field: {
@@ -32,6 +35,7 @@ export default {
 			data_type: "Datentyp",
 			multiple: "Mehrere auswählbar",
 			options: "Optionen",
+			language: "Sprache",
 		},
 		option: {
 			type: {
@@ -71,5 +75,8 @@ export default {
 		home: "Home",
 		forms: "Formulare",
 		submissions: "Einsendungen",
+	},
+	table_columns: {
+		name: "Name",
 	},
 } satisfies typeof en;

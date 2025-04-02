@@ -10,6 +10,9 @@ export default {
 			field: {
 				title: "Edit field: {type}",
 			},
+			form: {
+				title: "Edit form",
+			},
 		},
 	},
 	field: {
@@ -70,5 +73,8 @@ export default {
 		home: "Home",
 		forms: "Forms",
 		submissions: "Submissions",
+	},
+	table_columns: {
+		name: "Name",
 	},
 };

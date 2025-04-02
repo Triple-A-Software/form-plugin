@@ -8,6 +8,7 @@ import en from "./locales/en";
 import de from "./locales/de";
 import { handleHotUpdate, routes } from "vue-router/auto-routes";
 import { setupLayouts } from "virtual:generated-layouts";
+import { createPinia } from "pinia";
 
 const router = createRouter({
 	routes: setupLayouts(routes),
@@ -24,7 +25,9 @@ const i18n = createI18n({
 	},
 });
 
+const pinia = createPinia();
+
 if (import.meta.hot) {
 	handleHotUpdate(router);
 }
-createApp(App).use(router).use(ui).use(i18n).mount("#app");
+createApp(App).use(router).use(ui).use(pinia).use(i18n).mount("#app");

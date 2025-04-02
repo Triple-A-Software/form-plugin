@@ -2,7 +2,10 @@ use std::collections::HashMap;
 
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use sqlx::types::Json;
 use ts_rs::TS;
+
+use crate::date::JavascriptDate;
 
 #[derive(Deserialize, Serialize, Clone, Debug, TS)]
 #[ts(export, export_to = "index.ts")]
@@ -21,13 +24,32 @@ pub struct PropertyCommon {
 
 #[derive(Deserialize, Serialize, Clone, Debug, TS)]
 #[ts(export, export_to = "index.ts")]
-pub struct Builder {
-    data: Value,
-    icon: Option<String>,
+pub struct Submission {
+    id: i32,
+    form_id: i32,
+    timestamp: JavascriptDate,
+    #[ts(as = "Value")]
+    data: Json<Value>,
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug, TS)]
+#[ts(export, export_to = "index.ts")]
+pub struct Form {
+    id: i32,
+    name: String,
+    send_confirmation_email: bool,
+    confirmation_email_id: Option<i32>,
+    confirmation_email_recipient_field_name: Option<String>,
     props: Vec<Property>,
-    #[serde(flatten)]
-    #[ts(skip)]
-    extra: HashMap<String, Value>,
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug, TS)]
+#[ts(export, export_to = "index.ts")]
+pub struct Email {
+    id: i32,
+    subject: String,
+    /// html code for the email body
+    content: String,
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug, TS)]
