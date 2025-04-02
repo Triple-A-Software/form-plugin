@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useUrlSearchParams } from "@vueuse/core";
-import { onMounted, watch } from "vue";
+import { onMounted, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 
 const searchParams = useUrlSearchParams();
@@ -20,11 +20,15 @@ watch(
         updateLocaleFromSearchParams();
     },
 );
+
+const builder = ref([]);
 </script>
 
 <template>
     <UApp>
         <RouterView />
-        <FormBuilder name="form" :builder-items="[]" />
+        <UFormField :label="$t('field.label.formbuilder')">
+            <FormBuilder v-model="builder" />
+        </UFormField>
     </UApp>
 </template>

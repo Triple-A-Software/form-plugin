@@ -1,26 +1,92 @@
 <template>
-    <UFormField :name="name">
-        <template #label>
-            {{ label }}
-            <span v-if="required" class="ms-0.5 text-red-500 dark:text-red-400"> * </span>
-            <InfoPopover :text="hint" v-if="hint" />
-        </template>
-        <FormBuilderTree :builderItems="builderItems" v-model="model" />
-    </UFormField>
+    <div class="ring-1 ring-gray-200 dark:ring-gray-800 rounded-md p-2">
+        <Draggable :list="model">
+            <div v-if="model?.length" v-for="(formElement, index) in model" :key="index" class="rounded-md p-1">
+                <Element
+                    v-bind="formElement"
+                    @delete="deleteElementFromForm(index)"
+                    @edit="
+                        elementEditOpen = true;
+                        currentlySelectedElement = index;
+                    "
+                />
+            </div>
+        </Draggable>
+        <UPopover overlay>
+            <UButton variant="ghost" icon="i-tabler-plus">
+                {{ t("action.create.field") }}
+            </UButton>
+            <template #content>
+                <div class="grid grid-cols-4 overflow-y-scroll p-2 gap-2">
+                    <BuilderItemSelectCard
+                        v-for="element in builderItems"
+                        :element="element"
+                        fallback-icon="i-tabler-code"
+                        @click="addElementToForm($event.type)"
+                    />
+                </div>
+            </template>
+        </UPopover>
+        <USlideover
+            v-model:open="elementEditOpen"
+            v-if="currentlySelectedElement != null"
+            :title="t('modal.edit.field.title', { type: t(`builder.item.label.${model[currentlySelectedElement].type}`) })"
+        >
+            <template #body>
+                <div class="space-y-4">
+                    <ElementForm v-model="model[currentlySelectedElement]" />
+                </div>
+            </template>
+        </USlideover>
+    </div>
 </template>
-
 <script setup lang="ts">
-import type { BuilderItem } from "../../../bindings";
+import { VueDraggableNext as Draggable } from "vue-draggable-next";
+import { computed, ref, watch } from "vue";
+import type { Property } from "../../../bindings";
+import { useI18n } from "vue-i18n";
+import clone from "just-clone";
+import type { Item } from "./BuilderItemSelectCard.vue";
+import { createElement } from "@/utils";
 
-defineProps<{
-    builderItems: Array<BuilderItem>;
-    label?: string;
-    name: string;
-    hint?: string;
-    required?: boolean;
-}>();
+const elementEditOpen = ref(false);
 
-const model = defineModel<Array<BuilderItem>>({
-    default: [],
+const { t } = useI18n();
+
+const model = defineModel<Array<Property>>({
+    required: true,
+});
+
+function addElementToForm(element_type: Property["type"]) {
+    const newElement = clone(createElement(element_type));
+    model.value?.push(newElement);
+}
+
+function deleteElementFromForm(index: number) {
+    model.value = model.value?.filter((_, _index) => index !== _index);
+}
+
+const builderItems = computed<Array<Item>>(() => [
+    {
+        icon: "i-tabler-text-size",
+        label: t("builder.item.label.text"),
+        type: "text",
+    },
+    {
+        icon: "i-tabler-click",
+        label: t("builder.item.label.button"),
+        type: "button",
+    },
+    {
+        icon: "i-tabler-click",
+        label: t("builder.item.label.textarea"),
+        type: "textarea",
+    },
+]);
+const currentlySelectedElement = ref<number | null>(null);
+watch(elementEditOpen, (open) => {
+    if (!open) {
+        currentlySelectedElement.value = null;
+    }
 });
 </script>

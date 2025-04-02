@@ -1,39 +1,29 @@
 <template>
     <UCard
-        class="hover:ring-primary-500 hover:dark:ring-primary-400 hover:ring-2 transition-all duration-150 select-none text-center"
-        @click="emit('click', data)"
+        class="hover:ring-primary-500 hover:dark:ring-primary-400 hover:ring-2 transition-all duration-150 select-none"
+        @click="emit('click', element)"
     >
-        <div :class="`!w-10 !h-10 ${data.icon ?? fallbackIcon}`" />
+        <UIcon :name="element.icon ?? fallbackIcon ?? ''" class="size-10 w-full"></UIcon>
         <template #footer>
             <p>
-                <slot name="label">
-                    {{ "form" in data ? data.form.label[locale] : data.name }}
-                </slot>
+                {{ element.label }}
             </p>
         </template>
     </UCard>
 </template>
 <script setup lang="ts">
-import { useI18n } from "vue-i18n";
+import type { Property } from "../../../bindings";
 
-type Data = {
+export type Item = {
     icon?: string | null | undefined;
-} & (
-    | {
-          form: {
-              label: Record<string, string>;
-          };
-      }
-    | {
-          name: string;
-      }
-);
-const { locale } = useI18n();
+    label: string;
+    type: Property["type"];
+};
 defineProps<{
-    data: Data;
+    element: Item;
     fallbackIcon?: string;
 }>();
 const emit = defineEmits<{
-    (e: "click", data: Data): void;
+    (e: "click", data: Item): void;
 }>();
 </script>

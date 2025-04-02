@@ -7,25 +7,22 @@ use ts_rs::TS;
 #[derive(Deserialize, Serialize, Clone, Debug, TS)]
 #[ts(export, export_to = "index.ts")]
 pub struct PropertyCommon {
-    #[ts(optional)]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    description: Option<String>,
+    #[ts(type = "Record<string, string>")]
+    hint: HashMap<String, String>,
     #[ts(type = "Record<string, string>")]
     label: HashMap<String, String>,
-    #[ts(optional, type = "unknown")]
-    #[serde(skip_serializing_if = "Option::is_none")]
-    default_value: Option<Value>,
     #[ts(optional)]
     #[serde(skip_serializing_if = "Option::is_none")]
-    required: Option<bool>,
-    pub id: String,
+    default_value: Option<Value>,
+    class: String,
+    name: String,
+    required: bool,
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug, TS)]
 #[ts(export, export_to = "index.ts")]
 pub struct Builder {
     data: Value,
-    name: String,
     icon: Option<String>,
     props: Vec<Property>,
     #[serde(flatten)]
@@ -37,9 +34,8 @@ pub struct Builder {
 #[serde(tag = "type", rename_all = "kebab-case")]
 #[ts(export, export_to = "index.ts")]
 pub enum Property {
-    Textarea(PropertyCommon),
-    Password(PropertyCommon),
-    Text(PropertyCommon),
+    Textarea(TextareaProperty),
+    Text(TextProperty),
     Markdown(PropertyCommon),
     Richtext(PropertyCommon),
     Checkbox(PropertyCommon),
@@ -48,6 +44,33 @@ pub enum Property {
     Code(CodeProperty),
     Range(RangeProperty),
     Buttongroup(ButtongroupProperty),
+    Button(PropertyCommon),
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug, TS)]
+#[ts(export, export_to = "index.ts")]
+pub struct TextareaProperty {
+    #[serde(flatten)]
+    common: PropertyCommon,
+    #[ts(optional)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    max_length: Option<i32>,
+    #[ts(optional)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    placeholder: Option<String>,
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug, TS)]
+#[ts(export, export_to = "index.ts")]
+pub struct TextProperty {
+    #[serde(flatten)]
+    common: PropertyCommon,
+    #[ts(optional)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    max: Option<i32>,
+    #[ts(optional)]
+    #[serde(skip_serializing_if = "Option::is_none")]
+    placeholder: Option<String>,
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug, TS)]
@@ -75,7 +98,7 @@ pub struct SelectProperty {
     #[serde(skip_serializing_if = "Option::is_none")]
     multiple: Option<bool>,
     data_type: SelectDataType,
-    options: SelectOptions,
+    options: Vec<SelectOption>,
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug, TS)]
@@ -85,14 +108,6 @@ pub struct SelectOption {
     #[ts(type = "Record<string, string>")]
     label: HashMap<String, String>,
     value: SelectData,
-}
-
-#[derive(Deserialize, Serialize, Clone, Debug, TS)]
-#[serde(rename_all = "camelCase", untagged)]
-#[ts(export, export_to = "index.ts")]
-pub enum SelectOptions {
-    Remote(String),
-    Local(Vec<SelectOption>),
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug, TS)]
