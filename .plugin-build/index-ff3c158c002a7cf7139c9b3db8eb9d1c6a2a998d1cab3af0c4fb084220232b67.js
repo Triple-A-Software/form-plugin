@@ -762,10 +762,30 @@ function createFormPage(formHandler) {
           label: label().en("Send submissions to this email").de("Formularergebnisse an diese Email schicken").build()
         },
         {
+          id: "send_confirmation_email",
+          type: "checkbox",
+          label: label().en("Send confirmation email to visitor").de("Bestätigungs Email an Besucher schicken").build()
+        },
+        {
+          id: "confirmation_email_subject",
+          type: "text",
+          label: label().en("Confirmation email subject").de("Bestätigungsemailbetreff").build()
+        },
+        {
+          id: "confirmation_email_content",
+          type: "code",
+          language: "html",
+          label: label().en("Confirmation email content").de("Bestätigungsemailinhalt").build()
+        },
+        {
           label: label().en("Select Captcha").de("Captcha auswählen").build(),
           id: "captcha-select",
           type: "select",
-          options: [{ label: { de: "Ohne Captcha", en: "None" }, value: "none" }, { label: { de: "reCAPTCHA", en: "reCAPTCHA" }, value: "recaptcha" }, { label: { de: "h-Captcha", en: "h-Captcha" }, value: "hcaptcha" }]
+          options: [
+            { label: { de: "Ohne Captcha", en: "None" }, value: "none" },
+            { label: { de: "reCAPTCHA", en: "reCAPTCHA" }, value: "recaptcha" },
+            { label: { de: "h-Captcha", en: "h-Captcha" }, value: "hcaptcha" }
+          ]
         },
         {
           label: label().en("Activate Cleverreach").de("Aktivere Cleverreach").build(),
@@ -1229,6 +1249,12 @@ var form_plugin_default = definePlugin(async (ctx) => {
           const title = `[Neue Einsendung] ${form.data.form.name} vom ${import_dayjs.default(new Date).format("DD.MM.YYYY")}`;
           const { "g-recaptcha-response": g, ...data } = formData;
           ctx.sendMail(title, form.data.form.email, getMailContent(title, data));
+        }
+        if (form.data.form.send_confirmation_email && "email" in formData && typeof formData.email === "string") {
+          const to = formData.email;
+          const content = form.data.form.confirmation_email_content;
+          const subject = form.data.form.confirmation_email_subject;
+          ctx.sendMail(subject, to, content);
         }
         if (form.data.form["cleverreach-active"] || formData.subscribe_newsletter) {
           try {
