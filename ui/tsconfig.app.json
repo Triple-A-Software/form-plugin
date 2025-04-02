@@ -17,9 +17,9 @@
             ]
         },
         "types": [
-            // "unplugin-vue-router/client",
-            "vite/client"
-            // "vite-plugin-vue-layouts/client"
+            "unplugin-vue-router/client",
+            "vite/client",
+            "vite-plugin-vue-layouts/client"
         ]
     },
     "include": [
@@ -27,6 +27,7 @@
         "src/**/*.tsx",
         "src/**/*.vue",
         "auto-imports.d.ts",
+        "./typed-router.d.ts",
         "components.d.ts"
     ]
 }

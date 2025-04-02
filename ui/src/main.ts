@@ -6,9 +6,11 @@ import { createRouter, createWebHistory } from "vue-router";
 import { createI18n } from "vue-i18n";
 import en from "./locales/en";
 import de from "./locales/de";
+import { handleHotUpdate, routes } from "vue-router/auto-routes";
+import { setupLayouts } from "virtual:generated-layouts";
 
 const router = createRouter({
-	routes: [],
+	routes: setupLayouts(routes),
 	history: createWebHistory(),
 });
 
@@ -22,4 +24,7 @@ const i18n = createI18n({
 	},
 });
 
+if (import.meta.hot) {
+	handleHotUpdate(router);
+}
 createApp(App).use(router).use(ui).use(i18n).mount("#app");
