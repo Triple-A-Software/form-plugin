@@ -284,7 +284,16 @@ export default definePlugin(async (ctx) => {
 							getMailContent(title, data),
 						);
 					}
-
+					if (
+						form.data.form.send_confirmation_email &&
+						"email" in formData &&
+						typeof formData.email === "string"
+					) {
+						const to = formData.email;
+						const content = form.data.form.confirmation_email_content;
+						const subject = form.data.form.confirmation_email_subject;
+						ctx.sendMail(subject, to, content);
+					}
 					if (
 						form.data.form["cleverreach-active"] ||
 						formData.subscribe_newsletter

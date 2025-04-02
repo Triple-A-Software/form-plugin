@@ -38,13 +38,45 @@ export function createFormPage(
 						.build(),
 				},
 				{
+					id: "send_confirmation_email",
+					type: "checkbox",
+					label: label()
+						.en("Send confirmation email to visitor")
+						.de("Bestätigungs Email an Besucher schicken")
+						.build(),
+				},
+				{
+					id: "confirmation_email_subject",
+					type: "text",
+					label: label()
+						.en("Confirmation email subject")
+						.de("Bestätigungsemailbetreff")
+						.build(),
+				},
+				{
+					id: "confirmation_email_content",
+					type: "code",
+					language: "html",
+					label: label()
+						.en("Confirmation email content")
+						.de("Bestätigungsemailinhalt")
+						.build(),
+				},
+				{
 					label: label().en("Select Captcha").de("Captcha auswählen").build(),
 					id: "captcha-select",
 					type: "select",
-					options: [{ label: { de: "Ohne Captcha", en: "None" }, value: "none" }, { label: { de: "reCAPTCHA", en: "reCAPTCHA" }, value: "recaptcha" }, { label: { de: "h-Captcha", en: "h-Captcha" }, value: "hcaptcha" }]
+					options: [
+						{ label: { de: "Ohne Captcha", en: "None" }, value: "none" },
+						{ label: { de: "reCAPTCHA", en: "reCAPTCHA" }, value: "recaptcha" },
+						{ label: { de: "h-Captcha", en: "h-Captcha" }, value: "hcaptcha" },
+					],
 				},
 				{
-					label: label().en("Activate Cleverreach").de("Aktivere Cleverreach").build(),
+					label: label()
+						.en("Activate Cleverreach")
+						.de("Aktivere Cleverreach")
+						.build(),
 					id: "cleverreach-active",
 					type: "checkbox",
 				},
