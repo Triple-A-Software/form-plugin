@@ -1,6 +1,13 @@
 {
+	"$schema": "./plugin_manifest_schema.json",
 	"name": "form-plugin",
 	"version": "3.0.0",
 	"bin": "./main",
-	"ui": "/ui"
+	"ui": "/ui",
+	"api": [
+		{
+			"route": "/api/forms",
+			"allowed_roles": ["admin", "developer"]
+		}
+	]
 }

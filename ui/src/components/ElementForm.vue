@@ -1,8 +1,9 @@
 <script setup lang="ts">
+import type { NullToUndefined } from "@/utils/types/utils";
 import type { Property } from "../../../bindings";
 import CheckboxForm from "./element/form/CheckboxForm.vue";
 
-const model = defineModel<Property>({ required: true });
+const model = defineModel<NullToUndefined<Property>>({ required: true });
 </script>
 
 <template>

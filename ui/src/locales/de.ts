@@ -5,16 +5,17 @@ export default {
 		create: {
 			field: "Feld erstellen",
 			option: "Option erstellen",
+			form: "Formular erstellen",
 		},
+		save: "Speichern",
 	},
 	modal: {
 		edit: {
-			field: {
-				title: "Feld bearbeiten: {type}",
-			},
-			form: {
-				title: "Formular bearbeiten",
-			},
+			field: "Feld bearbeiten: {type}",
+			form: "Formular bearbeiten",
+		},
+		create: {
+			form: "Formular erstellen",
 		},
 	},
 	field: {
@@ -36,6 +37,9 @@ export default {
 			multiple: "Mehrere auswählbar",
 			options: "Optionen",
 			language: "Sprache",
+			sendConfirmationEmail: "Bestätigungs-Email senden",
+			confirmationEmail: "Bestätigungs-Email",
+			confirmationEmailRecipientFieldName: "Empfänger feld name",
 		},
 		option: {
 			type: {
@@ -52,6 +56,9 @@ export default {
 				string: "String",
 				number: "Zahl",
 			},
+		},
+		placeholder: {
+			confirmationEmail: "Bestätigungs-Email auswählen",
 		},
 	},
 	builder: {

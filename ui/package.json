@@ -13,6 +13,7 @@
 		"@pinia/colada": "^0.14.2",
 		"@vueuse/core": "^13.0.0",
 		"just-clone": "^6.2.0",
+		"neverthrow": "^8.2.0",
 		"pinia": "^3.0.1",
 		"unplugin-vue-router": "^0.12.0",
 		"vite-plugin-vue-layouts": "^0.11.0",

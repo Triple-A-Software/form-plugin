@@ -3,7 +3,7 @@
         <Draggable :list="model">
             <div v-if="model?.length" v-for="(formElement, index) in model" :key="index" class="rounded-md p-1">
                 <Element
-                    v-bind="formElement"
+                    :element="formElement"
                     @delete="deleteElementFromForm(index)"
                     @edit="
                         elementEditOpen = true;
@@ -30,7 +30,7 @@
         <USlideover
             v-model:open="elementEditOpen"
             v-if="currentlySelectedElement != null"
-            :title="t('modal.edit.field.title', { type: t(`builder.item.label.${model[currentlySelectedElement].type}`) })"
+            :title="t('modal.edit.field', { type: t(`builder.item.label.${model[currentlySelectedElement].type}`) })"
         >
             <template #body>
                 <div class="space-y-4">
@@ -48,12 +48,13 @@ import { useI18n } from "vue-i18n";
 import clone from "just-clone";
 import type { Item } from "./BuilderItemSelectCard.vue";
 import { createElement } from "@/utils";
+import type { NullToUndefined } from "@/utils/types/utils";
 
 const elementEditOpen = ref(false);
 
 const { t } = useI18n();
 
-const model = defineModel<Array<Property>>({
+const model = defineModel<Array<NullToUndefined<Property>>>({
     required: true,
 });
 

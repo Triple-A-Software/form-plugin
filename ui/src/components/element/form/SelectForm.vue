@@ -2,8 +2,9 @@
 import { computed } from "vue";
 import type { Property } from "../../../../../bindings";
 import { useI18n } from "vue-i18n";
+import type { NullToUndefined } from "@/utils/types/utils";
 
-const model = defineModel<Extract<Property, { type: "select" }>>({
+const model = defineModel<Extract<NullToUndefined<Property>, { type: "select" }>>({
     required: true,
     default: {
         type: "select",

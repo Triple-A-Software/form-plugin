@@ -3,16 +3,17 @@ export default {
 		create: {
 			field: "Create field",
 			option: "Create option",
+			form: "Create form",
 		},
+		save: "Save",
 	},
 	modal: {
 		edit: {
-			field: {
-				title: "Edit field: {type}",
-			},
-			form: {
-				title: "Edit form",
-			},
+			field: "Editing field: {type}",
+			form: "Editing form",
+		},
+		create: {
+			form: "Creating form",
 		},
 	},
 	field: {
@@ -34,6 +35,9 @@ export default {
 			multiple: "Multiple selectable",
 			options: "Options",
 			language: "Language",
+			sendConfirmationEmail: "Send confirmation email",
+			confirmationEmail: "Confirmation email",
+			confirmationEmailRecipientFieldName: "Recipient field name",
 		},
 		option: {
 			type: {
@@ -50,6 +54,9 @@ export default {
 				string: "String",
 				number: "Number",
 			},
+		},
+		placeholder: {
+			confirmationEmail: "Select confirmation email",
 		},
 	},
 	builder: {

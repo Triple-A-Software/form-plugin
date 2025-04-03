@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import type { NullToUndefined } from "@/utils/types/utils";
 import type { Property } from "../../../../../bindings";
 
-const model = defineModel<Extract<Property, { type: "range" }>>({
+const model = defineModel<Extract<NullToUndefined<Property>, { type: "range" }>>({
     required: true,
     default: {
         type: "range",

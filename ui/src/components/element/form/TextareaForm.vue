@@ -1,7 +1,8 @@
 <script setup lang="ts">
+import type { NullToUndefined } from "@/utils/types/utils";
 import type { Property } from "../../../../../bindings";
 
-const model = defineModel<Extract<Property, { type: "textarea" }>>({
+const model = defineModel<Extract<NullToUndefined<Property>, { type: "textarea" }>>({
     required: true,
     default: {
         type: "textarea",

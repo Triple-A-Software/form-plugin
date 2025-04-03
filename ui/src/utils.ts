@@ -1,8 +1,9 @@
 import type { Property } from "../../bindings";
+import type { NullToUndefined } from "./utils/types/utils";
 
 export function createElement<
 	TType extends Property["type"],
-	TOutput extends Extract<Property, { type: TType }>,
+	TOutput extends NullToUndefined<Extract<Property, { type: TType }>>,
 >(type: TType): TOutput {
 	switch (type) {
 		case "richtext":
