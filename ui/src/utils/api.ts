@@ -1,8 +1,10 @@
 import {
 	type UseMutationOptions,
 	type UseQueryOptions,
+	type UseQueryReturn,
 	useMutation,
 	useQuery,
+	useQueryCache,
 } from "@pinia/colada";
 import type { API } from "./types/api";
 import { err, ok, ResultAsync, type Result } from "neverthrow";
@@ -123,24 +125,35 @@ export function useApiQuery<
 	options: Options<API[TPath][TMethod], TMethod>,
 	queryOptions?: TQueryOptions,
 ) {
-	return useQuery({
-		key: () => [typeof path === "string" ? path : path()],
-		query: async () => {
-			const result = await fetchApi<TPath, TMethod, TResponse, TBody, TQuery>(
-				typeof path === "string" ? path : path(),
-				options,
-			);
-			return result.match(
-				(ok) => {
-					return ok;
-				},
-				(err) => {
-					throw err;
-				},
-			);
-		},
-		...queryOptions,
-	});
+	const key = () => [
+		typeof path === "string" ? `${path}:${String(options.method)}` : path(),
+	];
+	const queryCache = useQueryCache();
+	const invalidate = () => {
+		queryCache.invalidateQueries({ key: key() });
+	};
+	return {
+		...useQuery({
+			key,
+			query: async () => {
+				const result = await fetchApi<TPath, TMethod, TResponse, TBody, TQuery>(
+					typeof path === "string" ? path : path(),
+					options,
+				);
+				return result.match(
+					(ok) => {
+						return ok;
+					},
+					(err) => {
+						throw err;
+					},
+				);
+			},
+			...queryOptions,
+		}),
+		key,
+		invalidate,
+	};
 }
 
 export function useApiMutation<
@@ -152,18 +165,27 @@ export function useApiMutation<
 	TMutationOptions extends Omit<
 		UseMutationOptions<Result<TResponse, ApiError>, TBody, Error, {}>,
 		"mutation"
-	>,
+	> & { invalidate?: Array<{ invalidate: () => void }> },
 >(
 	path: TPath,
 	options: Omit<Options<API[TPath][TMethod], TMethod>, "body">,
 	mutationOptions?: TMutationOptions,
 ) {
+	const onSettled = mutationOptions?.invalidate
+		? () => {
+				if (!mutationOptions.invalidate) return;
+				for (const query of mutationOptions.invalidate) {
+					query.invalidate();
+				}
+			}
+		: undefined;
 	return useMutation({
 		mutation: (data: TBody) =>
 			fetchApi<TPath, TMethod, TResponse, TBody, TQuery>(path, {
 				...options,
 				body: data,
 			} as Options<API[TPath][TMethod], TMethod>),
+		onSettled,
 		...mutationOptions,
 	});
 }

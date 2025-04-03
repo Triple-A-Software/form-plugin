@@ -3,11 +3,17 @@ use std::{
     net::{IpAddr, SocketAddr},
 };
 
-use axum::{Json, Router, extract::State, routing::get};
+use axum::{
+    Json, Router,
+    extract::{Query, State},
+    routing::get,
+};
 use model::{Email, Form, StatusResponse};
+use serde::Deserialize;
 use sqlx::PgPool;
 use tokio::net::TcpListener;
 use tower_http::{normalize_path::NormalizePathLayer, services::ServeDir};
+use ts_rs::TS;
 
 mod date;
 mod model;
@@ -26,7 +32,10 @@ async fn main() {
         .nest_service("/ui", ServeDir::new("/ui"))
         .route(
             "/api/forms",
-            get(list_forms).post(create_form).put(update_form),
+            get(list_forms)
+                .post(create_form)
+                .put(update_form)
+                .delete(delete_form),
         )
         .route("/api/emails", get(list_emails))
         .layer(NormalizePathLayer::trim_trailing_slash())
@@ -93,6 +102,23 @@ async fn update_form(
     .execute(&state.db)
     .await
     .unwrap();
+    Json(StatusResponse::success())
+}
+
+#[derive(Deserialize, TS)]
+#[ts(export, export_to = "index.ts")]
+struct DeleteFormQuery {
+    id: i32,
+}
+async fn delete_form(
+    State(state): State<AppState>,
+    Query(query): Query<DeleteFormQuery>,
+) -> Json<StatusResponse> {
+    sqlx::query(r#"delete from form where id = $1"#)
+        .bind(query.id)
+        .execute(&state.db)
+        .await
+        .unwrap();
     Json(StatusResponse::success())
 }
 

@@ -15,6 +15,10 @@ type FormsApi = {
 			response: T.StatusResponse;
 			body: T.Form;
 		};
+		DELETE: {
+			response: T.StatusResponse;
+			query: T.DeleteFormQuery;
+		};
 	};
 };
 

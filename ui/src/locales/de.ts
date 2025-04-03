@@ -8,6 +8,9 @@ export default {
 			form: "Formular erstellen",
 		},
 		save: "Speichern",
+		saveAndClose: "Speichern und Schließen",
+		no: "Nein",
+		yes: "Ja",
 	},
 	modal: {
 		edit: {
@@ -17,6 +20,14 @@ export default {
 		create: {
 			form: "Formular erstellen",
 		},
+		delete: {
+			title: "{name} löschen",
+			description:
+				"Bist du dir sicher dass du diese/s {name} löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden",
+		},
+	},
+	deleteName: {
+		form: "Formular",
 	},
 	field: {
 		label: {

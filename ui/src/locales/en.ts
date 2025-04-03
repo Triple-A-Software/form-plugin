@@ -6,6 +6,9 @@ export default {
 			form: "Create form",
 		},
 		save: "Save",
+		saveAndClose: "Save and close",
+		no: "No",
+		yes: "Yes",
 	},
 	modal: {
 		edit: {
@@ -15,6 +18,14 @@ export default {
 		create: {
 			form: "Creating form",
 		},
+		delete: {
+			title: "Delete {name}",
+			description:
+				"Are you sure you want to delete this {name}? This action cannot be undone",
+		},
+	},
+	deleteName: {
+		form: "form",
 	},
 	field: {
 		label: {
