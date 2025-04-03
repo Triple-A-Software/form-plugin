@@ -1,7 +1,6 @@
 import {
 	type UseMutationOptions,
 	type UseQueryOptions,
-	type UseQueryReturn,
 	useMutation,
 	useQuery,
 	useQueryCache,
@@ -9,6 +8,8 @@ import {
 import type { API } from "./types/api";
 import { err, ok, ResultAsync, type Result } from "neverthrow";
 import type { ApiError } from "../../../bindings";
+import { nullToUndefined, undefinedToNull } from "./utils";
+import type { NullToUndefined } from "./types/utils";
 
 type Body<T> = T extends { body: infer TBody } ? TBody : never;
 type Query<T> = T extends { query: infer TQuery } ? TQuery : never;
@@ -46,14 +47,14 @@ export async function fetchApi<
 	TPath extends keyof API,
 	TMethod extends keyof API[TPath],
 	TResponse extends ExtractResponse<API[TPath][TMethod]>,
-	TBody extends Body<API[TPath][TMethod]>,
-	TQuery extends Query<API[TPath][TMethod]>,
+	TBody extends NullToUndefined<Body<API[TPath][TMethod]>>,
+	TQuery extends NullToUndefined<Query<API[TPath][TMethod]>>,
 >(
 	path: TPath,
 	options: Options<API[TPath][TMethod], TMethod>,
 	fetchOptions?: Omit<RequestInit, "body" | "method">,
-): Promise<Result<TResponse, ApiError>> {
-	const _options = options as {
+): Promise<Result<NullToUndefined<TResponse>, ApiError>> {
+	const _options = undefinedToNull(options) as {
 		body?: TBody;
 		query?: TQuery;
 		method?: TMethod;
@@ -102,7 +103,7 @@ export async function fetchApi<
 	if (isApiError(json)) {
 		return err(json);
 	}
-	return ok(json as TResponse);
+	return ok(nullToUndefined(json as TResponse));
 }
 
 // biome-ignore lint/suspicious/noExplicitAny: because we don't know the type
@@ -114,10 +115,14 @@ export function useApiQuery<
 	TPath extends keyof API,
 	TMethod extends keyof API[TPath],
 	TResponse extends ExtractResponse<API[TPath][TMethod]>,
-	TBody extends Body<API[TPath][TMethod]>,
-	TQuery extends Query<API[TPath][TMethod]>,
+	TBody extends NullToUndefined<Body<API[TPath][TMethod]>>,
+	TQuery extends NullToUndefined<Query<API[TPath][TMethod]>>,
 	TQueryOptions extends Omit<
-		UseQueryOptions<TResponse, ApiError, TResponse>,
+		UseQueryOptions<
+			NullToUndefined<TResponse>,
+			ApiError,
+			NullToUndefined<TResponse>
+		>,
 		"query"
 	>,
 >(
@@ -160,10 +165,15 @@ export function useApiMutation<
 	TPath extends keyof API,
 	TMethod extends keyof API[TPath],
 	TResponse extends ExtractResponse<API[TPath][TMethod]>,
-	TBody extends Body<API[TPath][TMethod]>,
-	TQuery extends Query<API[TPath][TMethod]>,
+	TBody extends NullToUndefined<Body<API[TPath][TMethod]>>,
+	TQuery extends NullToUndefined<Query<API[TPath][TMethod]>>,
 	TMutationOptions extends Omit<
-		UseMutationOptions<Result<TResponse, ApiError>, TBody, Error, {}>,
+		UseMutationOptions<
+			Result<NullToUndefined<TResponse>, ApiError>,
+			TBody,
+			Error,
+			{}
+		>,
 		"mutation"
 	> & { invalidate?: Array<{ invalidate: () => void }> },
 >(

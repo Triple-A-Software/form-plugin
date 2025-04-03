@@ -11,6 +11,8 @@ export type CodeLanguage = "js" | "css" | "html" | "json";
 
 export type CodeProperty = { language: CodeLanguage, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | null, class: string, name: string, required: boolean, };
 
+export type DeleteFormQuery = { id: number, };
+
 export type Email = { id: number, subject: string, 
 /**
  * html code for the email body

@@ -5,8 +5,6 @@ import { useI18n } from "vue-i18n";
 import { fetchApi, useApiMutation, useApiQuery } from "@/utils/api";
 import clone from "just-clone";
 import type { NullToUndefined } from "@/utils/types/utils";
-import { undefinedToNull, nullToUndefined } from "@/utils/utils";
-import { useQueryCache } from "@pinia/colada";
 
 const { t } = useI18n();
 
@@ -52,8 +50,7 @@ function saveCreateForm() {
     if (!editingForm.value) {
         return;
     }
-    const body = undefinedToNull(editingForm.value);
-    saveCreateMutation.mutate(body);
+    saveCreateMutation.mutate(editingForm.value);
 }
 
 const saveEditMutation = useApiMutation(
@@ -67,8 +64,7 @@ function saveEditForm() {
     if (!editingForm.value) {
         return;
     }
-    const body = undefinedToNull(editingForm.value);
-    saveEditMutation.mutate(body);
+    saveEditMutation.mutate(editingForm.value);
 }
 
 async function deleteForm(id: number) {
@@ -88,7 +84,7 @@ const createModalOpen = ref(false);
 <template>
     <div class="flex flex-row">
         <div class="flex-1" />
-        <UModal :title="$t('modal.create.form')" fullscreen v-model="createModalOpen">
+        <UModal :title="$t('modal.create.form')" fullscreen v-model:open="createModalOpen">
             <UButton icon="i-tabler-plus" @click="create">{{ t("action.create.form") }}</UButton>
             <template #body v-if="editingForm">
                 <FormForm v-model="editingForm" />
@@ -114,13 +110,8 @@ const createModalOpen = ref(false);
             />
         </template>
         <template #actions-cell="{ row }">
-            <UModal :title="t('modal.edit.form')" fullscreen v-model="editModalOpen">
-                <UButton
-                    color="neutral"
-                    variant="ghost"
-                    icon="i-tabler-pencil"
-                    @click="editingForm = nullToUndefined(row.original)"
-                />
+            <UModal :title="t('modal.edit.form')" fullscreen v-model:open="editModalOpen">
+                <UButton color="neutral" variant="ghost" icon="i-tabler-pencil" @click="editingForm = row.original" />
                 <template #body v-if="editingForm">
                     <FormForm v-model="editingForm" />
                 </template>
