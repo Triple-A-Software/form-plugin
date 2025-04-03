@@ -28,6 +28,7 @@ const emails = useApiQuery("/api/emails", {
                         v-model="model.confirmation_email_id"
                         :items="emails.data.value"
                         value-key="id"
+                        label-key="subject"
                         :placeholder="$t('field.placeholder.confirmationEmail')"
                     />
                 </UFormField>
