@@ -4,6 +4,7 @@ export default {
 			field: "Create field",
 			option: "Create option",
 			form: "Create form",
+			email: "Create email",
 		},
 		save: "Save",
 		saveAndClose: "Save and close",
@@ -14,9 +15,11 @@ export default {
 		edit: {
 			field: "Editing field: {type}",
 			form: "Editing form",
+			email: "Editing email",
 		},
 		create: {
 			form: "Creating form",
+			email: "Creating email",
 		},
 		delete: {
 			title: "Delete {name}",
@@ -26,6 +29,7 @@ export default {
 	},
 	deleteName: {
 		form: "form",
+		email: "email",
 	},
 	field: {
 		label: {
@@ -49,6 +53,8 @@ export default {
 			sendConfirmationEmail: "Send confirmation email",
 			confirmationEmail: "Confirmation email",
 			confirmationEmailRecipientFieldName: "Recipient field name",
+			subject: "Subject",
+			content: "Content",
 		},
 		option: {
 			type: {
@@ -91,8 +97,10 @@ export default {
 		home: "Home",
 		forms: "Forms",
 		submissions: "Submissions",
+		emails: "Emails",
 	},
 	table_columns: {
 		name: "Name",
+		subject: "Subject",
 	},
 };

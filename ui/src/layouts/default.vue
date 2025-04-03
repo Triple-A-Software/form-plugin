@@ -17,6 +17,11 @@ const links = computed<NavigationMenuItem[]>(() => [
         icon: "i-tabler-forms",
     },
     {
+        label: t("pages.emails"),
+        to: "/emails",
+        icon: "i-tabler-mail",
+    },
+    {
         label: t("pages.submissions"),
         to: "/submissions",
         icon: "i-tabler-send",

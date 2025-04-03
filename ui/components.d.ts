@@ -22,6 +22,7 @@ declare module 'vue' {
     DeleteModal: typeof import('./src/components/DeleteModal.vue')['default']
     Element: typeof import('./src/components/element/Element.vue')['default']
     ElementForm: typeof import('./src/components/ElementForm.vue')['default']
+    EmailForm: typeof import('./src/components/EmailForm.vue')['default']
     FormBuilder: typeof import('./src/components/FormBuilder.vue')['default']
     FormBuilderTree: typeof import('./src/components/FormBuilderTree.vue')['default']
     FormForm: typeof import('./src/components/FormForm.vue')['default']
@@ -62,5 +63,6 @@ declare module 'vue' {
     USlideover: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Slideover.vue')['default']
     UTable: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Table.vue')['default']
     UTabs: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Tabs.vue')['default']
+    UTextarea: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Textarea.vue')['default']
   }
 }

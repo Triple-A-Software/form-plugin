@@ -27,5 +27,17 @@ type EmailsApi = {
 		GET: {
 			response: Array<T.Email>;
 		};
+		POST: {
+			response: T.StatusResponse;
+			body: T.Email;
+		};
+		PUT: {
+			response: T.StatusResponse;
+			body: T.Email;
+		};
+		DELETE: {
+			response: T.StatusResponse;
+			query: T.DeleteEmailQuery;
+		};
 	};
 };

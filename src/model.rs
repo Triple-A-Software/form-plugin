@@ -63,10 +63,10 @@ pub struct Form {
 #[derive(Deserialize, Serialize, Clone, Debug, TS, FromRow)]
 #[ts(export, export_to = "index.ts")]
 pub struct Email {
-    id: i32,
-    subject: String,
+    pub id: i32,
+    pub subject: String,
     /// html code for the email body
-    content: String,
+    pub content: String,
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug, TS)]

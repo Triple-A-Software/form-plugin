@@ -6,6 +6,7 @@ export default {
 			field: "Feld erstellen",
 			option: "Option erstellen",
 			form: "Formular erstellen",
+			email: "E-mail erstellen",
 		},
 		save: "Speichern",
 		saveAndClose: "Speichern und Schließen",
@@ -16,9 +17,11 @@ export default {
 		edit: {
 			field: "Feld bearbeiten: {type}",
 			form: "Formular bearbeiten",
+			email: "E-mail bearbeiten",
 		},
 		create: {
 			form: "Formular erstellen",
+			email: "E-mail erstellen",
 		},
 		delete: {
 			title: "{name} löschen",
@@ -28,6 +31,7 @@ export default {
 	},
 	deleteName: {
 		form: "Formular",
+		email: "E-mail",
 	},
 	field: {
 		label: {
@@ -51,6 +55,8 @@ export default {
 			sendConfirmationEmail: "Bestätigungs-Email senden",
 			confirmationEmail: "Bestätigungs-Email",
 			confirmationEmailRecipientFieldName: "Empfänger feld name",
+			subject: "Betreff",
+			content: "Inhalt",
 		},
 		option: {
 			type: {
@@ -93,8 +99,10 @@ export default {
 		home: "Home",
 		forms: "Formulare",
 		submissions: "Einsendungen",
+		emails: "E-mails",
 	},
 	table_columns: {
 		name: "Name",
+		subject: "Betreff",
 	},
 } satisfies typeof en;
