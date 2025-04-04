@@ -1,0 +1,32 @@
+<div class="inline-flex rounded-md shadow-xs {{ property.common.class }}" role="group">
+    {% for item in property.options %}
+    <button type="button" data-value="{{ item.value }}" class="px-4
+py-2
+text-sm
+font-medium
+text-gray-900
+bg-white
+border
+border-gray-200
+{%if loop.first %}
+    rounded-s-lg
+{% elif loop.last %}
+    rounded-e-lg
+{%endif%}
+hover:bg-gray-100
+hover:text-{{ property.common.color }}-700
+focus:z-10
+focus:ring-2
+focus:ring-{{ property.common.color }}-700
+focus:text-{{ property.common.color }}-700
+dark:bg-gray-800
+dark:border-gray-700
+dark:text-white
+dark:hover:text-white
+dark:hover:bg-gray-700
+dark:focus:ring-{{ property.common.color }}-500
+dark:focus:text-white">
+        {{ item.label[language] }}
+    </button>
+    {% endfor %}
+</div>

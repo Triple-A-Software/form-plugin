@@ -13,5 +13,16 @@
 			"route": "/api/emails",
 			"allowed_roles": ["admin", "developer"]
 		}
+	],
+	"helpers": [
+		{
+			"name": "render_form",
+			"route": "/helper/render_form",
+			"type": {
+				"return_value": "String",
+				"arguments": ["Number"],
+				"block": false
+			}
+		}
 	]
 }

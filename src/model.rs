@@ -1,4 +1,4 @@
-use std::collections::HashMap;
+use std::{collections::HashMap, fmt::Display};
 
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -23,19 +23,6 @@ impl StatusResponse {
 #[ts(export, export_to = "index.ts")]
 pub struct ApiError {
     error_message: String,
-}
-
-#[derive(Deserialize, Serialize, Clone, Debug, TS)]
-#[ts(export, export_to = "index.ts")]
-pub struct PropertyCommon {
-    #[ts(type = "Record<string, string>")]
-    hint: HashMap<String, String>,
-    #[ts(type = "Record<string, string>")]
-    label: HashMap<String, String>,
-    default_value: Option<Value>,
-    class: String,
-    name: String,
-    required: bool,
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug, TS)]
@@ -75,15 +62,60 @@ pub struct Email {
 pub enum Property {
     Textarea(TextareaProperty),
     Text(TextProperty),
-    Markdown(PropertyCommon),
-    Richtext(PropertyCommon),
-    Checkbox(PropertyCommon),
+    Checkbox(CheckboxProperty),
     Number(NumberProperty),
     Select(SelectProperty),
-    Code(CodeProperty),
     Range(RangeProperty),
     Buttongroup(ButtongroupProperty),
-    Button(PropertyCommon),
+    Button(ButtonProperty),
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug, TS)]
+#[ts(export, export_to = "index.ts")]
+pub struct PropertyCommon {
+    #[ts(type = "Record<string, string>")]
+    hint: HashMap<String, String>,
+    #[ts(type = "Record<string, string>")]
+    label: HashMap<String, String>,
+    default_value: Option<Value>,
+    class: String,
+    name: String,
+    required: bool,
+    color: TailwindColor,
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug, TS)]
+#[ts(export, export_to = "index.ts")]
+pub struct ButtonProperty {
+    #[serde(flatten)]
+    common: PropertyCommon,
+    r#type: ButtonType,
+    variant: Variant,
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug, TS)]
+#[ts(export, export_to = "index.ts")]
+pub enum ButtonType {
+    Button,
+    Submit,
+    Reset,
+}
+
+impl Display for ButtonType {
+    fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
+        match self {
+            ButtonType::Button => f.write_str("button"),
+            ButtonType::Submit => f.write_str("submit"),
+            ButtonType::Reset => f.write_str("reset"),
+        }
+    }
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug, TS)]
+#[ts(export, export_to = "index.ts")]
+pub struct CheckboxProperty {
+    #[serde(flatten)]
+    common: PropertyCommon,
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug, TS)]
@@ -93,6 +125,8 @@ pub struct TextareaProperty {
     common: PropertyCommon,
     max_length: Option<i32>,
     placeholder: Option<String>,
+    rows: Option<i32>,
+    columns: Option<i32>,
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug, TS)]
@@ -101,7 +135,8 @@ pub struct TextProperty {
     #[serde(flatten)]
     common: PropertyCommon,
     max: Option<i32>,
-    placeholder: Option<String>,
+    #[ts(type = "Record<string, string> | null")]
+    placeholder: Option<HashMap<String, String>>,
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug, TS)]
@@ -112,6 +147,8 @@ pub struct NumberProperty {
     min: Option<f64>,
     max: Option<f64>,
     step: Option<f64>,
+    #[ts(type = "Record<string, string> | null")]
+    placeholder: Option<HashMap<String, String>>,
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug, TS)]
@@ -150,14 +187,6 @@ pub enum SelectDataType {
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug, TS)]
-#[ts(export, export_to = "index.ts")]
-pub struct CodeProperty {
-    #[serde(flatten)]
-    common: PropertyCommon,
-    language: CodeLanguage,
-}
-
-#[derive(Deserialize, Serialize, Clone, Debug, TS)]
 #[serde(rename_all = "camelCase")]
 #[ts(export, export_to = "index.ts")]
 pub enum CodeLanguage {
@@ -175,6 +204,10 @@ pub struct RangeProperty {
     min: f64,
     max: f64,
     step: Option<f64>,
+    #[ts(type = "Record<string, string>")]
+    max_label: HashMap<String, String>,
+    #[ts(type = "Record<string, string>")]
+    min_label: HashMap<String, String>,
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug, TS)]
@@ -192,4 +225,40 @@ pub struct ButtonGroupOption {
     #[ts(type = "Record<string, string>")]
     label: HashMap<String, String>,
     value: String,
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug, TS)]
+#[serde(rename_all = "kebab-case")]
+#[ts(export, export_to = "index.ts")]
+pub enum TailwindColor {
+    Red,
+    Orange,
+    Amber,
+    Yellow,
+    Lime,
+    Green,
+    Emerald,
+    Teal,
+    Cyan,
+    Sky,
+    Blue,
+    Indigo,
+    Violet,
+    Purple,
+    Fuchsia,
+    Pink,
+    Rose,
+    Slate,
+    Gray,
+    Zinc,
+    Neutral,
+    Stone,
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug, TS)]
+#[serde(rename_all = "kebab-case")]
+#[ts(export, export_to = "index.ts")]
+pub enum Variant {
+    Solid,
+    Alternative,
 }
