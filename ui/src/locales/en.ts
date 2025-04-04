@@ -65,6 +65,7 @@ export default {
 			columns: "Columns",
 			min_label: "Min label",
 			max_label: "Max label",
+			preview: "Preview",
 		},
 		option: {
 			type: {

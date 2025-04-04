@@ -10,15 +10,15 @@ const model = defineModel<PropertySelector<"number">>({
 <template>
     <CommonElementForm v-model="model" />
     <UFormField :label="$t('field.label.min')">
-        <UInputNumber v-model="model.min" />
+        <UInputNumber v-model="model.min" class="w-full" />
     </UFormField>
     <UFormField :label="$t('field.label.max')">
-        <UInputNumber v-model="model.max" />
+        <UInputNumber v-model="model.max" class="w-full" />
     </UFormField>
     <UFormField :label="$t('field.label.step')">
-        <UInputNumber v-model="model.step" />
+        <UInputNumber v-model="model.step" class="w-full" />
     </UFormField>
     <UFormField :label="$t('field.label.placeholder')">
-        <LocalizedTextInput v-model="model.placeholder" />
+        <LocalizedTextInput v-model="model.placeholder" class="w-full" />
     </UFormField>
 </template>

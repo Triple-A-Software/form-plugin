@@ -39,22 +39,22 @@ const colorOptions = computed<ColorOption[]>(
 </script>
 <template>
     <UFormField :label="$t('field.label.label')">
-        <LocalizedTextInput v-model="model.label" />
+        <LocalizedTextInput v-model="model.label" class="w-full" />
     </UFormField>
     <UFormField :label="$t('field.label.hint')">
-        <LocalizedTextInput v-model="model.hint" />
+        <LocalizedTextInput v-model="model.hint" class="w-full" />
     </UFormField>
     <UFormField :label="$t('field.label.class')">
-        <UInput v-model="model.class" />
+        <UInput v-model="model.class" class="w-full" />
     </UFormField>
     <UFormField :label="$t('field.label.name')">
-        <UInput v-model="model.name" />
+        <UInput v-model="model.name" class="w-full" />
     </UFormField>
     <UFormField :label="$t('field.label.required')">
-        <UCheckbox v-model="model.required" />
+        <UCheckbox v-model="model.required" class="w-full" />
     </UFormField>
     <UFormField :label="$t('field.label.color')">
-        <USelect v-model="model.color" :items="colorOptions" />
+        <USelect v-model="model.color" :items="colorOptions" class="w-full" />
     </UFormField>
     <!-- TODO -->
     <!-- <UFormField :label="$t('field.label.default_value')"> -->

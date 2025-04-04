@@ -37,9 +37,9 @@ const variantOptions = computed(() => [
 <template>
     <CommonElementForm v-model="model" />
     <UFormField :label="$t('field.label.type')">
-        <USelect v-model="model.button_type" :items="buttonTypeOptions" />
+        <USelect v-model="model.button_type" :items="buttonTypeOptions" class="w-full" />
     </UFormField>
     <UFormField :label="$t('field.label.variant')">
-        <USelect v-model="model.variant" :items="variantOptions" />
+        <USelect v-model="model.variant" :items="variantOptions" class="w-full" />
     </UFormField>
 </template>

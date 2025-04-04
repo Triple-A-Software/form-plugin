@@ -16,6 +16,7 @@ const model = defineModel<PropertySelector<"buttongroup">>({
                 label: {},
                 value: '',
             }"
+            class="w-full"
         >
             <template #edit-item="{ item }">
                 <UFormField :label="$t('field.label.label')">

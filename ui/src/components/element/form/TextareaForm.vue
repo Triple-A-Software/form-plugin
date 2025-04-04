@@ -10,15 +10,15 @@ const model = defineModel<PropertySelector<"textarea">>({
 <template>
     <CommonElementForm v-model="model" />
     <UFormField :label="$t('field.label.placeholder')">
-        <LocalizedTextInput v-model="model.placeholder" />
+        <LocalizedTextInput v-model="model.placeholder" class="w-full" />
     </UFormField>
     <UFormField :label="$t('field.label.maxLength')">
-        <UInputNumber :min="0" v-model="model.max_length" />
+        <UInputNumber :min="0" v-model="model.max_length" class="w-full" />
     </UFormField>
     <UFormField :label="$t('field.label.rows')">
-        <UInputNumber :min="0" v-model="model.rows" />
+        <UInputNumber :min="0" v-model="model.rows" class="w-full" />
     </UFormField>
     <UFormField :label="$t('field.label.columns')">
-        <UInputNumber :min="0" v-model="model.columns" />
+        <UInputNumber :min="0" v-model="model.columns" class="w-full" />
     </UFormField>
 </template>

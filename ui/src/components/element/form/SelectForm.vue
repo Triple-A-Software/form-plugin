@@ -29,13 +29,13 @@ const empty = computed(() => ({
 <template>
     <CommonElementForm v-model="model" />
     <UFormField :label="$t('field.label.multiple')">
-        <UCheckbox v-model="model.multiple" />
+        <UCheckbox v-model="model.multiple" class="w-full" />
     </UFormField>
     <UFormField :label="$t('field.label.data_type')">
-        <USelect v-model="model.data_type" :items="data_type_options" />
+        <USelect v-model="model.data_type" :items="data_type_options" class="w-full" />
     </UFormField>
     <UFormField :label="$t('field.label.options')">
-        <ArrayInput v-model="model.options" :empty="empty">
+        <ArrayInput v-model="model.options" :empty="empty" class="w-full">
             <template #edit-item="{ item }">
                 <UFormField :label="$t('field.label.label')">
                     <LocalizedTextInput v-model="item.label" />

@@ -113,8 +113,10 @@ const createModalOpen = ref(false);
             <UModal :title="t('modal.edit.form')" fullscreen v-model:open="editModalOpen">
                 <UButton color="neutral" variant="ghost" icon="i-tabler-pencil" @click="editingForm = row.original" />
                 <template #body v-if="editingForm">
-                    <FormForm v-model="editingForm" />
-                    <FormPreview :form="editingForm" />
+                    <div class="space-y-4">
+                        <FormForm v-model="editingForm" />
+                        <FormPreview :form="editingForm" />
+                    </div>
                 </template>
                 <template #footer>
                     <ModalSaveButtons @save="saveEditForm()" @close="editModalOpen = false" />

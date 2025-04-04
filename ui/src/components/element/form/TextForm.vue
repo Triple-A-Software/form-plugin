@@ -40,12 +40,12 @@ const textTypeOptions = computed(
 <template>
     <CommonElementForm v-model="model" />
     <UFormField :label="$t('field.label.type')">
-        <USelect v-model="model.input_type" :items="textTypeOptions" />
+        <USelect v-model="model.input_type" :items="textTypeOptions" class="w-full" />
     </UFormField>
     <UFormField :label="$t('field.label.max')">
-        <UInputNumber :min="0" v-model="model.max" />
+        <UInputNumber :min="0" v-model="model.max" class="w-full" />
     </UFormField>
     <UFormField :label="$t('field.label.placeholder')">
-        <LocalizedTextInput v-model="model.placeholder" />
+        <LocalizedTextInput v-model="model.placeholder" class="w-full" />
     </UFormField>
 </template>

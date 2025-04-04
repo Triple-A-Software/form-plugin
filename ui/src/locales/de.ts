@@ -63,6 +63,11 @@ export default {
 			content: "Inhalt",
 			color: "Farbe",
 			variant: "Variante",
+			rows: "Zeilen",
+			columns: "Spalten",
+			min_label: "Minimum label",
+			max_label: "Maximum label",
+			preview: "Vorschau",
 		},
 		option: {
 			type: {

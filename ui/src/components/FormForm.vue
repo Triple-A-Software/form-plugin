@@ -23,18 +23,20 @@ const emails = useApiQuery("/api/emails", {
                 {{ $t("field.label.sendConfirmationEmail") }}
             </UButton>
             <template #content v-if="model.send_confirmation_email && emails.data.value">
-                <UFormField :label="$t('field.label.confirmationEmail')" required>
-                    <USelect
-                        v-model="model.confirmation_email_id"
-                        :items="emails.data.value"
-                        value-key="id"
-                        label-key="subject"
-                        :placeholder="$t('field.placeholder.confirmationEmail')"
-                    />
-                </UFormField>
-                <UFormField :label="$t('field.label.confirmationEmailRecipientFieldName')">
-                    <UInput v-model="model.confirmation_email_recipient_field_name" />
-                </UFormField>
+                <UCard class="m-1" :ui="{ body: 'space-y-2' }">
+                    <UFormField :label="$t('field.label.confirmationEmail')" required>
+                        <USelect
+                            v-model="model.confirmation_email_id"
+                            :items="emails.data.value"
+                            value-key="id"
+                            label-key="subject"
+                            :placeholder="$t('field.placeholder.confirmationEmail')"
+                        />
+                    </UFormField>
+                    <UFormField :label="$t('field.label.confirmationEmailRecipientFieldName')">
+                        <UInput v-model="model.confirmation_email_recipient_field_name" />
+                    </UFormField>
+                </UCard>
             </template>
         </UCollapsible>
         <UFormField :label="$t('field.label.formbuilder')">

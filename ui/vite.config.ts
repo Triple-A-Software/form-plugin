@@ -17,6 +17,11 @@ export default defineConfig({
 					primary: "orange",
 					neutral: "zinc",
 				},
+				formField: {
+					slots: {
+						root: "w-full",
+					},
+				},
 			},
 		}),
 		Layouts(),
