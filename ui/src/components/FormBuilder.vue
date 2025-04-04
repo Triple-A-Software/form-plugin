@@ -12,7 +12,7 @@
                 />
             </div>
         </Draggable>
-        <UPopover overlay>
+        <UPopover overlay v-model:open="elementSelectorOpen">
             <UButton variant="ghost" icon="i-tabler-plus">
                 {{ t("action.create.field") }}
             </UButton>
@@ -22,7 +22,10 @@
                         v-for="element in builderItems"
                         :element="element"
                         fallback-icon="i-tabler-code"
-                        @click="addElementToForm($event.type)"
+                        @click="
+                            addElementToForm($event.type);
+                            elementSelectorOpen = false;
+                        "
                     />
                 </div>
             </template>
@@ -33,7 +36,7 @@
             :title="t('modal.edit.field', { type: t(`builder.item.label.${model[currentlySelectedElement].type}`) })"
         >
             <template #body>
-                <div class="space-y-4">
+                <div class="flex flex-col gap-4">
                     <ElementForm v-model="model[currentlySelectedElement]" />
                 </div>
             </template>
@@ -50,6 +53,7 @@ import { createElement } from "@/utils";
 import type { NullToUndefined } from "@/utils/types/utils";
 
 const elementEditOpen = ref(false);
+const elementSelectorOpen = ref(false);
 
 const { t } = useI18n();
 

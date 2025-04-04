@@ -139,6 +139,18 @@ pub struct TextProperty {
     max: Option<i32>,
     #[ts(type = "Record<string, string>")]
     placeholder: HashMap<String, String>,
+    input_type: TextInputType,
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug, TS)]
+#[serde(rename_all = "kebab-case")]
+#[ts(export, export_to = "index.ts")]
+pub enum TextInputType {
+    Text,
+    Email,
+    Password,
+    Color,
+    Tel,
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug, TS)]

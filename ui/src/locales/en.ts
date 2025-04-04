@@ -1,4 +1,8 @@
 export default {
+	hint: {
+		preview:
+			"This is just a rough preview, it is not exactly how the form will be rendered on your page.",
+	},
 	action: {
 		create: {
 			field: "Create field",
@@ -55,6 +59,12 @@ export default {
 			confirmationEmailRecipientFieldName: "Recipient field name",
 			subject: "Subject",
 			content: "Content",
+			color: "Color",
+			variant: "Variant",
+			rows: "Rows",
+			columns: "Columns",
+			min_label: "Min label",
+			max_label: "Max label",
 		},
 		option: {
 			type: {
@@ -70,6 +80,10 @@ export default {
 			data_type: {
 				string: "String",
 				number: "Number",
+			},
+			variant: {
+				solid: "Solid",
+				alternative: "Alternative",
 			},
 		},
 		placeholder: {

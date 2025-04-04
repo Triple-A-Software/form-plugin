@@ -13,5 +13,7 @@ const rendered = useApiQuery("/api/forms/preview", { method: "POST", body: () =>
 watch(props.form, () => rendered.refetch());
 </script>
 <template>
-    <iframe :srcdoc="rendered.data.value?.html" frameborder="0"></iframe>
+    <UFormField :help="$t('hint.preview')">
+        <iframe class="w-full rounded-lg" :srcdoc="rendered.data.value?.html" frameborder="0"></iframe>
+    </UFormField>
 </template>

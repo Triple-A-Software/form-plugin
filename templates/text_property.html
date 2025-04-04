@@ -3,9 +3,9 @@
         {{ property.label[language] }}
         {% if property.required %} <span>*</span> {% endif %}
     </label>
-    <input type="{{ property.type }}" {% if property.max %} max="{{ property.max }}" {%endif%}
+    <input type="{{ property.input_type }}" {% if property.max %} max="{{ property.max }}" {%endif%}
         id="{{ property.name }}"
-        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg focus:ring-{{ property.color }}-500 focus:border-{{ property.color }}-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-{{ property.color }}-500 dark:focus:border-{{ property.color }}-500"
+        class="bg-gray-50 border border-gray-300 text-gray-900 text-sm rounded-lg outline-none focus:ring-{{ property.color }}-500 focus:border-{{ property.color }}-500 block w-full p-2.5 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-{{ property.color }}-500 dark:focus:border-{{ property.color }}-500"
         {% if property.placeholder[language] %} placeholder="{{ property.placeholder[language] }}" {%endif%} {% if
         property.default_value %} value="{{property.default_value}}" {%endif%} {% if
         property.required %} required {%endif%} />

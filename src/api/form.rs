@@ -1,5 +1,3 @@
-use std::io::BufWriter;
-
 use axum::{
     Json, Router,
     extract::{Query, State},
@@ -13,7 +11,7 @@ use ts_rs::TS;
 use crate::{
     AppState,
     model::{Form, StatusResponse},
-    render::{Render, Renderer},
+    render::render_form,
 };
 
 pub fn form_router() -> Router<AppState> {
@@ -29,15 +27,9 @@ pub fn form_router() -> Router<AppState> {
 }
 
 async fn preview_form(State(state): State<AppState>, Json(form): Json<Form>) -> impl IntoResponse {
-    let renderer = Renderer::new("en", state.tera);
-    let mut output = BufWriter::new(Vec::new());
-    for prop in form.props.iter() {
-        prop.render(&renderer, &mut output);
-    }
-    let rendered = String::from_utf8(output.into_inner().unwrap()).ok();
-    let rendered = rendered.map(|rendered| {
-        format!(
-            r#"
+    let rendered = render_form(state, "en", form);
+    let rendered = format!(
+        r#"
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -53,8 +45,7 @@ async fn preview_form(State(state): State<AppState>, Json(form): Json<Form>) -> 
     {rendered}
 </body>
 </html>"#
-        )
-    });
+    );
     Json(json!({
         "html": rendered
     }))

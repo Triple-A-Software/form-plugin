@@ -7,7 +7,7 @@ use std::{
 use api::{email::email_router, form::form_router};
 use axum::{Json, Router, extract::State, response::IntoResponse, routing::post};
 use model::Form;
-use render::{Render, Renderer};
+use render::{Render, Renderer, render_form};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use sqlx::PgPool;
@@ -81,17 +81,12 @@ async fn render_form_helper(
 ) -> impl IntoResponse {
     if let Some(Value::Number(id)) = body.args.first() {
         if let Some(id) = id.as_i64() {
-            let renderer = Renderer::new("en", state.tera);
             let form: Form = sqlx::query_as(r#"select * from form where id = $1"#)
-                .bind(id as i32)
+                .bind(id)
                 .fetch_one(&state.db)
                 .await
                 .unwrap();
-            let mut output = BufWriter::new(Vec::new());
-            for prop in form.props.iter() {
-                prop.render(&renderer, &mut output);
-            }
-            let rendered = String::from_utf8(output.into_inner().unwrap()).unwrap();
+            let rendered = render_form(state, "en", form);
             Json(ServicePluginApiResponse::Data(Value::String(rendered)))
         } else {
             Json(ServicePluginApiResponse::Error(

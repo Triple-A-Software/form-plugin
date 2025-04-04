@@ -1,6 +1,10 @@
 import type en from "./en";
 
 export default {
+	hint: {
+		preview:
+			"Das ist nur eine grobe Vorschau, das eingebundene Formular auf deiner Seite wird wahrscheinlich etwas unterschiedlich aussehen.",
+	},
 	action: {
 		create: {
 			field: "Feld erstellen",
@@ -57,6 +61,8 @@ export default {
 			confirmationEmailRecipientFieldName: "Empfänger feld name",
 			subject: "Betreff",
 			content: "Inhalt",
+			color: "Farbe",
+			variant: "Variante",
 		},
 		option: {
 			type: {
@@ -72,6 +78,10 @@ export default {
 			data_type: {
 				string: "String",
 				number: "Zahl",
+			},
+			variant: {
+				solid: "Ausgefüllt",
+				alternative: "Alternativ",
 			},
 		},
 		placeholder: {

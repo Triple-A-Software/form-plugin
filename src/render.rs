@@ -1,12 +1,24 @@
-use std::io::Write;
+use std::io::{BufWriter, Write};
 
 use serde::Serialize;
 use tera::Tera;
 
-use crate::model::{
-    ButtonProperty, ButtongroupProperty, CheckboxProperty, NumberProperty, Property, RangeProperty,
-    SelectProperty, TextProperty, TextareaProperty,
+use crate::{
+    AppState,
+    model::{
+        ButtonProperty, ButtongroupProperty, CheckboxProperty, Form, NumberProperty, Property,
+        RangeProperty, SelectProperty, TextProperty, TextareaProperty,
+    },
 };
+
+pub fn render_form(state: AppState, language: impl Into<String>, form: Form) -> String {
+    let renderer = Renderer::new(language, state.tera);
+    let mut output = BufWriter::new(Vec::new());
+    for prop in form.props.iter() {
+        prop.render(&renderer, &mut output);
+    }
+    String::from_utf8(output.into_inner().unwrap()).unwrap()
+}
 
 pub struct Renderer {
     language: String,

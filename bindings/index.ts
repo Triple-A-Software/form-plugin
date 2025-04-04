@@ -49,7 +49,9 @@ export type Submission = { id: number, form_id: number, timestamp: string, data:
 
 export type TailwindColor = "red" | "orange" | "amber" | "yellow" | "lime" | "green" | "emerald" | "teal" | "cyan" | "sky" | "blue" | "indigo" | "violet" | "purple" | "fuchsia" | "pink" | "rose" | "slate" | "gray" | "zinc" | "neutral" | "stone";
 
-export type TextProperty = { max: number | null, placeholder: Record<string, string>, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | null, class: string, name: string, required: boolean, color: TailwindColor, };
+export type TextInputType = "text" | "email" | "password" | "color" | "tel";
+
+export type TextProperty = { max: number | null, placeholder: Record<string, string>, input_type: TextInputType, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | null, class: string, name: string, required: boolean, color: TailwindColor, };
 
 export type TextareaProperty = { max_length: number | null, placeholder: Record<string, string>, rows: number | null, columns: number | null, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | null, class: string, name: string, required: boolean, color: TailwindColor, };
 

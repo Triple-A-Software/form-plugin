@@ -23,6 +23,6 @@ function remove(index: number) {
             </div>
             <UButton color="error" variant="ghost" @click="remove(index)" icon="i-tabler-trash" />
         </div>
-        <UButton @click="create" icon="i-tabler-plus">{{ $t("action.create.option") }}</UButton>
+        <UButton @click="create" color="neutral" icon="i-tabler-plus">{{ $t("action.create.option") }}</UButton>
     </div>
 </template>
