@@ -1,24 +1,63 @@
+use std::io::BufWriter;
+
 use axum::{
     Json, Router,
     extract::{Query, State},
-    routing::get,
+    response::IntoResponse,
+    routing::{get, post},
 };
 use serde::Deserialize;
+use serde_json::json;
 use ts_rs::TS;
 
 use crate::{
     AppState,
     model::{Form, StatusResponse},
+    render::{Render, Renderer},
 };
 
 pub fn form_router() -> Router<AppState> {
-    Router::new().route(
-        "/api/forms",
-        get(list_forms)
-            .post(create_form)
-            .put(update_form)
-            .delete(delete_form),
-    )
+    Router::new()
+        .route(
+            "/api/forms",
+            get(list_forms)
+                .post(create_form)
+                .put(update_form)
+                .delete(delete_form),
+        )
+        .route("/api/forms/preview", post(preview_form))
+}
+
+async fn preview_form(State(state): State<AppState>, Json(form): Json<Form>) -> impl IntoResponse {
+    let renderer = Renderer::new("en", state.tera);
+    let mut output = BufWriter::new(Vec::new());
+    for prop in form.props.iter() {
+        prop.render(&renderer, &mut output);
+    }
+    let rendered = String::from_utf8(output.into_inner().unwrap()).ok();
+    let rendered = rendered.map(|rendered| {
+        format!(
+            r#"
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
+    <style type="text/tailwindcss">
+    @custom-variant dark (&:where(.dark, .dark *));
+    </style>
+    <title>Document</title>
+</head>
+<body>
+    {rendered}
+</body>
+</html>"#
+        )
+    });
+    Json(json!({
+        "html": rendered
+    }))
 }
 
 async fn create_form(

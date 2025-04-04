@@ -10,16 +10,21 @@ import { err, ok, ResultAsync, type Result } from "neverthrow";
 import type { ApiError } from "../../../bindings";
 import { nullToUndefined, undefinedToNull } from "./utils";
 import type { NullToUndefined } from "./types/utils";
+import { toValue, type MaybeRefOrGetter } from "vue";
 
 type Body<T> = T extends { body: infer TBody } ? TBody : never;
 type Query<T> = T extends { query: infer TQuery } ? TQuery : never;
 type Options<T, TMethod> = T extends { body: infer TBody; query: infer TQuery }
-	? { body: TBody; query: TQuery; method: TMethod }
+	? {
+			body: MaybeRefOrGetter<TBody>;
+			query: MaybeRefOrGetter<TQuery>;
+			method: MaybeRefOrGetter<TMethod>;
+		}
 	: T extends { body: infer TBody }
-		? { body: TBody; method: TMethod }
+		? { body: MaybeRefOrGetter<TBody>; method: MaybeRefOrGetter<TMethod> }
 		: T extends { query: infer TQuery }
-			? { query: TQuery; method: TMethod }
-			: { method: TMethod };
+			? { query: MaybeRefOrGetter<TQuery>; method: MaybeRefOrGetter<TMethod> }
+			: { method: MaybeRefOrGetter<TMethod> };
 type ExtractResponse<T> = Extract<T, { response: unknown }>["response"];
 
 export const safeFetch = ResultAsync.fromThrowable(fetch, (error) => {
@@ -54,11 +59,15 @@ export async function fetchApi<
 	options: Options<API[TPath][TMethod], TMethod>,
 	fetchOptions?: Omit<RequestInit, "body" | "method">,
 ): Promise<Result<NullToUndefined<TResponse>, ApiError>> {
-	const _options = undefinedToNull(options) as {
+	const _options = undefinedToNull({
+		body: "body" in options ? toValue(options.body) : undefined,
+		query: "query" in options ? toValue(options.query) : undefined,
+		method: toValue(options.method),
+	} as {
 		body?: TBody;
 		query?: TQuery;
 		method?: TMethod;
-	};
+	});
 	const query = new URLSearchParams();
 	for (const [key, value] of Object.entries(_options.query ?? {})) {
 		if (Array.isArray(value)) {

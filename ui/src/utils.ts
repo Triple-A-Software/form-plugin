@@ -1,76 +1,145 @@
 import type { Property } from "../../bindings";
 import type { NullToUndefined } from "./utils/types/utils";
 
-export function createElement<
-	TType extends Property["type"],
-	TOutput extends NullToUndefined<Extract<Property, { type: TType }>>,
->(type: TType): TOutput {
-	switch (type) {
-		case "richtext":
-		case "number":
-		case "markdown":
-		case "textarea":
-		case "text":
-		case "checkbox":
-			return {
-				type,
-				class: "",
-				label: {},
-				hint: {},
-				required: false,
-				name: "",
-			} as TOutput;
-		case "buttongroup":
-			return {
-				type,
-				class: "",
-				label: {},
-				hint: {},
-				required: false,
-				name: "",
-				options: [],
-			} as unknown as TOutput;
-		case "select":
-			return {
-				type: "select",
-				class: "",
-				label: {},
-				hint: {},
-				required: false,
-				name: "",
-				data_type: "string",
-				options: [],
-			} as unknown as TOutput;
-		case "range":
-			return {
-				type,
-				class: "",
-				label: {},
-				hint: {},
-				required: false,
-				name: "",
-				min: 0,
-				max: 100,
-			} as TOutput;
-		case "code":
-			return {
-				type,
-				class: "",
-				label: {},
-				hint: {},
-				required: false,
-				name: "",
-				language: "html",
-			} as TOutput;
-		default:
-			// this is just the PropertyCommon
-			return {
-				type,
-				class: "",
-				label: {},
-				hint: {},
-				required: false,
-				name: "",
-			} as TOutput;
-	}
+export type PropertyType = Property["type"];
+export type PropertySelector<TType extends PropertyType> = NullToUndefined<
+	Extract<Property, { type: TType }>
+>;
+
+export function createElement(
+	type: PropertyType,
+): NullToUndefined<Property> | undefined {
+	if (type === "button") return createButton();
+	else if (type === "number") return createNumber();
+	else if (type === "textarea") return createTextarea();
+	else if (type === "text") return createText();
+	else if (type === "checkbox") return createCheckbox();
+	else if (type === "buttongroup") return createButtongroup();
+	else if (type === "select") return createSelect();
+	else if (type === "range") return createRange();
+}
+
+export function createButton(): PropertySelector<"button"> {
+	return {
+		type: "button",
+		class: "",
+		label: {},
+		hint: {},
+		required: false,
+		name: "",
+		button_type: "button",
+		variant: "solid",
+		default_value: null,
+		color: "neutral",
+	};
+}
+
+export function createNumber(): PropertySelector<"number"> {
+	return {
+		type: "number",
+		class: "",
+		label: {},
+		hint: {},
+		required: false,
+		name: "",
+		min: undefined,
+		max: undefined,
+		step: undefined,
+		placeholder: {},
+		default_value: undefined,
+		color: "neutral",
+	};
+}
+
+export function createTextarea(): PropertySelector<"textarea"> {
+	return {
+		type: "textarea",
+		class: "",
+		label: {},
+		hint: {},
+		required: false,
+		name: "",
+		max_length: undefined,
+		placeholder: {},
+		rows: undefined,
+		columns: undefined,
+		default_value: undefined,
+		color: "neutral",
+	};
+}
+
+export function createText(): PropertySelector<"text"> {
+	return {
+		type: "text",
+		class: "",
+		label: {},
+		hint: {},
+		required: false,
+		name: "",
+		max: undefined,
+		default_value: undefined,
+		color: "neutral",
+		placeholder: {},
+	};
+}
+
+export function createCheckbox(): PropertySelector<"checkbox"> {
+	return {
+		type: "checkbox",
+		class: "",
+		label: {},
+		hint: {},
+		required: false,
+		name: "",
+		default_value: undefined,
+		color: "neutral",
+	};
+}
+
+export function createButtongroup(): PropertySelector<"buttongroup"> {
+	return {
+		type: "buttongroup",
+		class: "",
+		label: {},
+		hint: {},
+		required: false,
+		name: "",
+		options: [],
+		default_value: undefined,
+		color: "neutral",
+	};
+}
+
+export function createSelect(): PropertySelector<"select"> {
+	return {
+		type: "select",
+		class: "",
+		label: {},
+		hint: {},
+		required: false,
+		name: "",
+		multiple: false,
+		data_type: "string",
+		options: [],
+		default_value: undefined,
+		color: "neutral",
+	};
+}
+
+export function createRange(): PropertySelector<"range"> {
+	return {
+		type: "range",
+		class: "",
+		label: {},
+		hint: {},
+		required: false,
+		name: "",
+		min: 0,
+		max: 100,
+		default_value: undefined,
+		color: "neutral",
+		max_label: {},
+		min_label: {},
+		step: undefined,
+	};
 }

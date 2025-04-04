@@ -5,17 +5,15 @@ export type ApiError = { error_message: string, };
 
 export type ButtonGroupOption = { label: Record<string, string>, value: string, };
 
-export type ButtonProperty = { type: ButtonType, variant: Variant, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | null, class: string, name: string, required: boolean, color: TailwindColor, };
+export type ButtonProperty = { button_type: ButtonType, variant: Variant, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | null, class: string, name: string, required: boolean, color: TailwindColor, };
 
-export type ButtonType = "Button" | "Submit" | "Reset";
+export type ButtonType = "button" | "submit" | "reset";
 
 export type ButtongroupProperty = { options: Array<ButtonGroupOption>, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | null, class: string, name: string, required: boolean, color: TailwindColor, };
 
 export type CheckboxProperty = { hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | null, class: string, name: string, required: boolean, color: TailwindColor, };
 
 export type CodeLanguage = "js" | "css" | "html" | "json";
-
-export type CodeProperty = { language: CodeLanguage, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | null, class: string, name: string, required: boolean, color: TailwindColor, };
 
 export type DeleteEmailQuery = { id: number, };
 
@@ -29,13 +27,13 @@ content: string, };
 
 export type Form = { id: number, name: string, send_confirmation_email: boolean, confirmation_email_id: number | null, confirmation_email_recipient_field_name: string | null, props: Array<Property>, };
 
-export type NumberProperty = { min: number | null, max: number | null, step: number | null, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | null, class: string, name: string, required: boolean, color: TailwindColor, };
+export type NumberProperty = { min: number | null, max: number | null, step: number | null, placeholder: Record<string, string>, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | null, class: string, name: string, required: boolean, color: TailwindColor, };
 
-export type Property = { "type": "textarea" } & TextareaProperty | { "type": "text" } & TextProperty | { "type": "checkbox" } & CheckboxProperty | { "type": "number" } & NumberProperty | { "type": "select" } & SelectProperty | { "type": "code" } & CodeProperty | { "type": "range" } & RangeProperty | { "type": "buttongroup" } & ButtongroupProperty | { "type": "button" } & ButtonProperty;
+export type Property = { "type": "textarea" } & TextareaProperty | { "type": "text" } & TextProperty | { "type": "checkbox" } & CheckboxProperty | { "type": "number" } & NumberProperty | { "type": "select" } & SelectProperty | { "type": "range" } & RangeProperty | { "type": "buttongroup" } & ButtongroupProperty | { "type": "button" } & ButtonProperty;
 
 export type PropertyCommon = { hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | null, class: string, name: string, required: boolean, color: TailwindColor, };
 
-export type RangeProperty = { min: number, max: number, step: number | null, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | null, class: string, name: string, required: boolean, color: TailwindColor, };
+export type RangeProperty = { min: number, max: number, step: number | null, max_label: Record<string, string>, min_label: Record<string, string>, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | null, class: string, name: string, required: boolean, color: TailwindColor, };
 
 export type SelectData = string | number;
 
@@ -49,10 +47,10 @@ export type StatusResponse = { success: boolean, };
 
 export type Submission = { id: number, form_id: number, timestamp: string, data: JsonValue, };
 
-export type TailwindColor = "green" | "gray" | "red" | "blue";
+export type TailwindColor = "red" | "orange" | "amber" | "yellow" | "lime" | "green" | "emerald" | "teal" | "cyan" | "sky" | "blue" | "indigo" | "violet" | "purple" | "fuchsia" | "pink" | "rose" | "slate" | "gray" | "zinc" | "neutral" | "stone";
 
-export type TextProperty = { max: number | null, placeholder: string | null, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | null, class: string, name: string, required: boolean, color: TailwindColor, };
+export type TextProperty = { max: number | null, placeholder: Record<string, string>, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | null, class: string, name: string, required: boolean, color: TailwindColor, };
 
-export type TextareaProperty = { max_length: number | null, placeholder: string | null, rows: number | null, columns: number | null, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | null, class: string, name: string, required: boolean, color: TailwindColor, };
+export type TextareaProperty = { max_length: number | null, placeholder: Record<string, string>, rows: number | null, columns: number | null, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | null, class: string, name: string, required: boolean, color: TailwindColor, };
 
 export type Variant = "solid" | "alternative";

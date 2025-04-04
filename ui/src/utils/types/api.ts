@@ -20,6 +20,14 @@ type FormsApi = {
 			query: T.DeleteFormQuery;
 		};
 	};
+	"/api/forms/preview": {
+		POST: {
+			response: {
+				html: string | null;
+			};
+			body: T.Form;
+		};
+	};
 };
 
 type EmailsApi = {

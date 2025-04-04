@@ -1,18 +1,10 @@
 <script setup lang="ts">
 import LocalizedTextInput from "@/components/input/LocalizedTextInput.vue";
-import type { Property } from "../../../../../bindings";
+import { createButtongroup, type PropertySelector } from "@/utils";
 
-const model = defineModel<Extract<Property, { type: "buttongroup" }>>({
+const model = defineModel<PropertySelector<"buttongroup">>({
     required: true,
-    default: {
-        type: "buttongroup",
-        required: false,
-        label: {},
-        hint: {},
-        name: "",
-        class: "",
-        options: [],
-    },
+    default: createButtongroup(),
 });
 </script>
 <template>

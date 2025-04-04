@@ -1,19 +1,12 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
-import type { Property } from "../../../../../bindings";
-import type { NullToUndefined } from "@/utils/types/utils";
+import { createText, type PropertySelector } from "@/utils";
+import LocalizedTextInput from "@/components/input/LocalizedTextInput.vue";
 
-const model = defineModel<Extract<NullToUndefined<Property>, { type: "text" }>>({
+const model = defineModel<PropertySelector<"text">>({
     required: true,
-    default: {
-        type: "text",
-        required: false,
-        label: {},
-        hint: {},
-        name: "",
-        class: "",
-    },
+    default: createText(),
 });
 
 const { t } = useI18n();
@@ -49,6 +42,6 @@ const textTypeOptions = computed(() => [
         <UInputNumber :min="0" v-model="model.max" />
     </UFormField>
     <UFormField :label="$t('field.label.placeholder')">
-        <UInput v-model="model.placeholder" />
+        <LocalizedTextInput v-model="model.placeholder" />
     </UFormField>
 </template>

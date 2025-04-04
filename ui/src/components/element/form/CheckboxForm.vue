@@ -1,16 +1,9 @@
 <script setup lang="ts">
-import type { Property } from "../../../../../bindings";
+import { createCheckbox, type PropertySelector } from "@/utils";
 
-const model = defineModel<Extract<Property, { type: "checkbox" }>>({
+const model = defineModel<PropertySelector<"checkbox">>({
     required: true,
-    default: {
-        type: "checkbox",
-        required: false,
-        label: {},
-        hint: {},
-        name: "",
-        class: "",
-    },
+    default: createCheckbox(),
 });
 </script>
 <template>

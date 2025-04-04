@@ -26,6 +26,7 @@ declare module 'vue' {
     FormBuilder: typeof import('./src/components/FormBuilder.vue')['default']
     FormBuilderTree: typeof import('./src/components/FormBuilderTree.vue')['default']
     FormForm: typeof import('./src/components/FormForm.vue')['default']
+    FormPreview: typeof import('./src/components/FormPreview.vue')['default']
     FromForm: typeof import('./src/components/input/FromForm.vue')['default']
     FromFormInput: typeof import('./src/components/input/FromFormInput.vue')['default']
     InfoPopover: typeof import('./src/components/InfoPopover.vue')['default']

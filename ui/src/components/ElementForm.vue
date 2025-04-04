@@ -11,11 +11,8 @@ const model = defineModel<NullToUndefined<Property>>({ required: true });
     <TextareaForm v-else-if="model.type === 'textarea'" v-model="model" />
     <ButtonForm v-else-if="model.type === 'button'" v-model="model" />
     <ButtongroupForm v-else-if="model.type === 'buttongroup'" v-model="model" />
-    <CodeForm v-else-if="model.type === 'code'" v-model="model" />
     <CheckboxForm v-else-if="model.type === 'checkbox'" v-model="model" />
-    <MarkdownForm v-else-if="model.type === 'markdown'" v-model="model" />
     <NumberForm v-else-if="model.type === 'number'" v-model="model" />
     <RangeForm v-else-if="model.type === 'range'" v-model="model" />
-    <RichtextForm v-else-if="model.type === 'richtext'" v-model="model" />
     <SelectForm v-else-if="model.type === 'select'" v-model="model" />
 </template>

@@ -114,6 +114,7 @@ const createModalOpen = ref(false);
                 <UButton color="neutral" variant="ghost" icon="i-tabler-pencil" @click="editingForm = row.original" />
                 <template #body v-if="editingForm">
                     <FormForm v-model="editingForm" />
+                    <FormPreview :form="editingForm" />
                 </template>
                 <template #footer>
                     <ModalSaveButtons @save="saveEditForm()" @close="editModalOpen = false" />

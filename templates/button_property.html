@@ -1,11 +1,11 @@
 {% if property.variant == "solid" %}
-<button type="{{ property.type }}" class="
+<button type="{{ property.button_type }}" class="
     focus:outline-none
-    text-whitr
-    bg-{{property.common.color}}-700
-    hover:bg-{{property.common.color}}-800
+    text-white
+    bg-{{property.color}}-700
+    hover:bg-{{property.color}}-800
     focus:ring-4
-    focus:ring-{{property.common.color}}-300
+    focus:ring-{{property.color}}-300
     font-medium
     rounded-lg
     text-sm
@@ -13,36 +13,36 @@
     py-2.5
     me-2
     mb-2
-    dark:bg-{{property.common.color}}-600
-    dark:hover:bg-{{property.common.color}}-700
-    dark:focus:ring-{{property.common.color}}-800">
-    {{ property.common.label[language] }}
+    dark:bg-{{property.color}}-600
+    dark:hover:bg-{{property.color}}-700
+    dark:focus:ring-{{property.color}}-800">
+    {{ property.label[language] }}
 </button>
 {% elif property.variant == "alternative" %}
-<button type="{{ property.type }}" class="
+<button type="{{ property.button_type }}" class="
     py-2.5
     px-5
     me-2
     mb-2
     text-sm
     font-medium
-    text-{{ property.common.color }}-900
+    text-{{ property.color }}-900
     focus:outline-none
     bg-white
     rounded-lg
     border
-    border-{{ property.common.color }}-200
-    hover:bg-{{ property.common.color }}-100
-    hover:text-{{ property.common.color }}-700
+    border-{{ property.color }}-200
+    hover:bg-{{ property.color }}-100
+    hover:text-{{ property.color }}-700
     focus:z-10
     focus:ring-4
-    focus:ring-{{ property.common.color }}-100
-    dark:focus:ring-{{ property.common.color }}-700
-    dark:bg-{{ property.common.color }}-800
-    dark:text-{{ property.common.color }}-400
-    dark:border-{{ property.common.color }}-600
+    focus:ring-{{ property.color }}-100
+    dark:focus:ring-{{ property.color }}-700
+    dark:bg-{{ property.color }}-800
+    dark:text-{{ property.color }}-400
+    dark:border-{{ property.color }}-600
     dark:hover:text-white
-    dark:hover:bg-{{ property.common.color }}-700">
-    {{ property.common.label[language] }}
+    dark:hover:bg-{{ property.color }}-700">
+    {{ property.label[language] }}
 </button>
 {% endif %}

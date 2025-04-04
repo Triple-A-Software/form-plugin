@@ -1,17 +1,10 @@
 <script setup lang="ts">
-import type { NullToUndefined } from "@/utils/types/utils";
-import type { Property } from "../../../../../bindings";
+import LocalizedTextInput from "@/components/input/LocalizedTextInput.vue";
+import { createNumber, type PropertySelector } from "@/utils";
 
-const model = defineModel<Extract<NullToUndefined<Property>, { type: "number" }>>({
+const model = defineModel<PropertySelector<"number">>({
     required: true,
-    default: {
-        type: "number",
-        required: false,
-        label: {},
-        hint: {},
-        name: "",
-        class: "",
-    },
+    default: createNumber(),
 });
 </script>
 <template>
@@ -24,5 +17,8 @@ const model = defineModel<Extract<NullToUndefined<Property>, { type: "number" }>
     </UFormField>
     <UFormField :label="$t('field.label.step')">
         <UInputNumber v-model="model.step" />
+    </UFormField>
+    <UFormField :label="$t('field.label.placeholder')">
+        <LocalizedTextInput v-model="model.placeholder" />
     </UFormField>
 </template>

@@ -1,18 +1,11 @@
 <script setup lang="ts">
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
-import type { Property } from "../../../../../bindings";
+import { createButton, type PropertySelector } from "@/utils";
 
-const model = defineModel<Extract<Property, { type: "button" }>>({
+const model = defineModel<PropertySelector<"button">>({
     required: true,
-    default: {
-        type: "button",
-        required: false,
-        label: {},
-        hint: {},
-        name: "",
-        class: "",
-    },
+    default: createButton(),
 });
 
 const { t } = useI18n();
@@ -30,10 +23,23 @@ const buttonTypeOptions = computed(() => [
         value: "reset",
     },
 ]);
+const variantOptions = computed(() => [
+    {
+        label: t("field.option.variant.solid"),
+        value: "solid",
+    },
+    {
+        label: t("field.option.variant.alternative"),
+        value: "alternative",
+    },
+]);
 </script>
 <template>
     <CommonElementForm v-model="model" />
     <UFormField :label="$t('field.label.type')">
-        <USelect v-model="model.type" :items="buttonTypeOptions" />
+        <USelect v-model="model.button_type" :items="buttonTypeOptions" />
+    </UFormField>
+    <UFormField :label="$t('field.label.variant')">
+        <USelect v-model="model.variant" :items="variantOptions" />
     </UFormField>
 </template>

@@ -89,11 +89,12 @@ pub struct PropertyCommon {
 pub struct ButtonProperty {
     #[serde(flatten)]
     common: PropertyCommon,
-    r#type: ButtonType,
+    button_type: ButtonType,
     variant: Variant,
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug, TS)]
+#[serde(rename_all = "kebab-case")]
 #[ts(export, export_to = "index.ts")]
 pub enum ButtonType {
     Button,
@@ -124,7 +125,8 @@ pub struct TextareaProperty {
     #[serde(flatten)]
     common: PropertyCommon,
     max_length: Option<i32>,
-    placeholder: Option<String>,
+    #[ts(type = "Record<string, string>")]
+    placeholder: HashMap<String, String>,
     rows: Option<i32>,
     columns: Option<i32>,
 }
@@ -135,8 +137,8 @@ pub struct TextProperty {
     #[serde(flatten)]
     common: PropertyCommon,
     max: Option<i32>,
-    #[ts(type = "Record<string, string> | null")]
-    placeholder: Option<HashMap<String, String>>,
+    #[ts(type = "Record<string, string>")]
+    placeholder: HashMap<String, String>,
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug, TS)]
@@ -147,8 +149,8 @@ pub struct NumberProperty {
     min: Option<f64>,
     max: Option<f64>,
     step: Option<f64>,
-    #[ts(type = "Record<string, string> | null")]
-    placeholder: Option<HashMap<String, String>>,
+    #[ts(type = "Record<string, string>")]
+    placeholder: HashMap<String, String>,
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug, TS)]

@@ -45,7 +45,6 @@ import { VueDraggableNext as Draggable } from "vue-draggable-next";
 import { computed, ref, watch } from "vue";
 import type { Property } from "../../../bindings";
 import { useI18n } from "vue-i18n";
-import clone from "just-clone";
 import type { Item } from "./BuilderItemSelectCard.vue";
 import { createElement } from "@/utils";
 import type { NullToUndefined } from "@/utils/types/utils";
@@ -59,7 +58,8 @@ const model = defineModel<Array<NullToUndefined<Property>>>({
 });
 
 function addElementToForm(element_type: Property["type"]) {
-    const newElement = clone(createElement(element_type));
+    const newElement = createElement(element_type);
+    if (!newElement) return;
     model.value?.push(newElement);
 }
 
@@ -78,16 +78,11 @@ const builderItems = computed<Array<Item>>(() => [
         label: t("builder.item.label.text"),
         type: "text",
     },
-    {
-        icon: "i-tabler-markdown",
-        label: t("builder.item.label.markdown"),
-        type: "markdown",
-    },
-    {
-        icon: "i-tabler-text-grammar",
-        label: t("builder.item.label.richtext"),
-        type: "richtext",
-    },
+    // {
+    //     icon: "i-tabler-text-grammar",
+    //     label: t("builder.item.label.richtext"),
+    //     type: "richtext",
+    // },
     {
         icon: "i-tabler-check",
         label: t("builder.item.label.checkbox"),
@@ -102,11 +97,6 @@ const builderItems = computed<Array<Item>>(() => [
         icon: "i-tabler-select",
         label: t("builder.item.label.select"),
         type: "select",
-    },
-    {
-        icon: "i-tabler-code",
-        label: t("builder.item.label.code"),
-        type: "code",
     },
     {
         icon: "i-tabler-number-123",

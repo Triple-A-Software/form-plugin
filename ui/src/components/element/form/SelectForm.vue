@@ -1,20 +1,11 @@
 <script setup lang="ts">
 import { computed } from "vue";
-import type { Property } from "../../../../../bindings";
 import { useI18n } from "vue-i18n";
-import type { NullToUndefined } from "@/utils/types/utils";
+import { createSelect, type PropertySelector } from "@/utils";
 
-const model = defineModel<Extract<NullToUndefined<Property>, { type: "select" }>>({
+const model = defineModel<PropertySelector<"select">>({
     required: true,
-    default: {
-        type: "select",
-        required: false,
-        label: {},
-        hint: {},
-        name: "",
-        class: "",
-        data_type: "string",
-    },
+    default: createSelect(),
 });
 
 const { t } = useI18n();

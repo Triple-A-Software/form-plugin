@@ -1,17 +1,10 @@
 <script setup lang="ts">
-import type { NullToUndefined } from "@/utils/types/utils";
-import type { Property } from "../../../../../bindings";
+import LocalizedTextInput from "@/components/input/LocalizedTextInput.vue";
+import { createRange, type PropertySelector } from "@/utils";
 
-const model = defineModel<Extract<NullToUndefined<Property>, { type: "range" }>>({
+const model = defineModel<PropertySelector<"range">>({
     required: true,
-    default: {
-        type: "range",
-        required: false,
-        label: {},
-        hint: {},
-        name: "",
-        class: "",
-    },
+    default: createRange(),
 });
 </script>
 <template>
@@ -24,5 +17,11 @@ const model = defineModel<Extract<NullToUndefined<Property>, { type: "range" }>>
     </UFormField>
     <UFormField :label="$t('field.label.step')">
         <UInputNumber v-model="model.step" />
+    </UFormField>
+    <UFormField :label="$t('field.label.min_label')">
+        <LocalizedTextInput v-model="model.min_label" />
+    </UFormField>
+    <UFormField :label="$t('field.label.max_label')">
+        <LocalizedTextInput v-model="model.max_label" />
     </UFormField>
 </template>
