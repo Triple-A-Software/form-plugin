@@ -20,9 +20,9 @@
                 <h2>{{ $t("pages.submissions.title") }}</h2>
                 <p>{{ $t("pages.submissions.description") }}</p>
             </div>
-            <UButton to="/submissions" icon="i-tabler-send" class="w-max" color="neutral">{{
-                $t("action.goto.submissions")
-            }}</UButton>
+            <UButton to="/submissions" icon="i-tabler-send" class="w-max" color="neutral">
+                {{ $t("action.goto.submissions") }}
+            </UButton>
         </UCard>
     </div>
 </template>
