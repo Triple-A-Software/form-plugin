@@ -9,6 +9,9 @@ const model = defineModel<PropertySelector<"number">>({
 </script>
 <template>
     <CommonElementForm v-model="model" />
+    <UFormField :label="$t('field.label.default_value')">
+        <UInputNumber v-model="model.default_value" class="w-full" />
+    </UFormField>
     <UFormField :label="$t('field.label.min')">
         <UInputNumber v-model="model.min" class="w-full" />
     </UFormField>

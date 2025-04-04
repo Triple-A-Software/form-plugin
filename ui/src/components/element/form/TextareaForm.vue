@@ -9,6 +9,9 @@ const model = defineModel<PropertySelector<"textarea">>({
 </script>
 <template>
     <CommonElementForm v-model="model" />
+    <UFormField :label="$t('field.label.default_value')">
+        <UInput v-model="model.default_value" class="w-full" />
+    </UFormField>
     <UFormField :label="$t('field.label.placeholder')">
         <LocalizedTextInput v-model="model.placeholder" class="w-full" />
     </UFormField>

@@ -39,6 +39,9 @@ const textTypeOptions = computed(
 </script>
 <template>
     <CommonElementForm v-model="model" />
+    <UFormField :label="$t('field.label.default_value')">
+        <UInput v-model="model.default_value" class="w-full" />
+    </UFormField>
     <UFormField :label="$t('field.label.type')">
         <USelect v-model="model.input_type" :items="textTypeOptions" class="w-full" />
     </UFormField>

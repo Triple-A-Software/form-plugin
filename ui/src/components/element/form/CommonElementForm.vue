@@ -56,8 +56,4 @@ const colorOptions = computed<ColorOption[]>(
     <UFormField :label="$t('field.label.color')">
         <USelect v-model="model.color" :items="colorOptions" class="w-full" />
     </UFormField>
-    <!-- TODO -->
-    <!-- <UFormField :label="$t('field.label.default_value')"> -->
-    <!--     <UInput v-model="model.default_value" /> -->
-    <!-- </UFormField> -->
 </template>

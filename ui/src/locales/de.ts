@@ -68,6 +68,7 @@ export default {
 			min_label: "Minimum label",
 			max_label: "Maximum label",
 			preview: "Vorschau",
+			default_value: "Standardwert",
 		},
 		option: {
 			type: {
@@ -87,6 +88,9 @@ export default {
 			variant: {
 				solid: "Ausgefüllt",
 				alternative: "Alternativ",
+			},
+			default_value: {
+				nothing: "Nichts",
 			},
 		},
 		placeholder: {

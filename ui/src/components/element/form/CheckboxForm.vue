@@ -8,4 +8,7 @@ const model = defineModel<PropertySelector<"checkbox">>({
 </script>
 <template>
     <CommonElementForm v-model="model" />
+    <UFormField :label="$t('field.label.default_value')">
+        <UCheckbox v-model="model.default_value" class="w-full" />
+    </UFormField>
 </template>

@@ -28,6 +28,9 @@ const empty = computed(() => ({
 
 <template>
     <CommonElementForm v-model="model" />
+    <UFormField :label="$t('field.label.default_value')">
+        <USelect v-model="model.default_value" :items="model.options" class="w-full" />
+    </UFormField>
     <UFormField :label="$t('field.label.multiple')">
         <UCheckbox v-model="model.multiple" class="w-full" />
     </UFormField>
