@@ -6,6 +6,11 @@ export default {
 			"Das ist nur eine grobe Vorschau, das eingebundene Formular auf deiner Seite wird wahrscheinlich etwas unterschiedlich aussehen.",
 	},
 	action: {
+		goto: {
+			forms: "Formulare verwalten",
+			emails: "Erreiche deine User",
+			submissions: "Siehe Einsendungen",
+		},
 		create: {
 			field: "Feld erstellen",
 			option: "Option erstellen",
@@ -115,10 +120,24 @@ export default {
 		},
 	},
 	pages: {
-		home: "Home",
-		forms: "Formulare",
-		submissions: "Einsendungen",
-		emails: "E-mails",
+		home: {
+			title: "Home",
+		},
+		forms: {
+			title: "Formulare",
+			description:
+				"Manage forms visitors of your website can fill out to send information to you, or sign up to anything",
+		},
+		submissions: {
+			title: "Einsendungen",
+			description:
+				"See the submissions on every one of your forms, export them to analyse them further or send emails to the submitters",
+		},
+		emails: {
+			title: "E-mails",
+			description:
+				"Manage emails, which can be sent to form submitters or a fixed email address. This way you can notify visitors when they fill out a form",
+		},
 	},
 	table_columns: {
 		name: "Name",

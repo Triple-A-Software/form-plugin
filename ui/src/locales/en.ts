@@ -4,6 +4,11 @@ export default {
 			"This is just a rough preview, it is not exactly how the form will be rendered on your page.",
 	},
 	action: {
+		goto: {
+			forms: "Manage forms",
+			emails: "Reach your users",
+			submissions: "See submissions",
+		},
 		create: {
 			field: "Create field",
 			option: "Create option",
@@ -113,10 +118,24 @@ export default {
 		},
 	},
 	pages: {
-		home: "Home",
-		forms: "Forms",
-		submissions: "Submissions",
-		emails: "Emails",
+		home: {
+			title: "Home",
+		},
+		forms: {
+			title: "Forms",
+			description:
+				"Manage forms visitors of your website can fill out to send information to you, or sign up to anything",
+		},
+		submissions: {
+			title: "Submissions",
+			description:
+				"See the submissions on every one of your forms, export them to analyse them further or send emails to the submitters",
+		},
+		emails: {
+			title: "Emails",
+			description:
+				"Manage emails, which can be sent to form submitters or a fixed email address. This way you can notify visitors when they fill out a form",
+		},
 	},
 	table_columns: {
 		name: "Name",
