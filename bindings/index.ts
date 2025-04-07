@@ -19,6 +19,8 @@ export type DeleteEmailQuery = { id: number, };
 
 export type DeleteFormQuery = { id: number, };
 
+export type DeleteSubmissionQuery = { id: number, };
+
 export type Email = { id: number, subject: string, 
 /**
  * html code for the email body

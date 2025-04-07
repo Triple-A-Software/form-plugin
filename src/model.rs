@@ -25,7 +25,7 @@ pub struct ApiError {
     error_message: String,
 }
 
-#[derive(Deserialize, Serialize, Clone, Debug, TS)]
+#[derive(Deserialize, Serialize, Clone, Debug, TS, FromRow)]
 #[ts(export, export_to = "index.ts")]
 pub struct Submission {
     id: i32,

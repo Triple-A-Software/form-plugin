@@ -3,7 +3,7 @@ use std::{
     net::{IpAddr, SocketAddr},
 };
 
-use api::{email::email_router, form::form_router};
+use api::{email::email_router, form::form_router, submission::submission_router};
 use axum::{Json, Router, extract::State, response::IntoResponse, routing::post};
 use model::Form;
 use render::render_form;
@@ -20,6 +20,7 @@ mod render;
 mod api {
     pub mod email;
     pub mod form;
+    pub mod submission;
 }
 
 #[derive(Clone)]
@@ -39,6 +40,7 @@ async fn main() {
         .nest_service("/ui", ServeDir::new("/ui"))
         .merge(form_router())
         .merge(email_router())
+        .merge(submission_router())
         .route("/helper/render_form", post(render_form_helper))
         .layer(NormalizePathLayer::trim_trailing_slash())
         .with_state(state);
