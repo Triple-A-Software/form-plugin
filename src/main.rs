@@ -1,13 +1,12 @@
 use std::{
     env,
-    io::BufWriter,
     net::{IpAddr, SocketAddr},
 };
 
 use api::{email::email_router, form::form_router};
 use axum::{Json, Router, extract::State, response::IntoResponse, routing::post};
 use model::Form;
-use render::{Render, Renderer, render_form};
+use render::render_form;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use sqlx::PgPool;
