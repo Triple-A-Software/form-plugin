@@ -11,12 +11,20 @@ use crate::{
     },
 };
 
-pub fn render_form(state: AppState, language: impl Into<String>, form: Form) -> String {
+pub fn render_form(
+    state: AppState,
+    language: impl Into<String>,
+    form: Form,
+    prefix: impl AsRef<[u8]>,
+    suffix: impl AsRef<[u8]>,
+) -> String {
     let renderer = Renderer::new(language, state.tera);
     let mut output = BufWriter::new(Vec::new());
+    output.write_all(prefix.as_ref()).unwrap();
     for prop in form.props.iter() {
         prop.render(&renderer, &mut output);
     }
+    output.write_all(suffix.as_ref()).unwrap();
     String::from_utf8(output.into_inner().unwrap()).unwrap()
 }
 

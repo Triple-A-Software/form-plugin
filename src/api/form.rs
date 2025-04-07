@@ -27,9 +27,11 @@ pub fn form_router() -> Router<AppState> {
 }
 
 async fn preview_form(State(state): State<AppState>, Json(form): Json<Form>) -> impl IntoResponse {
-    let rendered = render_form(state, "en", form);
-    let rendered = format!(
-        r#"
+    let rendered = render_form(
+        state,
+        "en",
+        form,
+        br#"
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -41,10 +43,10 @@ async fn preview_form(State(state): State<AppState>, Json(form): Json<Form>) -> 
     </style>
     <title>Document</title>
 </head>
-<body>
-    {rendered}
+<body>"#,
+        br#"
 </body>
-</html>"#
+</html>"#,
     );
     Json(json!({
         "html": rendered

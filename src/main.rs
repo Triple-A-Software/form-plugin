@@ -4,7 +4,13 @@ use std::{
 };
 
 use api::{email::email_router, form::form_router, submission::submission_router};
-use axum::{Json, Router, extract::State, response::IntoResponse, routing::post};
+use axum::{
+    Json, Router,
+    extract::{self, Query, State},
+    http::StatusCode,
+    response::{IntoResponse, Redirect},
+    routing::post,
+};
 use model::Form;
 use render::render_form;
 use serde::{Deserialize, Serialize};
@@ -13,6 +19,7 @@ use sqlx::PgPool;
 use tera::Tera;
 use tokio::net::TcpListener;
 use tower_http::{normalize_path::NormalizePathLayer, services::ServeDir};
+use url::Url;
 
 mod date;
 mod model;
@@ -42,6 +49,7 @@ async fn main() {
         .merge(email_router())
         .merge(submission_router())
         .route("/helper/render_form", post(render_form_helper))
+        .route("/form-plugin/submit", post(form_submit))
         .layer(NormalizePathLayer::trim_trailing_slash())
         .with_state(state);
 
@@ -87,7 +95,20 @@ async fn render_form_helper(
                 .fetch_one(&state.db)
                 .await
                 .unwrap();
-            let rendered = render_form(state, "en", form);
+            let mut form_action_url = Url::parse("/form-plugin/submit").unwrap();
+            let route = ""; //TODO this will be passed in from the handlebars service
+            {
+                let mut action_query = form_action_url.query_pairs_mut();
+                action_query.append_pair("id", &id.to_string());
+                action_query.append_pair("redirect", route);
+            }
+            let rendered = render_form(
+                state,
+                "en",
+                form,
+                format!(r#"<form action="{form_action_url}" method="POST">"#,),
+                "</form>",
+            );
             Json(ServicePluginApiResponse::Data(Value::String(rendered)))
         } else {
             Json(ServicePluginApiResponse::Error(
@@ -109,4 +130,27 @@ async fn create_db() -> PgPool {
         .await
         .expect("Failed to run migrations");
     db
+}
+
+#[derive(Deserialize, Debug, Clone)]
+struct FormSubmitQuery {
+    id: i32,
+    redirect: Option<String>,
+}
+async fn form_submit(
+    State(state): State<AppState>,
+    Query(query): Query<FormSubmitQuery>,
+    extract::Form(body): extract::Form<Value>,
+) -> impl IntoResponse {
+    sqlx::query(r#"insert into submission (form_id, data) value ($1, $2)"#)
+        .bind(query.id)
+        .bind(sqlx::types::Json(body))
+        .execute(&state.db)
+        .await
+        .unwrap();
+    if let Some(redirect) = query.redirect {
+        Redirect::temporary(&redirect).into_response()
+    } else {
+        StatusCode::OK.into_response()
+    }
 }

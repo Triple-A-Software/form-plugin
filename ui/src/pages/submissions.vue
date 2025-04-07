@@ -14,8 +14,8 @@ const columns = computed(() => [
         id: "expand",
     },
     {
-        accessorKey: "subject",
-        header: t("table_columns.subject"),
+        accessorKey: "form_id",
+        header: t("table_columns.form_id"),
     },
     {
         id: "actions",

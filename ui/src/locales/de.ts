@@ -142,6 +142,7 @@ export default {
 	table_columns: {
 		name: "Name",
 		subject: "Betreff",
+		form_id: "Formular ID",
 	},
 	color: {
 		red: "Rot",

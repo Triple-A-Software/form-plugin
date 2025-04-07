@@ -4,6 +4,12 @@
 	"version": "3.0.0",
 	"bin": "./main",
 	"ui": "/ui",
+	"pages": [
+		{
+			"name": "form-submit",
+			"route": "/form-plugin/submit"
+		}
+	],
 	"api": [
 		{
 			"route": "/api/forms",
@@ -11,6 +17,10 @@
 		},
 		{
 			"route": "/api/emails",
+			"allowed_roles": ["admin", "developer"]
+		},
+		{
+			"route": "/api/submissions",
 			"allowed_roles": ["admin", "developer"]
 		}
 	],

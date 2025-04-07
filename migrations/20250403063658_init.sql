@@ -18,3 +18,11 @@ create table if not exists form (
     foreign key (confirmation_email_id) references email(id)
 );
 
+create table if not exists submission (
+    id int generated always as identity,
+    form_id int not null,
+    "timestamp" timestamp not null default NOW(),
+    data jsonb not null default '{}'::jsonb,
+
+    foreign key (form_id) references form(id)
+);
