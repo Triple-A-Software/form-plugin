@@ -5,10 +5,12 @@ defineEmits<{
 }>();
 </script>
 <template>
-    <UButton color="neutral" variant="subtle" icon="i-tabler-device-floppy" @click="$emit('save')">
+    <UButton icon="i-tabler-device-floppy" @click="$emit('save')">
         {{ $t("action.save") }}
     </UButton>
     <UButton
+        color="neutral"
+        variant="subtle"
         icon="i-tabler-device-floppy"
         @click="
             $emit('save');
