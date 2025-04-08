@@ -28,6 +28,7 @@
         "src/**/*.vue",
         "auto-imports.d.ts",
         "./typed-router.d.ts",
-        "components.d.ts"
+        "components.d.ts",
+        "vite-env.d.ts"
     ]
 }

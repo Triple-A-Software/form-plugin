@@ -85,6 +85,9 @@ export async function fetchApi<
 	if (_options.query) {
 		_path += `?${query.toString()}`;
 	}
+	if (import.meta.env.MODE === "production") {
+		_path = `${__API_BASE__}${_path}`;
+	}
 	let response: Awaited<ReturnType<typeof safeFetch>> | null = null;
 	if (_options.body instanceof FormData) {
 		response = await safeFetch(_path, {

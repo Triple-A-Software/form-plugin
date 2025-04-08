@@ -9,6 +9,9 @@ import VueRouter from "unplugin-vue-router/vite";
 // https://vite.dev/config/
 export default defineConfig({
 	base: "/api/rest/plugins/form-plugin/ui",
+	define: {
+		__API_BASE__: JSON.stringify("/api/rest/plugins/form-plugin/api"),
+	},
 	plugins: [
 		VueRouter(),
 		vue(),
