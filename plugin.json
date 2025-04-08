@@ -2,7 +2,8 @@
 	"$schema": "./plugin_manifest_schema.json",
 	"name": "form-plugin",
 	"version": "3.0.0",
-	"bin": "./main",
+	"bin": "./target/debug/form-plugin",
+	"include_files": ["ui/dist/**/*", "target/debug/form-plugin"],
 	"ui": "/ui",
 	"pages": [
 		{

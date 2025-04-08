@@ -6,7 +6,7 @@ edition = "2024"
 [dependencies]
 axum = "0.8"
 tokio = { version = "1", features = ["rt-multi-thread"] }
-tower-http = { version = "0.6", features = ["normalize-path", "fs"] }
+tower-http = { version = "0.6", features = ["normalize-path", "fs", "trace"] }
 ts-rs = { version = "10", features = ["serde-json-impl", "no-serde-warnings"] }
 serde = { version = "1", features = ["derive"] }
 serde_json = "1"
@@ -14,3 +14,6 @@ chrono = { version = "0.4", features = ["serde"] }
 sqlx = { version = "0.8", features = ["postgres", "runtime-tokio", "chrono"] }
 tera = "1"
 url = "2"
+
+tracing = "0.1"
+tracing-subscriber = "0.3"

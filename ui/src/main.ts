@@ -2,7 +2,7 @@ import { createApp } from "vue";
 import "./style.css";
 import App from "./App.vue";
 import ui from "@nuxt/ui/vue-plugin";
-import { createRouter, createWebHistory } from "vue-router";
+import { createRouter, createWebHashHistory } from "vue-router";
 import { createI18n } from "vue-i18n";
 import en from "./locales/en";
 import de from "./locales/de";
@@ -12,7 +12,7 @@ import { createPinia } from "pinia";
 
 const router = createRouter({
 	routes: setupLayouts(routes),
-	history: createWebHistory(),
+	history: createWebHashHistory(),
 });
 
 const i18n = createI18n({

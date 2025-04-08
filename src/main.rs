@@ -18,7 +18,12 @@ use serde_json::Value;
 use sqlx::PgPool;
 use tera::Tera;
 use tokio::net::TcpListener;
-use tower_http::{normalize_path::NormalizePathLayer, services::ServeDir};
+use tower_http::{
+    normalize_path::NormalizePathLayer,
+    services::ServeDir,
+    trace::{self, TraceLayer},
+};
+use tracing::Level;
 use url::Url;
 
 mod date;
@@ -38,19 +43,29 @@ struct AppState {
 
 #[tokio::main]
 async fn main() {
+    tracing_subscriber::fmt()
+        .with_target(false)
+        .compact()
+        .init();
+
     let db = create_db().await;
 
     let tera = Tera::new("./templates/*.html").expect("Failed to parse template files");
 
     let state = AppState { db, tera };
     let router = Router::new()
-        .nest_service("/ui", ServeDir::new("/ui"))
+        .nest_service("/ui", ServeDir::new("ui/dist"))
         .merge(form_router())
         .merge(email_router())
         .merge(submission_router())
         .route("/helper/render_form", post(render_form_helper))
         .route("/form-plugin/submit", post(form_submit))
         .layer(NormalizePathLayer::trim_trailing_slash())
+        .layer(
+            TraceLayer::new_for_http()
+                .make_span_with(trace::DefaultMakeSpan::new().level(Level::INFO))
+                .on_response(trace::DefaultOnResponse::new().level(Level::INFO)),
+        )
         .with_state(state);
 
     let port = env::var("PORT").unwrap_or("3000".to_string());
