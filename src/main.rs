@@ -1,4 +1,5 @@
 use std::{
+    collections::HashMap,
     env,
     net::{IpAddr, SocketAddr},
 };
@@ -24,7 +25,6 @@ use tower_http::{
     trace::{self, TraceLayer},
 };
 use tracing::Level;
-use url::Url;
 
 mod date;
 mod model;
@@ -85,8 +85,20 @@ async fn main() {
 }
 
 #[derive(Deserialize)]
+#[allow(dead_code)]
 struct HelperBody {
-    args: Vec<Value>,
+    json_args: Vec<Value>,
+    page: PageRenderInput,
+    query: HashMap<String, String>,
+    params: HashMap<String, String>,
+    route: String,
+    interactive: bool,
+}
+#[derive(Deserialize)]
+#[allow(dead_code)]
+/// this can get many more fields, but we don't necessarily need those
+struct PageRenderInput {
+    language: Option<String>,
 }
 #[derive(Serialize, Debug)]
 #[serde(rename_all = "camelCase")]
@@ -103,25 +115,34 @@ async fn render_form_helper(
     State(state): State<AppState>,
     Json(body): Json<HelperBody>,
 ) -> impl IntoResponse {
-    if let Some(Value::Number(id)) = body.args.first() {
+    if let Some(Value::Number(id)) = body.json_args.first() {
         if let Some(id) = id.as_i64() {
-            let form: Form = sqlx::query_as(r#"select * from form where id = $1"#)
+            let form: Form = match sqlx::query_as(r#"select * from form where id = $1"#)
                 .bind(id)
                 .fetch_one(&state.db)
                 .await
-                .unwrap();
-            let mut form_action_url = Url::parse("/form-plugin/submit").unwrap();
-            let route = ""; //TODO this will be passed in from the handlebars service
             {
-                let mut action_query = form_action_url.query_pairs_mut();
-                action_query.append_pair("id", &id.to_string());
-                action_query.append_pair("redirect", route);
-            }
+                Ok(v) => v,
+                Err(e) => {
+                    if body.interactive {
+                        return Json(ServicePluginApiResponse::Data(Value::String(format!(
+                            "Error when loading form from database: {e}"
+                        ))));
+                    }
+                    return Json(ServicePluginApiResponse::Data(Value::String(
+                        "".to_string(),
+                    )));
+                }
+            };
+
+            let route = &body.route;
             let rendered = render_form(
                 state,
                 "en",
                 form,
-                format!(r#"<form action="{form_action_url}" method="POST">"#,),
+                format!(
+                    r#"<form action="/form-plugin/submit?id={id}&redirect={route}" method="POST">"#,
+                ),
                 "</form>",
             );
             Json(ServicePluginApiResponse::Data(Value::String(rendered)))
