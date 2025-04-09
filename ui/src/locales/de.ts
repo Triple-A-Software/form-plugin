@@ -126,23 +126,24 @@ export default {
 		forms: {
 			title: "Formulare",
 			description:
-				"Manage forms visitors of your website can fill out to send information to you, or sign up to anything",
+				"Verwalte Formulare, die Besucher deiner Webseite ausfüllen können um dir Informationen zukommen zu lassen oder einen Newsletter zu abonnieren",
 		},
 		submissions: {
 			title: "Einsendungen",
 			description:
-				"See the submissions on every one of your forms, export them to analyse them further or send emails to the submitters",
+				"Siehe Einsendungen deiner Formulare, exportiere diese um sie weiter zu analysieren oder sende E-mails an die Absender",
 		},
 		emails: {
 			title: "E-mails",
 			description:
-				"Manage emails, which can be sent to form submitters or a fixed email address. This way you can notify visitors when they fill out a form",
+				"Verwalte E-mails, die an den Absender eines Formulars oder eine feste E-mailadresse geschickt werden können. So kannst du Besucher benachrichtigen, wenn diese ein Formular auf deiner Webseite ausfüllen",
 		},
 	},
 	table_columns: {
 		name: "Name",
 		subject: "Betreff",
 		form_id: "Formular ID",
+		timestamp: "Zeitpunkt",
 	},
 	color: {
 		red: "Rot",

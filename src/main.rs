@@ -115,7 +115,9 @@ async fn render_form_helper(
     State(state): State<AppState>,
     Json(body): Json<HelperBody>,
 ) -> impl IntoResponse {
-    if let Some(Value::Number(id)) = body.json_args.first() {
+    if let Some(([Value::Number(id), Value::String(route)], _)) =
+        body.json_args.split_first_chunk::<2>()
+    {
         if let Some(id) = id.as_i64() {
             let form: Form = match sqlx::query_as(r#"select * from form where id = $1"#)
                 .bind(id)
@@ -135,10 +137,9 @@ async fn render_form_helper(
                 }
             };
 
-            let route = &body.route;
             let rendered = render_form(
                 state,
-                "en",
+                body.page.language.unwrap_or("en".to_string()),
                 form,
                 format!(
                     r#"<form action="/form-plugin/submit?id={id}&redirect={route}" method="POST">"#,
@@ -151,6 +152,10 @@ async fn render_form_helper(
                 "invalid i32 argument".to_string(),
             ))
         }
+    } else if body.interactive {
+        Json(ServicePluginApiResponse::Data(Value::String(
+            "Invalid number of arguments, wanted: render_form(int, string)".to_string(),
+        )))
     } else {
         Json(ServicePluginApiResponse::Data(Value::String(
             "".to_string(),
@@ -178,9 +183,10 @@ async fn form_submit(
     Query(query): Query<FormSubmitQuery>,
     extract::Form(body): extract::Form<Value>,
 ) -> impl IntoResponse {
-    sqlx::query(r#"insert into submission (form_id, data) value ($1, $2)"#)
+    dbg!(&body);
+    sqlx::query(r#"insert into submission (form_id, data) values ($1, $2)"#)
         .bind(query.id)
-        .bind(sqlx::types::Json(body))
+        .bind(body)
         .execute(&state.db)
         .await
         .unwrap();

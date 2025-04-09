@@ -141,6 +141,7 @@ export default {
 		name: "Name",
 		subject: "Subject",
 		form_id: "Form ID",
+		timestamp: "Timestamp",
 	},
 	color: {
 		red: "Red",

@@ -11,3 +11,7 @@ create-migration name:
 
 reset-db:
     sqlx database reset
+
+build:
+    cargo build
+    cd ui && bun vite build

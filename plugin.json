@@ -39,7 +39,7 @@
 			"route": "/helper/render_form",
 			"type": {
 				"return_value": "String",
-				"arguments": ["Number"],
+				"arguments": ["Number", "String"],
 				"block": false
 			}
 		}

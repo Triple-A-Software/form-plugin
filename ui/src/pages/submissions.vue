@@ -1,17 +1,32 @@
 <script setup lang="ts">
 import { fetchApi, useApiQuery } from "@/utils/api";
+import type { TableColumn } from "@nuxt/ui";
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
+import type { Submission } from "../../../bindings";
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 
 const submissions = useApiQuery("/api/submissions", {
     method: "GET",
 });
 
-const columns = computed(() => [
+const columns = computed<TableColumn<Submission>[]>(() => [
     {
         id: "expand",
+    },
+    {
+        accessorKey: "timestamp",
+        header: t("table_columns.timestamp"),
+        cell: ({ row }) =>
+            new Date(row.getValue("timestamp")).toLocaleString(locale.value, {
+                day: "numeric",
+                month: "short",
+                year: "numeric",
+                hour: "2-digit",
+                minute: "2-digit",
+                hour12: false,
+            }),
     },
     {
         accessorKey: "form_id",
