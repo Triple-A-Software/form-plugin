@@ -1,0 +1,38 @@
+{
+	"$schema": "../../form_schema.json",
+	"label": {
+		"de": "Formular",
+		"en": "Form"
+	},
+	"properties": [
+		{
+			"id": "redirect",
+			"type": "text",
+			"label": {
+				"en": "Redirect to after submit",
+				"de": "Weiterleiten nach Absenden zu"
+			},
+			"hint": {
+				"en": "The user will be redirected to this page after submitting the form",
+				"de": "Der Besucher wird zu dieser Seite weitergeleitet, nachdem er das Formular abgesendet hat"
+			}
+		},
+		{
+			"id": "form_id",
+			"type": "pluginData",
+			"pluginId": "form-plugin",
+			"plugin_endpoint": {
+				"list": "/api/form-select/list",
+				"byId": "/api/form-select/by-id",
+				"idKey": "id",
+				"labelKey": "label"
+			},
+			"valueKey": "id",
+			"valueType": "Number",
+			"label": {
+				"de": "Formular",
+				"en": "Form"
+			}
+		}
+	]
+}

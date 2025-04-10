@@ -24,6 +24,25 @@ pub fn form_router() -> Router<AppState> {
                 .delete(delete_form),
         )
         .route("/api/forms/preview", post(preview_form))
+        .route("/api/form-select", get(list_forms_for_select))
+}
+
+async fn list_forms_for_select(State(state): State<AppState>) -> impl IntoResponse {
+    let forms: Vec<Form> = sqlx::query_as(r#"select * from form"#)
+        .fetch_all(&state.db)
+        .await
+        .unwrap();
+    Json(
+        forms
+            .into_iter()
+            .map(|form| {
+                json!({
+                    "value": form.id,
+                    "label": form.name,
+                })
+            })
+            .collect::<Vec<_>>(),
+    )
 }
 
 async fn preview_form(State(state): State<AppState>, Json(form): Json<Form>) -> impl IntoResponse {

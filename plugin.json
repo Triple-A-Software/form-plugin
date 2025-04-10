@@ -6,8 +6,10 @@
 	"include_files": [
 		"ui/dist/**/*",
 		"target/debug/form-plugin",
-		"templates/**/*.html"
+		"templates/**/*.html",
+		"components/**/*"
 	],
+	"components": "./components",
 	"ui": "/ui",
 	"pages": [
 		{
@@ -31,6 +33,10 @@
 		{
 			"route": "/api/submissions",
 			"allowed_roles": ["admin", "developer"]
+		},
+		{
+			"route": "/api/form-select",
+			"allowed_roles": ["admin", "developer", "editor", "author"]
 		}
 	],
 	"helpers": [
