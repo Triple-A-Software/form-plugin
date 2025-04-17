@@ -26,6 +26,11 @@ const links = computed<NavigationMenuItem[]>(() => [
         to: "/submissions",
         icon: "i-tabler-send",
     },
+    {
+        label: t("pages.settings.title"),
+        to: "/settings",
+        icon: "i-tabler-settings",
+    },
 ]);
 </script>
 <template>

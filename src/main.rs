@@ -4,7 +4,10 @@ use std::{
     net::{IpAddr, SocketAddr},
 };
 
-use api::{email::email_router, form::form_router, submission::submission_router};
+use api::{
+    email::email_router, form::form_router, settings::settings_router,
+    submission::submission_router,
+};
 use axum::{
     Json, Router,
     extract::{self, Query, State},
@@ -12,7 +15,8 @@ use axum::{
     response::{IntoResponse, Redirect},
     routing::post,
 };
-use model::Form;
+use cleverreach::{Cleverreach, ReceiverRequest};
+use model::{Form, Settings};
 use render::render_form;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -26,12 +30,14 @@ use tower_http::{
 };
 use tracing::Level;
 
+mod cleverreach;
 mod date;
 mod model;
 mod render;
 mod api {
     pub mod email;
     pub mod form;
+    pub mod settings;
     pub mod submission;
 }
 
@@ -39,6 +45,7 @@ mod api {
 struct AppState {
     db: PgPool,
     tera: Tera,
+    cleverreach: Cleverreach,
 }
 
 #[tokio::main]
@@ -50,14 +57,28 @@ async fn main() {
 
     let db = create_db().await;
 
+    // this query needs the do update part, because otherwise we would need another query to fetch
+    // the settings
+    let settings: Settings = sqlx::query_as(
+        r#"insert into settings (id) values ('settings') on conflict (id) do update set id = 'settings' returning *"#,
+    )
+    .fetch_one(&db)
+    .await
+    .unwrap();
+
     let tera = Tera::new("./templates/*.html").expect("Failed to parse template files");
 
-    let state = AppState { db, tera };
+    let state = AppState {
+        db,
+        tera,
+        cleverreach: Cleverreach::new(settings.cleverreach_client_id, settings.cleverreach_secret),
+    };
     let router = Router::new()
         .nest_service("/ui", ServeDir::new("ui/dist"))
         .merge(form_router())
         .merge(email_router())
         .merge(submission_router())
+        .merge(settings_router())
         .route("/helper/render_form", post(render_form_helper))
         .route("/form-plugin/submit", post(form_submit))
         .layer(NormalizePathLayer::trim_trailing_slash())
@@ -179,20 +200,45 @@ struct FormSubmitQuery {
     redirect: Option<String>,
 }
 async fn form_submit(
-    State(state): State<AppState>,
+    State(mut state): State<AppState>,
     Query(query): Query<FormSubmitQuery>,
     extract::Form(body): extract::Form<Value>,
 ) -> impl IntoResponse {
-    dbg!(&body);
-    sqlx::query(r#"insert into submission (form_id, data) values ($1, $2)"#)
+    let form: Option<Form> = sqlx::query_as(r#"select * from form where id = $1"#)
         .bind(query.id)
-        .bind(body)
-        .execute(&state.db)
+        .fetch_optional(&state.db)
         .await
         .unwrap();
-    if let Some(redirect) = query.redirect {
-        Redirect::temporary(&redirect).into_response()
+    if let Some(form) = form {
+        if form.activate_cleverreach {
+            if let Some(group_id) = form.cleverreach_group_id {
+                // the form is used to sign up for a cleverreach newsletter
+                state
+                    .cleverreach
+                    .create_receiver(ReceiverRequest {
+                        group_id,
+                        email: todo!(),
+                        first_name: todo!(),
+                        last_name: todo!(),
+                        salutation: todo!(),
+                    })
+                    .await
+                    .unwrap();
+            }
+        } else {
+            sqlx::query(r#"insert into submission (form_id, data) values ($1, $2)"#)
+                .bind(query.id)
+                .bind(body)
+                .execute(&state.db)
+                .await
+                .unwrap();
+        }
+        if let Some(redirect) = query.redirect {
+            Redirect::temporary(&redirect).into_response()
+        } else {
+            StatusCode::OK.into_response()
+        }
     } else {
-        StatusCode::OK.into_response()
+        StatusCode::NOT_FOUND.into_response()
     }
 }

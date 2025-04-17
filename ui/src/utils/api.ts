@@ -25,6 +25,12 @@ type Options<T, TMethod> = T extends { body: infer TBody; query: infer TQuery }
 		: T extends { query: infer TQuery }
 			? { query: MaybeRefOrGetter<TQuery>; method: MaybeRefOrGetter<TMethod> }
 			: { method: MaybeRefOrGetter<TMethod> };
+type MutationOptions<T, TMethod> = T extends { query: infer TQuery }
+	? {
+			query: MaybeRefOrGetter<TQuery>;
+			method: MaybeRefOrGetter<TMethod>;
+		}
+	: { method: MaybeRefOrGetter<TMethod> };
 type ExtractResponse<T> = Extract<T, { response: unknown }>["response"];
 
 export const safeFetch = ResultAsync.fromThrowable(fetch, (error) => {
@@ -190,7 +196,7 @@ export function useApiMutation<
 	> & { invalidate?: Array<{ invalidate: () => void }> },
 >(
 	path: TPath,
-	options: Omit<Options<API[TPath][TMethod], TMethod>, "body">,
+	options: MutationOptions<API[TPath][TMethod], TMethod>,
 	mutationOptions?: TMutationOptions,
 ) {
 	const onSettled = mutationOptions?.invalidate

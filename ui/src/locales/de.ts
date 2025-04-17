@@ -4,6 +4,9 @@ export default {
 	hint: {
 		preview:
 			"Das ist nur eine grobe Vorschau, das eingebundene Formular auf deiner Seite wird wahrscheinlich etwas unterschiedlich aussehen.",
+		cleverreachClientId: "Die Client ID für deinen Cleverreach acccount",
+		cleverreachSecret:
+			"Dieses Secret wird verwendet, um API-calls zu Cleverreach zu authentifizieren",
 	},
 	action: {
 		goto: {
@@ -74,6 +77,10 @@ export default {
 			max_label: "Maximum label",
 			preview: "Vorschau",
 			default_value: "Standardwert",
+			cleverreachClientId: "Cleverreach client ID",
+			cleverreachSecret: "Cleverreach secret",
+			cleverreachGroupId: "Cleverreach Gruppen-ID",
+			activateCleverreach: "Cleverreach Integration aktivieren",
 		},
 		option: {
 			type: {
@@ -137,6 +144,10 @@ export default {
 			title: "E-mails",
 			description:
 				"Verwalte E-mails, die an den Absender eines Formulars oder eine feste E-mailadresse geschickt werden können. So kannst du Besucher benachrichtigen, wenn diese ein Formular auf deiner Webseite ausfüllen",
+		},
+		settings: {
+			title: "Einstellungen",
+			cleverreach: "Cleverreach",
 		},
 	},
 	table_columns: {

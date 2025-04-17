@@ -1,6 +1,6 @@
 import type * as T from "../../../../bindings";
 
-export type API = FormsApi & EmailsApi & SubmissionsApi;
+export type API = FormsApi & EmailsApi & SubmissionsApi & SettingsApi;
 
 type FormsApi = {
 	"/api/forms": {
@@ -8,7 +8,7 @@ type FormsApi = {
 			response: Array<T.Form>;
 		};
 		POST: {
-			response: T.StatusResponse;
+			response: T.Form;
 			body: T.Form;
 		};
 		PUT: {
@@ -58,6 +58,18 @@ type SubmissionsApi = {
 		DELETE: {
 			response: T.StatusResponse;
 			query: T.DeleteSubmissionQuery;
+		};
+	};
+};
+
+type SettingsApi = {
+	"/api/settings": {
+		GET: {
+			response: T.Settings;
+		};
+		PUT: {
+			body: T.Settings;
+			response: T.StatusResponse;
 		};
 	};
 };

@@ -72,28 +72,25 @@ async fn preview_form(State(state): State<AppState>, Json(form): Json<Form>) -> 
     }))
 }
 
-async fn create_form(
-    State(state): State<AppState>,
-    Json(body): Json<Form>,
-) -> Json<StatusResponse> {
-    sqlx::query(
+async fn create_form(State(state): State<AppState>, Json(body): Json<Form>) -> Json<Form> {
+    let created = sqlx::query_as(
         r#"insert into form (
             name,
             send_confirmation_email,
             confirmation_email_id,
             confirmation_email_recipient_field_name,
             props
-        ) values ($1, $2, $3, $4, $5)"#,
+        ) values ($1, $2, $3, $4, $5) returning *"#,
     )
     .bind(body.name)
     .bind(body.send_confirmation_email)
     .bind(body.confirmation_email_id)
     .bind(body.confirmation_email_recipient_field_name)
     .bind(body.props)
-    .execute(&state.db)
+    .fetch_one(&state.db)
     .await
     .unwrap();
-    Json(StatusResponse::success())
+    Json(created)
 }
 
 async fn update_form(

@@ -32,6 +32,8 @@ const emptyForm: NullToUndefined<Form> = {
     send_confirmation_email: false,
     confirmation_email_id: undefined,
     confirmation_email_recipient_field_name: undefined,
+    activate_cleverreach: false,
+    cleverreach_group_id: undefined,
     name: "",
     props: [],
 };
@@ -46,11 +48,17 @@ const saveCreateMutation = useApiMutation(
         invalidate: [forms],
     },
 );
-function saveCreateForm() {
+async function saveCreateForm() {
     if (!editingForm.value) {
         return;
     }
-    saveCreateMutation.mutate(editingForm.value);
+    const result = await saveCreateMutation.mutateAsync(editingForm.value);
+    result.match(
+        (ok) => {
+            editingForm.value = ok;
+        },
+        (_) => {},
+    );
 }
 
 const saveEditMutation = useApiMutation(

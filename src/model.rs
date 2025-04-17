@@ -43,8 +43,23 @@ pub struct Form {
     pub send_confirmation_email: bool,
     pub confirmation_email_id: Option<i32>,
     pub confirmation_email_recipient_field_name: Option<String>,
+    pub activate_cleverreach: bool,
+    #[ts(as = "CleverreachFormCondition")]
+    pub cleverreach_condition: Json<CleverreachFormCondition>,
+    pub cleverreach_group_id: Option<String>,
+    pub cleverreach_email_field_name: Option<String>,
+    pub cleverreach_first_name_field_name: Option<String>,
+    pub cleverreach_last_name_field_name: Option<String>,
     #[ts(as = "Vec<Property>")]
     pub props: Json<Vec<Property>>,
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug, TS)]
+#[serde(tag = "type")]
+#[ts(export, export_to = "index.ts")]
+pub enum CleverreachFormCondition {
+    OnSubmit,
+    WhenFieldIsSet(String),
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug, TS, FromRow)]
@@ -275,4 +290,12 @@ pub enum TailwindColor {
 pub enum Variant {
     Solid,
     Alternative,
+}
+
+#[derive(Deserialize, Serialize, FromRow, Clone, Debug, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export, export_to = "index.ts")]
+pub struct Settings {
+    pub cleverreach_client_id: Option<String>,
+    pub cleverreach_secret: Option<String>,
 }

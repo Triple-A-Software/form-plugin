@@ -3,27 +3,19 @@
 	"name": "form-plugin",
 	"version": "3.0.0",
 	"bin": "./target/debug/form-plugin",
-	"include_files": [
-		"ui/dist/**/*",
-		"target/debug/form-plugin",
-		"templates/**/*.html",
-		"components/**/*"
-	],
-	"components": "./components",
+	"include_files": ["ui/dist/**/*", "target/debug/form-plugin"],
 	"ui": "/ui",
 	"pages": [
 		{
 			"name": "form-submit",
-			"route": "/form-plugin/submit"
+			"route": "/form-plugin/submit",
+			"enable_tailwind": false,
+			"allow_select_layout": false
 		}
 	],
 	"api": [
 		{
 			"route": "/api/forms",
-			"allowed_roles": ["admin", "developer"]
-		},
-		{
-			"route": "/api/forms/preview",
 			"allowed_roles": ["admin", "developer"]
 		},
 		{
@@ -35,19 +27,17 @@
 			"allowed_roles": ["admin", "developer"]
 		},
 		{
-			"route": "/api/form-select",
-			"allowed_roles": ["admin", "developer", "editor", "author"]
+			"route": "/api/settings",
+			"allowed_roles": ["admin", "developer"]
 		}
 	],
 	"helpers": [
 		{
 			"name": "render_form",
 			"route": "/helper/render_form",
-			"type": {
-				"return_value": "String",
-				"arguments": ["Number", "String"],
-				"block": false
-			}
+			"type": "inline",
+			"return_value": "String",
+			"arguments": ["Number"]
 		}
 	]
 }

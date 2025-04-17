@@ -39,6 +39,22 @@ const emails = useApiQuery("/api/emails", {
                 </UCard>
             </template>
         </UCollapsible>
+        <UCollapsible v-model:open="model.activate_cleverreach">
+            <UButton
+                color="neutral"
+                variant="ghost"
+                :icon="model.activate_cleverreach ? 'i-tabler-square-check' : 'i-tabler-square'"
+            >
+                {{ $t("field.label.activateCleverreach") }}
+            </UButton>
+            <template #content v-if="model.activate_cleverreach">
+                <UCard class="m-1" :ui="{ body: 'space-y-2' }">
+                    <UFormField :label="$t('field.label.cleverreachGroupId')">
+                        <UInput v-model="model.cleverreach_group_id" />
+                    </UFormField>
+                </UCard>
+            </template>
+        </UCollapsible>
         <UFormField :label="$t('field.label.formbuilder')">
             <FormBuilder v-model="model.props" />
         </UFormField>

@@ -8,7 +8,10 @@ import VueRouter from "unplugin-vue-router/vite";
 
 // https://vite.dev/config/
 export default defineConfig({
-	base: "/api/rest/plugins/form-plugin/ui",
+	base:
+		process.env.NODE_ENV === "production"
+			? "/api/rest/plugins/form-plugin/ui"
+			: undefined,
 	define: {
 		__API_BASE__: JSON.stringify("/api/rest/plugins/form-plugin/api"),
 	},

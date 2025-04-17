@@ -12,6 +12,8 @@ create table if not exists form (
     send_confirmation_email boolean not null default false,
     confirmation_email_id int,
     confirmation_email_recipient_field_name text,
+    activate_cleverreach boolean not null default false,
+    cleverreach_group_id int,
     props jsonb not null default '[]'::jsonb,
 
     primary key (id),
@@ -25,4 +27,10 @@ create table if not exists submission (
     data jsonb not null default '{}'::jsonb,
 
     foreign key (form_id) references form(id)
+);
+
+create table if not exists settings (
+    id text not null primary key,
+    cleverreach_client_id text,
+    cleverreach_secret text
 );

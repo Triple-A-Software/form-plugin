@@ -2,6 +2,9 @@ export default {
 	hint: {
 		preview:
 			"This is just a rough preview, it is not exactly how the form will be rendered on your page.",
+		cleverreachClientId: "This is the client id for your cleverreach account",
+		cleverreachSecret:
+			"This secret is used to authenticate api calls to cleverreach",
 	},
 	action: {
 		goto: {
@@ -72,6 +75,10 @@ export default {
 			max_label: "Max label",
 			preview: "Preview",
 			default_value: "Default value",
+			cleverreachClientId: "Cleverreach client ID",
+			cleverreachSecret: "Cleverreach secret",
+			cleverreachGroupId: "Cleverreach group ID",
+			activateCleverreach: "Activate Cleverreach integration",
 		},
 		option: {
 			type: {
@@ -135,6 +142,10 @@ export default {
 			title: "Emails",
 			description:
 				"Manage emails, which can be sent to form submitters or a fixed email address. This way you can notify visitors when they fill out a form",
+		},
+		settings: {
+			title: "Settings",
+			cleverreach: "Cleverreach",
 		},
 	},
 	table_columns: {
