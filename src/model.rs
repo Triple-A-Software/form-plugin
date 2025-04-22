@@ -50,6 +50,7 @@ pub struct Form {
     pub cleverreach_email_field_name: Option<String>,
     pub cleverreach_first_name_field_name: Option<String>,
     pub cleverreach_last_name_field_name: Option<String>,
+    pub cleverreach_salutation: Option<String>,
     #[ts(as = "Vec<Property>")]
     pub props: Json<Vec<Property>>,
 }

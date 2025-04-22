@@ -29,7 +29,7 @@ export type Email = { id: number, subject: string,
  */
 content: string, };
 
-export type Form = { id: number, name: string, send_confirmation_email: boolean, confirmation_email_id: number | null, confirmation_email_recipient_field_name: string | null, activate_cleverreach: boolean, cleverreach_condition: CleverreachFormCondition, cleverreach_group_id: string | null, cleverreach_email_field_name: string | null, cleverreach_first_name_field_name: string | null, cleverreach_last_name_field_name: string | null, props: Array<Property>, };
+export type Form = { id: number, name: string, send_confirmation_email: boolean, confirmation_email_id: number | null, confirmation_email_recipient_field_name: string | null, activate_cleverreach: boolean, cleverreach_condition: CleverreachFormCondition, cleverreach_group_id: string | null, cleverreach_email_field_name: string | null, cleverreach_first_name_field_name: string | null, cleverreach_last_name_field_name: string | null, cleverreach_salutation: string | null, props: Array<Property>, };
 
 export type NumberProperty = { min: number | null, max: number | null, step: number | null, placeholder: Record<string, string>, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | null, class: string, name: string, required: boolean, color: TailwindColor, };
 

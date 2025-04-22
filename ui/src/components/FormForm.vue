@@ -49,8 +49,20 @@ const emails = useApiQuery("/api/emails", {
             </UButton>
             <template #content v-if="model.activate_cleverreach">
                 <UCard class="m-1" :ui="{ body: 'space-y-2' }">
-                    <UFormField :label="$t('field.label.cleverreachGroupId')">
+                    <UFormField :label="$t('field.label.cleverreachGroupId')" required>
                         <UInput v-model="model.cleverreach_group_id" />
+                    </UFormField>
+                    <UFormField :label="$t('field.label.cleverreachEmailField')" required>
+                        <UInput v-model="model.cleverreach_email_field_name" />
+                    </UFormField>
+                    <UFormField :label="$t('field.label.cleverreachFirstNameField')">
+                        <UInput v-model="model.cleverreach_first_name_field_name" />
+                    </UFormField>
+                    <UFormField :label="$t('field.label.cleverreachLastNameField')">
+                        <UInput v-model="model.cleverreach_last_name_field_name" />
+                    </UFormField>
+                    <UFormField :label="$t('field.label.cleverreachSalutation')" required>
+                        <UInput v-model="model.cleverreach_salutation" />
                     </UFormField>
                 </UCard>
             </template>

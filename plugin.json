@@ -2,19 +2,29 @@
 	"$schema": "./plugin_manifest_schema.json",
 	"name": "form-plugin",
 	"version": "3.0.0",
-	"bin": "./main",
-	"include_files": ["ui/dist/**/*", "target/"],
+	"bin": "./target/debug/form-plugin",
+	"include_files": ["ui/dist/**/*", "target/debug/form-plugin"],
 	"ui": "/ui",
 	"pages": [
 		{
 			"name": "form-submit",
-			"route": "/form-plugin/submit"
+			"route": "/form-plugin/submit",
+			"enable_tailwind": false,
+			"allow_select_layout": false
 		}
 	],
 	"api": [
 		{
 			"route": "/api/forms",
 			"allowed_roles": ["admin", "developer"]
+		},
+		{
+			"route": "/api/forms/preview",
+			"allowed_roles": ["admin", "developer"]
+		},
+		{
+			"route": "/api/form-select",
+			"allowed_roles": ["admin", "developer", "editor", "author"]
 		},
 		{
 			"route": "/api/emails",

@@ -211,19 +211,27 @@ async fn form_submit(
         .unwrap();
     if let Some(form) = form {
         if form.activate_cleverreach {
-            if let Some(group_id) = form.cleverreach_group_id {
-                // the form is used to sign up for a cleverreach newsletter
-                state
-                    .cleverreach
-                    .create_receiver(ReceiverRequest {
-                        group_id,
-                        email: todo!(),
-                        first_name: todo!(),
-                        last_name: todo!(),
-                        salutation: todo!(),
-                    })
-                    .await
-                    .unwrap();
+            let first_name =
+                extract_field_as_string(&body, form.cleverreach_first_name_field_name.as_deref());
+            let last_name =
+                extract_field_as_string(&body, form.cleverreach_last_name_field_name.as_deref());
+            let email =
+                extract_field_as_string(&body, form.cleverreach_email_field_name.as_deref());
+            if let Some(email) = email {
+                if let Some(group_id) = form.cleverreach_group_id {
+                    // the form is used to sign up for a cleverreach newsletter
+                    state
+                        .cleverreach
+                        .create_receiver(ReceiverRequest {
+                            group_id,
+                            email,
+                            first_name,
+                            last_name,
+                            salutation: form.cleverreach_salutation.unwrap_or_default(),
+                        })
+                        .await
+                        .unwrap();
+                }
             }
         } else {
             sqlx::query(r#"insert into submission (form_id, data) values ($1, $2)"#)
@@ -240,5 +248,20 @@ async fn form_submit(
         }
     } else {
         StatusCode::NOT_FOUND.into_response()
+    }
+}
+
+fn extract_field_as_string(data: &Value, field_name: Option<&str>) -> Option<String> {
+    if let Some(field_name) = field_name {
+        Some(data.get(field_name).map(|v| {
+            if let Value::String(v) = v {
+                v.to_string()
+            } else {
+                v.to_string()
+            }
+        }))
+        .flatten()
+    } else {
+        None
     }
 }
