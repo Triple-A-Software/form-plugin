@@ -2,15 +2,13 @@
 	"$schema": "./plugin_manifest_schema.json",
 	"name": "form-plugin",
 	"version": "3.0.0",
-	"bin": "./target/debug/form-plugin",
-	"include_files": ["ui/dist/**/*", "target/debug/form-plugin"],
+	"bin": "./main",
+	"include_files": ["ui/dist/**/*", "target/"],
 	"ui": "/ui",
 	"pages": [
 		{
 			"name": "form-submit",
-			"route": "/form-plugin/submit",
-			"enable_tailwind": false,
-			"allow_select_layout": false
+			"route": "/form-plugin/submit"
 		}
 	],
 	"api": [
@@ -37,7 +35,7 @@
 			"route": "/helper/render_form",
 			"type": "inline",
 			"return_value": "String",
-			"arguments": ["Number"]
+			"arguments": ["Number", "String"]
 		}
 	]
 }
