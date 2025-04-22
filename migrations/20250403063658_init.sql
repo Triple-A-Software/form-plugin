@@ -12,7 +12,12 @@ create table if not exists form (
     send_confirmation_email boolean not null default false,
     confirmation_email_id int,
     confirmation_email_recipient_field_name text,
+    send_submissions_as_email text,
     activate_cleverreach boolean not null default false,
+    cleverreach_email_field_name text,
+    cleverreach_firstname_field_name text,
+    cleverreach_lastname_field_name text,
+    cleverreach_salutation text,
     cleverreach_group_id int,
     props jsonb not null default '[]'::jsonb,
 

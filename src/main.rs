@@ -16,7 +16,7 @@ use axum::{
     routing::post,
 };
 use cleverreach::{Cleverreach, ReceiverRequest};
-use model::{Form, Settings};
+use model::{Email, Form, Settings};
 use render::render_form;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -212,9 +212,9 @@ async fn form_submit(
     if let Some(form) = form {
         if form.activate_cleverreach {
             let first_name =
-                extract_field_as_string(&body, form.cleverreach_first_name_field_name.as_deref());
+                extract_field_as_string(&body, form.cleverreach_firstname_field_name.as_deref());
             let last_name =
-                extract_field_as_string(&body, form.cleverreach_last_name_field_name.as_deref());
+                extract_field_as_string(&body, form.cleverreach_lastname_field_name.as_deref());
             let email =
                 extract_field_as_string(&body, form.cleverreach_email_field_name.as_deref());
             if let Some(email) = email {
@@ -234,6 +234,24 @@ async fn form_submit(
                 }
             }
         } else {
+            if form.send_submission_as_email_enabled {
+                if let (Some(submission_receiver_email), Some(submissions_email_id)) =
+                    (&form.send_submission_as_email, &form.submissions_email_id)
+                {
+                    let email: Email = sqlx::query_as(r#"select * from email where id = $1"#)
+                        .bind(submissions_email_id)
+                        .fetch_one(&state.db)
+                        .await
+                        .unwrap();
+                    let mut context = tera::Context::new();
+                    context.insert("form", &form);
+                    context.insert("submission", &body);
+                    email
+                        .send(submission_receiver_email, context)
+                        .await
+                        .unwrap();
+                }
+            }
             sqlx::query(r#"insert into submission (form_id, data) values ($1, $2)"#)
                 .bind(query.id)
                 .bind(body)

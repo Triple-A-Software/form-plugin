@@ -1,8 +1,9 @@
-use std::{collections::HashMap, fmt::Display};
+use std::{collections::HashMap, env, fmt::Display};
 
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use sqlx::{prelude::*, types::Json};
+use tera::Context;
 use ts_rs::TS;
 
 use crate::date::JavascriptDate;
@@ -43,13 +44,16 @@ pub struct Form {
     pub send_confirmation_email: bool,
     pub confirmation_email_id: Option<i32>,
     pub confirmation_email_recipient_field_name: Option<String>,
+    pub send_submission_as_email_enabled: bool,
+    pub send_submission_as_email: Option<String>,
+    pub submissions_email_id: Option<i32>,
     pub activate_cleverreach: bool,
     #[ts(as = "CleverreachFormCondition")]
     pub cleverreach_condition: Json<CleverreachFormCondition>,
     pub cleverreach_group_id: Option<String>,
     pub cleverreach_email_field_name: Option<String>,
-    pub cleverreach_first_name_field_name: Option<String>,
-    pub cleverreach_last_name_field_name: Option<String>,
+    pub cleverreach_firstname_field_name: Option<String>,
+    pub cleverreach_lastname_field_name: Option<String>,
     pub cleverreach_salutation: Option<String>,
     #[ts(as = "Vec<Property>")]
     pub props: Json<Vec<Property>>,
@@ -69,6 +73,29 @@ pub struct Email {
     pub id: i32,
     pub subject: String,
     /// html code for the email body
+    pub content: String,
+}
+
+impl Email {
+    pub async fn send(&self, receiver: &str, render_context: Context) -> anyhow::Result<()> {
+        let internal_backend_port = env::var("INTERNAL_BACKEND_PORT")?;
+        reqwest::Client::new()
+            .post(format!("localhost:{}/email/send", internal_backend_port))
+            .body(serde_json::to_string(&EmailSendRequest {
+                receiver,
+                subject: self.subject.clone(),
+                content: tera::Tera::one_off(&self.content, &render_context, true).unwrap(),
+            })?)
+            .send()
+            .await?;
+        Ok(())
+    }
+}
+
+#[derive(Serialize)]
+pub struct EmailSendRequest<'a> {
+    pub receiver: &'a str,
+    pub subject: String,
     pub content: String,
 }
 
