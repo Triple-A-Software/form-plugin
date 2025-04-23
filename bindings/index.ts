@@ -13,7 +13,7 @@ export type ButtongroupProperty = { options: Array<ButtonGroupOption>, hint: Rec
 
 export type CheckboxProperty = { hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | null, class: string, name: string, required: boolean, color: TailwindColor, };
 
-export type CleverreachFormCondition = { "type": "OnSubmit" } | { "type": "WhenFieldIsSet" } & string;
+export type CleverreachFormCondition = { "type": "OnSubmit" } | { "type": "WhenFieldIsSet", field: string, };
 
 export type CodeLanguage = "js" | "css" | "html" | "json";
 
@@ -29,7 +29,7 @@ export type Email = { id: number, subject: string,
  */
 content: string, };
 
-export type Form = { id: number, name: string, send_confirmation_email: boolean, confirmation_email_id: number | null, confirmation_email_recipient_field_name: string | null, activate_cleverreach: boolean, cleverreach_condition: CleverreachFormCondition, cleverreach_group_id: string | null, cleverreach_email_field_name: string | null, cleverreach_first_name_field_name: string | null, cleverreach_last_name_field_name: string | null, cleverreach_salutation: string | null, props: Array<Property>, };
+export type Form = { id: number, name: string, send_confirmation_email: boolean, confirmation_email_id: number | null, confirmation_email_recipient_field_name: string | null, send_submission_as_email_enabled: boolean, send_submission_as_email: string | null, submissions_email_id: number | null, activate_cleverreach: boolean, cleverreach_condition: CleverreachFormCondition | null, cleverreach_group_id: string | null, cleverreach_email_field_name: string | null, cleverreach_firstname_field_name: string | null, cleverreach_lastname_field_name: string | null, cleverreach_salutation: string | null, props: Array<Property>, };
 
 export type NumberProperty = { min: number | null, max: number | null, step: number | null, placeholder: Record<string, string>, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | null, class: string, name: string, required: boolean, color: TailwindColor, };
 

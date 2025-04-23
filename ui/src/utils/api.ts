@@ -11,6 +11,7 @@ import type { ApiError } from "../../../bindings";
 import { nullToUndefined, undefinedToNull } from "./utils";
 import type { NullToUndefined } from "./types/utils";
 import { toValue, type MaybeRefOrGetter } from "vue";
+import { useI18n } from "vue-i18n";
 
 type Body<T> = T extends { body: infer TBody } ? TBody : never;
 type Query<T> = T extends { query: infer TQuery } ? TQuery : never;
@@ -148,26 +149,43 @@ export function useApiQuery<
 	options: Options<API[TPath][TMethod], TMethod>,
 	queryOptions?: TQueryOptions,
 ) {
-	const key = () => [
-		typeof path === "string" ? `${path}:${String(options.method)}` : path(),
-	];
+	const _path = () => (typeof path === "string" ? path : path());
+	const key = () => [`${_path()}:${String(options.method)}`];
 	const queryCache = useQueryCache();
 	const invalidate = () => {
 		queryCache.invalidateQueries({ key: key() });
 	};
+	const toast = useToast();
+	const { t, te } = useI18n();
 	return {
 		...useQuery({
 			key,
 			query: async () => {
 				const result = await fetchApi<TPath, TMethod, TResponse, TBody, TQuery>(
-					typeof path === "string" ? path : path(),
+					_path(),
 					options,
 				);
 				return result.match(
 					(ok) => {
+						const tKey = `toast.success.${_path()}.${String(options.method)}`;
+						if (te(tKey)) {
+							toast.add({
+								title: t(tKey),
+								color: "success",
+								icon: "i-tabler-check",
+							});
+						}
 						return ok;
 					},
 					(err) => {
+						const tKey = `toast.error.${_path()}.${String(options.method)}`;
+						if (te(tKey)) {
+							toast.add({
+								title: t(tKey),
+								color: "error",
+								icon: "i-tabler-alert-circle",
+							});
+						}
 						throw err;
 					},
 				);
@@ -207,12 +225,41 @@ export function useApiMutation<
 				}
 			}
 		: undefined;
+	const toast = useToast();
+	const { t, te } = useI18n();
 	return useMutation({
-		mutation: (data: TBody) =>
-			fetchApi<TPath, TMethod, TResponse, TBody, TQuery>(path, {
-				...options,
-				body: data,
-			} as Options<API[TPath][TMethod], TMethod>),
+		mutation: async (data: TBody) => {
+			const response = await fetchApi<TPath, TMethod, TResponse, TBody, TQuery>(
+				path,
+				{
+					...options,
+					body: data,
+				} as Options<API[TPath][TMethod], TMethod>,
+			);
+			response.match(
+				(_) => {
+					const tKey = `toast.success.${path}.${String(options.method)}`;
+					if (te(tKey)) {
+						toast.add({
+							title: t(tKey),
+							color: "success",
+							icon: "i-tabler-check",
+						});
+					}
+				},
+				(_) => {
+					const tKey = `toast.error.${path}.${String(options.method)}`;
+					if (te(tKey)) {
+						toast.add({
+							title: t(tKey),
+							color: "error",
+							icon: "i-tabler-alert-circle",
+						});
+					}
+				},
+			);
+			return response;
+		},
 		onSettled,
 		...mutationOptions,
 	});

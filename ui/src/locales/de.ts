@@ -180,4 +180,39 @@ export default {
 		neutral: "Neutral",
 		stone: "Stein",
 	},
+	toast: {
+		success: {
+			"/api/emails": {
+				POST: "Email erfolgreich erstellt",
+				PUT: "Email erfolgreich gespeichert",
+				DELETE: "Email erfolgreich gelöscht",
+			},
+			"/api/forms": {
+				POST: "Formular erfolgreich erstellt",
+				PUT: "Formular erfolgreich gespeichert",
+				DELETE: "Formular erfolgreich gelöscht",
+			},
+			"/api/settings": {
+				PUT: "Einstellungen erfolgreich gespeichert",
+			},
+		},
+		error: {
+			"/api/emails": {
+				GET: "Emails konnten nicht geladen werden",
+				POST: "Email konnte nicht erstellt werden",
+				PUT: "Email konnte nicht gespeichert werden",
+				DELETE: "Email konnte nicht gelöscht werden",
+			},
+			"/api/forms": {
+				GET: "Formulare konnten nicht geladen werden",
+				POST: "Formular konnte nicht erstellt werden",
+				PUT: "Formular konnte nicht gespeichert werden",
+				DELETE: "Formular konnte nicht gelöscht werden",
+			},
+			"/api/settings": {
+				GET: "Einstellungen konnten nicht geladen werden",
+				PUT: "Einstellungen konnten nicht gespeichert werden",
+			},
+		},
+	},
 } satisfies typeof en;

@@ -48,8 +48,8 @@ pub struct Form {
     pub send_submission_as_email: Option<String>,
     pub submissions_email_id: Option<i32>,
     pub activate_cleverreach: bool,
-    #[ts(as = "CleverreachFormCondition")]
-    pub cleverreach_condition: Json<CleverreachFormCondition>,
+    #[ts(as = "Option<CleverreachFormCondition>")]
+    pub cleverreach_condition: Option<Json<CleverreachFormCondition>>,
     pub cleverreach_group_id: Option<String>,
     pub cleverreach_email_field_name: Option<String>,
     pub cleverreach_firstname_field_name: Option<String>,
@@ -64,7 +64,7 @@ pub struct Form {
 #[ts(export, export_to = "index.ts")]
 pub enum CleverreachFormCondition {
     OnSubmit,
-    WhenFieldIsSet(String),
+    WhenFieldIsSet { field: String },
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug, TS, FromRow)]

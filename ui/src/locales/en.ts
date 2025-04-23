@@ -178,4 +178,39 @@ export default {
 		neutral: "Neutral",
 		stone: "Stone",
 	},
+	toast: {
+		success: {
+			"/api/emails": {
+				POST: "Email created successfully",
+				PUT: "Email updated successfully",
+				DELETE: "Email deleted successfully",
+			},
+			"/api/forms": {
+				POST: "Form created successfully",
+				PUT: "Form updated successfully",
+				DELETE: "Form deleted successfully",
+			},
+			"/api/settings": {
+				PUT: "Settings saved successfully",
+			},
+		},
+		error: {
+			"/api/emails": {
+				GET: "Failed to fetch emails",
+				POST: "Failed to create email",
+				PUT: "Failed to update email",
+				DELETE: "Failed to delete email",
+			},
+			"/api/forms": {
+				GET: "Failed to fetch forms",
+				POST: "Failed to create form",
+				PUT: "Failed to update form",
+				DELETE: "Failed to delete form",
+			},
+			"/api/settings": {
+				GET: "Failed to load settings",
+				PUT: "Failed to save settings",
+			},
+		},
+	},
 };
