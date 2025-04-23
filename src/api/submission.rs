@@ -1,8 +1,4 @@
-use axum::{
-    Json, Router,
-    extract::{Query, State},
-    routing::get,
-};
+use axum::{Json, Router, extract::State, routing::get};
 use serde::Deserialize;
 use ts_rs::TS;
 
@@ -29,15 +25,15 @@ async fn list_submissions(State(state): State<AppState>) -> Json<Vec<Submission>
 
 #[derive(Deserialize, TS)]
 #[ts(export, export_to = "index.ts")]
-struct DeleteSubmissionQuery {
+struct DeleteSubmissionBody {
     id: i32,
 }
 async fn delete_submission(
     State(state): State<AppState>,
-    Query(query): Query<DeleteSubmissionQuery>,
+    Json(body): Json<DeleteSubmissionBody>,
 ) -> Json<StatusResponse> {
     sqlx::query(r#"delete from submission where id = $1"#)
-        .bind(query.id)
+        .bind(body.id)
         .execute(&state.db)
         .await
         .unwrap();

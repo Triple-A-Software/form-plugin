@@ -2,7 +2,7 @@
 import { computed, ref } from "vue";
 import type { Form } from "../../../bindings";
 import { useI18n } from "vue-i18n";
-import { fetchApi, useApiMutation, useApiQuery } from "@/utils/api";
+import { useApiMutation, useApiQuery } from "@/utils/api";
 import clone from "just-clone";
 import type { NullToUndefined } from "@/utils/types/utils";
 
@@ -56,19 +56,6 @@ const saveCreateMutation = useApiMutation(
         invalidate: [forms],
     },
 );
-async function saveCreateForm() {
-    if (!editingForm.value) {
-        return;
-    }
-    const result = await saveCreateMutation.mutateAsync(editingForm.value);
-    result.match(
-        (ok) => {
-            editingForm.value = ok;
-        },
-        (_) => {},
-    );
-}
-
 const saveEditMutation = useApiMutation(
     "/api/forms",
     { method: "PUT" },
@@ -76,22 +63,32 @@ const saveEditMutation = useApiMutation(
         invalidate: [forms],
     },
 );
-function saveEditForm() {
+async function saveForm() {
     if (!editingForm.value) {
         return;
     }
-    saveEditMutation.mutate(editingForm.value);
+    if (editingForm.value.id !== -1) {
+        saveEditMutation.mutate(editingForm.value);
+    } else {
+        const result = await saveCreateMutation.mutateAsync(editingForm.value);
+        result.match(
+            (ok) => {
+                editingForm.value = ok;
+            },
+            (_) => {},
+        );
+    }
 }
 
-async function deleteForm(id: number) {
-    await fetchApi("/api/forms", {
+const deleteMutation = useApiMutation(
+    "/api/forms",
+    {
         method: "DELETE",
-        query: {
-            id,
-        },
-    });
-    forms.invalidate();
-}
+    },
+    {
+        invalidate: [forms],
+    },
+);
 
 const editModalOpen = ref(false);
 const createModalOpen = ref(false);
@@ -104,9 +101,10 @@ const createModalOpen = ref(false);
             <UButton icon="i-tabler-plus" @click="create">{{ t("action.create.form") }}</UButton>
             <template #body v-if="editingForm">
                 <FormForm v-model="editingForm" />
+                <FormPreview :form="editingForm" />
             </template>
             <template #footer>
-                <ModalSaveButtons @save="saveCreateForm()" @close="createModalOpen = false" />
+                <ModalSaveButtons @save="saveForm()" @close="createModalOpen = false" />
             </template>
         </UModal>
     </div>
@@ -135,10 +133,14 @@ const createModalOpen = ref(false);
                     </div>
                 </template>
                 <template #footer>
-                    <ModalSaveButtons @save="saveEditForm()" @close="editModalOpen = false" />
+                    <ModalSaveButtons @save="saveForm()" @close="editModalOpen = false" />
                 </template>
             </UModal>
-            <DeleteModal :name="$t('deleteName.form')" :id="row.original.id" @confirm="deleteForm">
+            <DeleteModal
+                :name="$t('deleteName.form')"
+                :id="row.original.id"
+                @confirm="deleteMutation.mutate({ id: row.original.id })"
+            >
                 <UButton color="error" variant="ghost" icon="i-tabler-trash" />
             </DeleteModal>
         </template>

@@ -1,8 +1,4 @@
-use axum::{
-    Json, Router,
-    extract::{Query, State},
-    routing::get,
-};
+use axum::{Json, Router, extract::State, routing::get};
 use serde::Deserialize;
 use ts_rs::TS;
 
@@ -30,22 +26,19 @@ async fn list_emails(State(state): State<AppState>) -> Json<Vec<Email>> {
     )
 }
 
-async fn create_email(
-    State(state): State<AppState>,
-    Json(body): Json<Email>,
-) -> Json<StatusResponse> {
-    sqlx::query(
+async fn create_email(State(state): State<AppState>, Json(body): Json<Email>) -> Json<Email> {
+    let email: Email = sqlx::query_as(
         r#"insert into email (
             subject,
             content
-        ) values ($1, $2)"#,
+        ) values ($1, $2) returning *"#,
     )
     .bind(body.subject)
     .bind(body.content)
-    .execute(&state.db)
+    .fetch_one(&state.db)
     .await
     .unwrap();
-    Json(StatusResponse::success())
+    Json(email)
 }
 
 async fn update_email(
@@ -54,9 +47,8 @@ async fn update_email(
 ) -> Json<StatusResponse> {
     sqlx::query(
         r#"update email set
-            name = $1,
-            subject = $2,
-            content = $3 where id = $4"#,
+            subject = $1,
+            content = $2 where id = $3"#,
     )
     .bind(body.subject)
     .bind(body.content)
@@ -69,15 +61,15 @@ async fn update_email(
 
 #[derive(Deserialize, TS)]
 #[ts(export, export_to = "index.ts")]
-struct DeleteEmailQuery {
+struct DeleteEmailBody {
     id: i32,
 }
 async fn delete_email(
     State(state): State<AppState>,
-    Query(query): Query<DeleteEmailQuery>,
+    Json(body): Json<DeleteEmailBody>,
 ) -> Json<StatusResponse> {
     sqlx::query(r#"delete from email where id = $1"#)
-        .bind(query.id)
+        .bind(body.id)
         .execute(&state.db)
         .await
         .unwrap();

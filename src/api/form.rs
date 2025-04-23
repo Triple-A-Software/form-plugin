@@ -1,6 +1,6 @@
 use axum::{
     Json, Router,
-    extract::{Query, State},
+    extract::State,
     response::IntoResponse,
     routing::{get, post},
 };
@@ -119,15 +119,15 @@ async fn update_form(
 
 #[derive(Deserialize, TS)]
 #[ts(export, export_to = "index.ts")]
-struct DeleteFormQuery {
+struct DeleteFormBody {
     id: i32,
 }
 async fn delete_form(
     State(state): State<AppState>,
-    Query(query): Query<DeleteFormQuery>,
+    Json(body): Json<DeleteFormBody>,
 ) -> Json<StatusResponse> {
     sqlx::query(r#"delete from form where id = $1"#)
-        .bind(query.id)
+        .bind(body.id)
         .execute(&state.db)
         .await
         .unwrap();

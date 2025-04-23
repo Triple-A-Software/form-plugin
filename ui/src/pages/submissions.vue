@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { fetchApi, useApiQuery } from "@/utils/api";
+import { useApiMutation, useApiQuery } from "@/utils/api";
 import type { TableColumn } from "@nuxt/ui";
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
@@ -38,15 +38,15 @@ const columns = computed<TableColumn<Submission>[]>(() => [
 ]);
 const expanded = ref({});
 
-async function deleteSubmission(id: number) {
-    await fetchApi("/api/submissions", {
+const deleteMutation = useApiMutation(
+    "/api/submissions",
+    {
         method: "DELETE",
-        query: {
-            id,
-        },
-    });
-    submissions.invalidate();
-}
+    },
+    {
+        invalidate: [submissions],
+    },
+);
 </script>
 
 <template>
@@ -66,7 +66,11 @@ async function deleteSubmission(id: number) {
             />
         </template>
         <template #actions-cell="{ row }">
-            <DeleteModal :name="$t('deleteName.email')" :id="row.original.id" @confirm="deleteSubmission">
+            <DeleteModal
+                :name="$t('deleteName.email')"
+                :id="row.original.id"
+                @confirm="deleteMutation.mutate({ id: row.original.id })"
+            >
                 <UButton color="error" variant="ghost" icon="i-tabler-trash" />
             </DeleteModal>
         </template>

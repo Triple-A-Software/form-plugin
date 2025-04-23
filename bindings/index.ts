@@ -17,11 +17,11 @@ export type CleverreachFormCondition = { "type": "OnSubmit" } | { "type": "WhenF
 
 export type CodeLanguage = "js" | "css" | "html" | "json";
 
-export type DeleteEmailQuery = { id: number, };
+export type DeleteEmailBody = { id: number, };
 
-export type DeleteFormQuery = { id: number, };
+export type DeleteFormBody = { id: number, };
 
-export type DeleteSubmissionQuery = { id: number, };
+export type DeleteSubmissionBody = { id: number, };
 
 export type Email = { id: number, subject: string, 
 /**

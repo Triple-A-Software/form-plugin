@@ -2,7 +2,7 @@
 import { computed, ref } from "vue";
 import type { Email } from "../../../bindings";
 import { useI18n } from "vue-i18n";
-import { fetchApi, useApiMutation, useApiQuery } from "@/utils/api";
+import { useApiMutation, useApiQuery } from "@/utils/api";
 import clone from "just-clone";
 import type { NullToUndefined } from "@/utils/types/utils";
 
@@ -43,13 +43,6 @@ const saveCreateMutation = useApiMutation(
         invalidate: [emails],
     },
 );
-function saveCreateEmail() {
-    if (!editingEmail.value) {
-        return;
-    }
-    saveCreateMutation.mutate(editingEmail.value);
-}
-
 const saveEditMutation = useApiMutation(
     "/api/emails",
     { method: "PUT" },
@@ -57,22 +50,30 @@ const saveEditMutation = useApiMutation(
         invalidate: [emails],
     },
 );
-function saveEditEmail() {
+async function saveEmail() {
     if (!editingEmail.value) {
         return;
     }
-    saveEditMutation.mutate(editingEmail.value);
+    if (editingEmail.value.id !== -1) {
+        saveEditMutation.mutate(editingEmail.value);
+    } else {
+        const result = await saveCreateMutation.mutateAsync(editingEmail.value);
+        result.match(
+            (ok) => (editingEmail.value = ok),
+            (_) => {},
+        );
+    }
 }
 
-async function deleteEmail(id: number) {
-    await fetchApi("/api/emails", {
+const deleteMutation = useApiMutation(
+    "/api/emails",
+    {
         method: "DELETE",
-        query: {
-            id,
-        },
-    });
-    emails.invalidate();
-}
+    },
+    {
+        invalidate: [emails],
+    },
+);
 
 const editModalOpen = ref(false);
 const createModalOpen = ref(false);
@@ -86,7 +87,7 @@ const createModalOpen = ref(false);
                 <EmailForm v-model="editingEmail" />
             </template>
             <template #footer>
-                <ModalSaveButtons @save="saveCreateEmail()" @close="createModalOpen = false" />
+                <ModalSaveButtons @save="saveEmail()" @close="createModalOpen = false" />
             </template>
         </UModal>
     </div>
@@ -112,10 +113,14 @@ const createModalOpen = ref(false);
                     <EmailForm v-model="editingEmail" />
                 </template>
                 <template #footer>
-                    <ModalSaveButtons @save="saveEditEmail()" @close="editModalOpen = false" />
+                    <ModalSaveButtons @save="saveEmail()" @close="editModalOpen = false" />
                 </template>
             </UModal>
-            <DeleteModal :name="$t('deleteName.email')" :id="row.original.id" @confirm="deleteEmail">
+            <DeleteModal
+                :name="$t('deleteName.email')"
+                :id="row.original.id"
+                @confirm="deleteMutation.mutate({ id: row.original.id })"
+            >
                 <UButton color="error" variant="ghost" icon="i-tabler-trash" />
             </DeleteModal>
         </template>

@@ -17,7 +17,7 @@ type FormsApi = {
 		};
 		DELETE: {
 			response: T.StatusResponse;
-			query: T.DeleteFormQuery;
+			body: T.DeleteFormBody;
 		};
 	};
 	"/api/forms/preview": {
@@ -36,7 +36,7 @@ type EmailsApi = {
 			response: Array<T.Email>;
 		};
 		POST: {
-			response: T.StatusResponse;
+			response: T.Email;
 			body: T.Email;
 		};
 		PUT: {
@@ -45,7 +45,7 @@ type EmailsApi = {
 		};
 		DELETE: {
 			response: T.StatusResponse;
-			query: T.DeleteEmailQuery;
+			body: T.DeleteEmailBody;
 		};
 	};
 };
@@ -57,7 +57,7 @@ type SubmissionsApi = {
 		};
 		DELETE: {
 			response: T.StatusResponse;
-			query: T.DeleteSubmissionQuery;
+			body: T.DeleteSubmissionBody;
 		};
 	};
 };
