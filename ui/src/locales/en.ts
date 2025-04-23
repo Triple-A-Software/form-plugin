@@ -5,6 +5,8 @@ export default {
 		cleverreachClientId: "This is the client id for your cleverreach account",
 		cleverreachSecret:
 			"This secret is used to authenticate api calls to cleverreach",
+		cleverreach_condition:
+			"When should the user be added to the cleverreach group?",
 	},
 	action: {
 		goto: {
@@ -79,6 +81,12 @@ export default {
 			cleverreachSecret: "Cleverreach secret",
 			cleverreachGroupId: "Cleverreach group ID",
 			activateCleverreach: "Activate Cleverreach integration",
+			cleverreach_condition: "Cleverreach condition",
+			cleverreachEmailField: "Cleverreach email field",
+			cleverreachFirstNameField: "Cleverreach first name field",
+			cleverreachLastNameField: "Cleverreach last name field",
+			cleverreachSalutation: "Cleverreach salutation",
+			cleverreach_condition_field: "Field name",
 		},
 		option: {
 			type: {
@@ -101,6 +109,10 @@ export default {
 			},
 			default_value: {
 				nothing: "Nothing",
+			},
+			cleverreach_condition: {
+				on_submit: "On submit",
+				when_field_is_set: "When field is set",
 			},
 		},
 		placeholder: {

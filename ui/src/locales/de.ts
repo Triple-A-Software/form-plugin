@@ -7,6 +7,8 @@ export default {
 		cleverreachClientId: "Die Client ID für deinen Cleverreach acccount",
 		cleverreachSecret:
 			"Dieses Secret wird verwendet, um API-calls zu Cleverreach zu authentifizieren",
+		cleverreach_condition:
+			"Wann der User zur Cleverreach gruppe hinzugefügt werden soll",
 	},
 	action: {
 		goto: {
@@ -81,6 +83,12 @@ export default {
 			cleverreachSecret: "Cleverreach secret",
 			cleverreachGroupId: "Cleverreach Gruppen-ID",
 			activateCleverreach: "Cleverreach Integration aktivieren",
+			cleverreach_condition: "Cleverreach Bedingung",
+			cleverreach_condition_field: "Feld name",
+			cleverreachEmailField: "Cleverreach Email-Feld",
+			cleverreachFirstNameField: "Cleverreach Vornamenfeld",
+			cleverreachLastNameField: "Cleverreach Nachnamefeld",
+			cleverreachSalutation: "Cleverreach Begrüßung",
 		},
 		option: {
 			type: {
@@ -103,6 +111,10 @@ export default {
 			},
 			default_value: {
 				nothing: "Nichts",
+			},
+			cleverreach_condition: {
+				on_submit: "Beim Absenden",
+				when_field_is_set: "Wenn ein Feld gesetzt ist",
 			},
 		},
 		placeholder: {

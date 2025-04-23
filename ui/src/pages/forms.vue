@@ -34,7 +34,9 @@ const emptyForm: NullToUndefined<Form> = {
     confirmation_email_recipient_field_name: undefined,
     activate_cleverreach: false,
     cleverreach_group_id: undefined,
-    cleverreach_condition: undefined,
+    cleverreach_condition: {
+        type: "OnSubmit",
+    },
     send_submission_as_email_enabled: false,
     send_submission_as_email: undefined,
     submissions_email_id: undefined,

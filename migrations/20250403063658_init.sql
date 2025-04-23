@@ -16,7 +16,7 @@ create table if not exists form (
     send_submissions_as_email text,
     submissions_email_id int,
     activate_cleverreach boolean not null default false,
-    cleverreach_condition jsonb,
+    cleverreach_condition jsonb not null default '{"type":"OnSubmit"}'::jsonb,
     cleverreach_group_id int,
     cleverreach_email_field_name text,
     cleverreach_firstname_field_name text,

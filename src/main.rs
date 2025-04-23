@@ -16,7 +16,7 @@ use axum::{
     routing::post,
 };
 use cleverreach::{Cleverreach, ReceiverRequest};
-use model::{Email, Form, Settings};
+use model::{CleverreachFormCondition, Email, Form, Settings};
 use render::render_form;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
@@ -211,54 +211,67 @@ async fn form_submit(
         .unwrap();
     if let Some(form) = form {
         if form.activate_cleverreach {
-            let first_name =
-                extract_field_as_string(&body, form.cleverreach_firstname_field_name.as_deref());
-            let last_name =
-                extract_field_as_string(&body, form.cleverreach_lastname_field_name.as_deref());
-            let email =
-                extract_field_as_string(&body, form.cleverreach_email_field_name.as_deref());
-            if let Some(email) = email {
-                if let Some(group_id) = form.cleverreach_group_id {
-                    // the form is used to sign up for a cleverreach newsletter
-                    state
-                        .cleverreach
-                        .create_receiver(ReceiverRequest {
-                            group_id,
-                            email,
-                            first_name,
-                            last_name,
-                            salutation: form.cleverreach_salutation.unwrap_or_default(),
-                        })
-                        .await
-                        .unwrap();
+            // TODO: check cleverreach condition
+            let should_create_receiver = match form.cleverreach_condition.0 {
+                CleverreachFormCondition::OnSubmit => {
+                    // when it is on submit, we don't need to check anything additionally
+                    true
+                }
+                CleverreachFormCondition::WhenFieldIsSet { ref field } => {
+                    is_field_set(&body, Some(field))
+                }
+            };
+            if should_create_receiver {
+                let first_name = extract_field_as_string(
+                    &body,
+                    form.cleverreach_firstname_field_name.as_deref(),
+                );
+                let last_name =
+                    extract_field_as_string(&body, form.cleverreach_lastname_field_name.as_deref());
+                let email =
+                    extract_field_as_string(&body, form.cleverreach_email_field_name.as_deref());
+                if let Some(email) = email {
+                    if let Some(group_id) = &form.cleverreach_group_id {
+                        // the form is used to sign up for a cleverreach newsletter
+                        state
+                            .cleverreach
+                            .create_receiver(ReceiverRequest {
+                                group_id: group_id.to_string(),
+                                email,
+                                first_name,
+                                last_name,
+                                salutation: form.cleverreach_salutation.clone().unwrap_or_default(),
+                            })
+                            .await
+                            .unwrap();
+                    }
                 }
             }
-        } else {
-            if form.send_submission_as_email_enabled {
-                if let (Some(submission_receiver_email), Some(submissions_email_id)) =
-                    (&form.send_submission_as_email, &form.submissions_email_id)
-                {
-                    let email: Email = sqlx::query_as(r#"select * from email where id = $1"#)
-                        .bind(submissions_email_id)
-                        .fetch_one(&state.db)
-                        .await
-                        .unwrap();
-                    let mut context = tera::Context::new();
-                    context.insert("form", &form);
-                    context.insert("submission", &body);
-                    email
-                        .send(submission_receiver_email, context)
-                        .await
-                        .unwrap();
-                }
-            }
-            sqlx::query(r#"insert into submission (form_id, data) values ($1, $2)"#)
-                .bind(query.id)
-                .bind(body)
-                .execute(&state.db)
-                .await
-                .unwrap();
         }
+        if form.send_submission_as_email_enabled {
+            if let (Some(submission_receiver_email), Some(submissions_email_id)) =
+                (&form.send_submission_as_email, &form.submissions_email_id)
+            {
+                let email: Email = sqlx::query_as(r#"select * from email where id = $1"#)
+                    .bind(submissions_email_id)
+                    .fetch_one(&state.db)
+                    .await
+                    .unwrap();
+                let mut context = tera::Context::new();
+                context.insert("form", &form);
+                context.insert("submission", &body);
+                email
+                    .send(submission_receiver_email, context)
+                    .await
+                    .unwrap();
+            }
+        }
+        sqlx::query(r#"insert into submission (form_id, data) values ($1, $2)"#)
+            .bind(query.id)
+            .bind(body)
+            .execute(&state.db)
+            .await
+            .unwrap();
         if let Some(redirect) = query.redirect {
             Redirect::temporary(&redirect).into_response()
         } else {
@@ -281,5 +294,34 @@ fn extract_field_as_string(data: &Value, field_name: Option<&str>) -> Option<Str
         .flatten()
     } else {
         None
+    }
+}
+
+fn is_field_set(data: &Value, field_name: Option<&str>) -> bool {
+    if let Some(field_name) = field_name {
+        if let Some(field) = data.get(field_name) {
+            match field {
+                Value::Null => false,
+                Value::Bool(v) => *v,
+                Value::Number(number) => {
+                    if let Some(number) = number.as_i64() {
+                        number != 0
+                    } else if let Some(number) = number.as_f64() {
+                        number != 0.0
+                    } else if let Some(number) = number.as_u64() {
+                        number != 0
+                    } else {
+                        false
+                    }
+                }
+                Value::String(s) => !s.is_empty(),
+                Value::Array(vec) => !vec.is_empty(),
+                Value::Object(map) => !map.is_empty(),
+            }
+        } else {
+            false
+        }
+    } else {
+        false
     }
 }

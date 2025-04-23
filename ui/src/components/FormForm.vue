@@ -49,6 +49,30 @@ const emails = useApiQuery("/api/emails", {
             </UButton>
             <template #content v-if="model.activate_cleverreach">
                 <UCard class="m-1" :ui="{ body: 'space-y-2' }">
+                    <UFormField :label="$t('field.label.cleverreach_condition')" required>
+                        <UButtonGroup>
+                            <UButton
+                                @click="model.cleverreach_condition = { type: 'OnSubmit' }"
+                                color="neutral"
+                                :variant="model.cleverreach_condition?.type === 'OnSubmit' ? 'solid' : 'subtle'"
+                            >
+                                {{ $t("field.option.cleverreach_condition.on_submit") }}
+                            </UButton>
+                            <UButton
+                                @click="model.cleverreach_condition = { type: 'WhenFieldIsSet', field: '' }"
+                                color="neutral"
+                                :variant="model.cleverreach_condition?.type === 'WhenFieldIsSet' ? 'solid' : 'subtle'"
+                            >
+                                {{ $t("field.option.cleverreach_condition.when_field_is_set") }}
+                            </UButton>
+                        </UButtonGroup>
+                        <UFormField
+                            v-if="model.cleverreach_condition?.type === 'WhenFieldIsSet'"
+                            :label="$t('field.label.cleverreach_condition_field')"
+                        >
+                            <UInput v-model="model.cleverreach_condition.field" />
+                        </UFormField>
+                    </UFormField>
                     <UFormField :label="$t('field.label.cleverreachGroupId')" required>
                         <UInput v-model="model.cleverreach_group_id" />
                     </UFormField>
@@ -56,10 +80,10 @@ const emails = useApiQuery("/api/emails", {
                         <UInput v-model="model.cleverreach_email_field_name" />
                     </UFormField>
                     <UFormField :label="$t('field.label.cleverreachFirstNameField')">
-                        <UInput v-model="model.cleverreach_first_name_field_name" />
+                        <UInput v-model="model.cleverreach_firstname_field_name" />
                     </UFormField>
                     <UFormField :label="$t('field.label.cleverreachLastNameField')">
-                        <UInput v-model="model.cleverreach_last_name_field_name" />
+                        <UInput v-model="model.cleverreach_lastname_field_name" />
                     </UFormField>
                     <UFormField :label="$t('field.label.cleverreachSalutation')" required>
                         <UInput v-model="model.cleverreach_salutation" />
