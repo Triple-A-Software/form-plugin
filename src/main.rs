@@ -211,7 +211,6 @@ async fn form_submit(
         .unwrap();
     if let Some(form) = form {
         if form.activate_cleverreach {
-            // TODO: check cleverreach condition
             let should_create_receiver = match form.cleverreach_condition.0 {
                 CleverreachFormCondition::OnSubmit => {
                     // when it is on submit, we don't need to check anything additionally
