@@ -54,6 +54,9 @@ const deleteMutation = useApiMutation(
         <template #expanded="{ row }">
             <pre>{{ row.original }}</pre>
         </template>
+        <template #form_id-cell="{ row }">
+            <FormLink :id="row.original.form_id" />
+        </template>
         <template #expand-cell="{ row }">
             <UButton
                 color="neutral"

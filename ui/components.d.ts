@@ -20,6 +20,7 @@ declare module 'vue' {
     EmailForm: typeof import('./src/components/EmailForm.vue')['default']
     FormBuilder: typeof import('./src/components/FormBuilder.vue')['default']
     FormForm: typeof import('./src/components/FormForm.vue')['default']
+    FormLink: typeof import('./src/components/FormLink.vue')['default']
     FormPreview: typeof import('./src/components/FormPreview.vue')['default']
     InfoPopover: typeof import('./src/components/InfoPopover.vue')['default']
     LocalizedTextInput: typeof import('./src/components/input/LocalizedTextInput.vue')['default']

@@ -1,10 +1,12 @@
 <script setup lang="ts">
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import type { Form } from "../../../bindings";
 import { useI18n } from "vue-i18n";
-import { useApiMutation, useApiQuery } from "@/utils/api";
+import { useApiMutation } from "@/utils/api";
 import clone from "just-clone";
 import type { NullToUndefined } from "@/utils/types/utils";
+import { useForms } from "@/store/forms";
+import { useUrlSearchParams } from "@vueuse/core";
 
 const { t } = useI18n();
 
@@ -22,9 +24,7 @@ const columns = computed(() => [
 ]);
 const expanded = ref({});
 
-const forms = useApiQuery("/api/forms", {
-    method: "GET",
-});
+const formStore = useForms();
 
 const editingForm = ref<NullToUndefined<Form> | undefined>(undefined);
 const emptyForm: NullToUndefined<Form> = {
@@ -55,14 +55,14 @@ const saveCreateMutation = useApiMutation(
     "/api/forms",
     { method: "POST" },
     {
-        invalidate: [forms],
+        invalidate: [formStore.forms],
     },
 );
 const saveEditMutation = useApiMutation(
     "/api/forms",
     { method: "PUT" },
     {
-        invalidate: [forms],
+        invalidate: [formStore.forms],
     },
 );
 async function saveForm() {
@@ -88,12 +88,54 @@ const deleteMutation = useApiMutation(
         method: "DELETE",
     },
     {
-        invalidate: [forms],
+        invalidate: [formStore.forms],
     },
 );
 
-const editModalOpen = ref(false);
-const createModalOpen = ref(false);
+const search = useUrlSearchParams<{ id: string | undefined; edit: boolean | undefined; create: boolean | undefined }>("hash", {
+    removeFalsyValues: true,
+    removeNullishValues: true,
+});
+const editModalOpen = computed({
+    get() {
+        return Boolean(search.edit);
+    },
+    set(v) {
+        if (v) {
+            search.edit = true;
+        } else {
+            search.edit = undefined;
+            search.id = undefined;
+        }
+    },
+});
+const createModalOpen = computed({
+    get() {
+        return Boolean(search.create);
+    },
+    set(v) {
+        if (v) {
+            search.create = true;
+        } else {
+            search.create = undefined;
+        }
+    },
+});
+
+watch(
+    () => [search.id, formStore.forms.data] as const,
+    ([id, data]) => {
+        if (id && data) {
+            const form = data.find((f) => f.id === Number(id));
+            if (form) {
+                editingForm.value = clone(form);
+            }
+        }
+    },
+);
+function editForm(id: number) {
+    search.id = String(id);
+}
 </script>
 
 <template>
@@ -110,7 +152,7 @@ const createModalOpen = ref(false);
             </template>
         </UModal>
     </div>
-    <UTable :columns="columns" :data="forms.data.value" v-model:expanded="expanded">
+    <UTable :columns="columns" :data="formStore.forms.data" v-model:expanded="expanded">
         <template #expanded="{ row }">
             <pre>{{ row.original }}</pre>
         </template>
@@ -127,7 +169,7 @@ const createModalOpen = ref(false);
         </template>
         <template #actions-cell="{ row }">
             <UModal :title="t('modal.edit.form')" fullscreen v-model:open="editModalOpen">
-                <UButton color="neutral" variant="ghost" icon="i-tabler-pencil" @click="editingForm = row.original" />
+                <UButton color="neutral" variant="ghost" icon="i-tabler-pencil" @click="editForm(row.original.id)" />
                 <template #body v-if="editingForm">
                     <div class="space-y-4">
                         <FormForm v-model="editingForm" />

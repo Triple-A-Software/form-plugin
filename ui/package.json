@@ -14,6 +14,7 @@
 		"@pinia/colada": "^0.14.2",
 		"@tailwindcss/typography": "^0.5.16",
 		"@vueuse/core": "^13.0.0",
+		"@vueuse/router": "^13.1.0",
 		"just-clone": "^6.2.0",
 		"neverthrow": "^8.2.0",
 		"pinia": "^3.0.1",
