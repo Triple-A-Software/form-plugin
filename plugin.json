@@ -37,6 +37,10 @@
 		{
 			"route": "/api/settings",
 			"allowed_roles": ["admin", "developer"]
+		},
+		{
+			"route": "/api/submissins/send-email",
+			"allowed_roles": ["admin", "developer"]
 		}
 	],
 	"helpers": [

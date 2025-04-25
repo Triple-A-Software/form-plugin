@@ -24,6 +24,7 @@ export default {
 		saveAndClose: "Save and close",
 		no: "No",
 		yes: "Yes",
+		sendEmail: "Send email",
 	},
 	modal: {
 		edit: {
@@ -39,6 +40,9 @@ export default {
 			title: "Delete {name}",
 			description:
 				"Are you sure you want to delete this {name}? This action cannot be undone",
+		},
+		sendEmail: {
+			title: "Sending email",
 		},
 	},
 	deleteName: {
@@ -87,6 +91,7 @@ export default {
 			cleverreachLastNameField: "Cleverreach last name field",
 			cleverreachSalutation: "Cleverreach salutation",
 			cleverreach_condition_field: "Field name",
+			emailFieldName: "Email field name",
 		},
 		option: {
 			type: {
@@ -117,6 +122,10 @@ export default {
 		},
 		placeholder: {
 			confirmationEmail: "Select confirmation email",
+			selectEmail: "Select an email",
+		},
+		tooltip: {
+			sendEmail: "Send email to this user",
 		},
 	},
 	builder: {
@@ -163,7 +172,7 @@ export default {
 	table_columns: {
 		name: "Name",
 		subject: "Subject",
-		form_id: "Form ID",
+		form: "Form",
 		timestamp: "Timestamp",
 	},
 	color: {

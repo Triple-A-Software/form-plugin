@@ -29,8 +29,8 @@ const columns = computed<TableColumn<Submission>[]>(() => [
             }),
     },
     {
-        accessorKey: "form_id",
-        header: t("table_columns.form_id"),
+        id: "form",
+        header: t("table_columns.form"),
     },
     {
         id: "actions",
@@ -54,7 +54,7 @@ const deleteMutation = useApiMutation(
         <template #expanded="{ row }">
             <pre>{{ row.original }}</pre>
         </template>
-        <template #form_id-cell="{ row }">
+        <template #form-cell="{ row }">
             <FormLink :id="row.original.form_id" />
         </template>
         <template #expand-cell="{ row }">
@@ -69,13 +69,16 @@ const deleteMutation = useApiMutation(
             />
         </template>
         <template #actions-cell="{ row }">
-            <DeleteModal
-                :name="$t('deleteName.email')"
-                :id="row.original.id"
-                @confirm="deleteMutation.mutate({ id: row.original.id })"
-            >
-                <UButton color="error" variant="ghost" icon="i-tabler-trash" />
-            </DeleteModal>
+            <div class="flex flex-row gap-2 items-center">
+                <SendEmailModal :submission="row.original" />
+                <DeleteModal
+                    :name="$t('deleteName.email')"
+                    :id="row.original.id"
+                    @confirm="deleteMutation.mutate({ id: row.original.id })"
+                >
+                    <UButton color="error" variant="ghost" icon="i-tabler-trash" />
+                </DeleteModal>
+            </div>
         </template>
     </UTable>
 </template>

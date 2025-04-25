@@ -12,15 +12,15 @@ use axum::{
     Json, Router,
     extract::{self, Query, State},
     http::StatusCode,
-    response::{IntoResponse, Redirect},
-    routing::post,
+    response::{Html, IntoResponse, Redirect},
+    routing::{get, post},
 };
 use cleverreach::{Cleverreach, ReceiverRequest};
 use model::{CleverreachFormCondition, Email, Form, Settings};
 use render::render_form;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use sqlx::PgPool;
+use sqlx::{PgConnection, PgPool};
 use tera::Tera;
 use tokio::net::TcpListener;
 use tower_http::{
@@ -81,6 +81,7 @@ async fn main() {
         .merge(settings_router())
         .route("/helper/render_form", post(render_form_helper))
         .route("/form-plugin/submit", post(form_submit))
+        .route("/test", get(test_page))
         .layer(NormalizePathLayer::trim_trailing_slash())
         .layer(
             TraceLayer::new_for_http()
@@ -103,6 +104,29 @@ async fn main() {
     )
     .await
     .unwrap();
+}
+
+#[derive(Deserialize)]
+struct TestPageQuery {
+    id: i32,
+}
+async fn test_page(
+    State(state): State<AppState>,
+    Query(TestPageQuery { id }): Query<TestPageQuery>,
+) -> impl IntoResponse {
+    let form: Form = sqlx::query_as(r#"select * from form where id = $1"#)
+        .bind(id)
+        .fetch_one(&state.db)
+        .await
+        .unwrap();
+    let rendered = render_form(
+        state,
+        "en".to_string(),
+        form,
+        format!(r#"<form action="/form-plugin/submit?id={id}&redirect=/test" method="POST">"#,),
+        "</form>",
+    );
+    Html(rendered)
 }
 
 #[derive(Deserialize)]
@@ -251,18 +275,14 @@ async fn form_submit(
             if let (Some(submission_receiver_email), Some(submissions_email_id)) =
                 (&form.send_submission_as_email, &form.submissions_email_id)
             {
-                let email: Email = sqlx::query_as(r#"select * from email where id = $1"#)
-                    .bind(submissions_email_id)
-                    .fetch_one(&state.db)
-                    .await
-                    .unwrap();
-                let mut context = tera::Context::new();
-                context.insert("form", &form);
-                context.insert("submission", &body);
-                email
-                    .send(submission_receiver_email, context)
-                    .await
-                    .unwrap();
+                send_email(
+                    &state.db,
+                    *submissions_email_id,
+                    &form,
+                    &body,
+                    submission_receiver_email,
+                )
+                .await;
             }
         }
         sqlx::query(r#"insert into submission (form_id, data) values ($1, $2)"#)
@@ -272,7 +292,7 @@ async fn form_submit(
             .await
             .unwrap();
         if let Some(redirect) = query.redirect {
-            Redirect::temporary(&redirect).into_response()
+            Redirect::to(&redirect).into_response()
         } else {
             StatusCode::OK.into_response()
         }
@@ -281,7 +301,19 @@ async fn form_submit(
     }
 }
 
-fn extract_field_as_string(data: &Value, field_name: Option<&str>) -> Option<String> {
+pub async fn send_email(db: &PgPool, id: i32, form: &Form, body: &Value, to: &str) {
+    let email: Email = sqlx::query_as(r#"select * from email where id = $1"#)
+        .bind(id)
+        .fetch_one(db)
+        .await
+        .unwrap();
+    let mut context = tera::Context::new();
+    context.insert("form", &form);
+    context.insert("submission", &body);
+    email.send(to, context).await.unwrap();
+}
+
+pub fn extract_field_as_string(data: &Value, field_name: Option<&str>) -> Option<String> {
     if let Some(field_name) = field_name {
         Some(data.get(field_name).map(|v| {
             if let Value::String(v) = v {

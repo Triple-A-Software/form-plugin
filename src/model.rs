@@ -18,6 +18,10 @@ impl StatusResponse {
     pub fn success() -> Self {
         Self { success: true }
     }
+
+    pub fn fail() -> Self {
+        Self { success: false }
+    }
 }
 
 #[derive(Serialize, TS, Debug, Clone)]
@@ -30,10 +34,10 @@ pub struct ApiError {
 #[ts(export, export_to = "index.ts")]
 pub struct Submission {
     id: i32,
-    form_id: i32,
+    pub form_id: i32,
     timestamp: JavascriptDate,
     #[ts(as = "Value")]
-    data: Json<Value>,
+    pub data: Json<Value>,
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug, TS, FromRow)]

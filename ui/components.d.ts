@@ -30,6 +30,7 @@ declare module 'vue' {
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
     SelectForm: typeof import('./src/components/element/form/SelectForm.vue')['default']
+    SendEmailModal: typeof import('./src/components/SendEmailModal.vue')['default']
     TextareaForm: typeof import('./src/components/element/form/TextareaForm.vue')['default']
     TextForm: typeof import('./src/components/element/form/TextForm.vue')['default']
     UApp: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/App.vue')['default']
@@ -53,5 +54,6 @@ declare module 'vue' {
     USlideover: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Slideover.vue')['default']
     UTable: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Table.vue')['default']
     UTextarea: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Textarea.vue')['default']
+    UTooltip: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Tooltip.vue')['default']
   }
 }

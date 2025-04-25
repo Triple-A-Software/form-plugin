@@ -142,7 +142,7 @@ export function useApiQuery<
 			ApiError,
 			NullToUndefined<TResponse>
 		>,
-		"query"
+		"query" | "key"
 	>,
 >(
 	path: (() => TPath) | TPath,

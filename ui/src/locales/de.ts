@@ -26,6 +26,7 @@ export default {
 		saveAndClose: "Speichern und Schließen",
 		no: "Nein",
 		yes: "Ja",
+		sendEmail: "E-mail senden",
 	},
 	modal: {
 		edit: {
@@ -41,6 +42,9 @@ export default {
 			title: "{name} löschen",
 			description:
 				"Bist du dir sicher dass du diese/s {name} löschen möchtest? Diese Aktion kann nicht rückgängig gemacht werden",
+		},
+		sendEmail: {
+			title: "E-mail versenden",
 		},
 	},
 	deleteName: {
@@ -89,6 +93,7 @@ export default {
 			cleverreachFirstNameField: "Cleverreach Vornamenfeld",
 			cleverreachLastNameField: "Cleverreach Nachnamefeld",
 			cleverreachSalutation: "Cleverreach Begrüßung",
+			emailFieldName: "E-mail feld name",
 		},
 		option: {
 			type: {
@@ -119,6 +124,10 @@ export default {
 		},
 		placeholder: {
 			confirmationEmail: "Bestätigungs-Email auswählen",
+			selectEmail: "E-mail auswählen",
+		},
+		tooltip: {
+			sendEmail: "E-mail an diesen User senden",
 		},
 	},
 	builder: {
@@ -165,7 +174,7 @@ export default {
 	table_columns: {
 		name: "Name",
 		subject: "Betreff",
-		form_id: "Formular ID",
+		form: "Formular",
 		timestamp: "Zeitpunkt",
 	},
 	color: {

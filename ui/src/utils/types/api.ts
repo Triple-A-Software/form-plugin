@@ -60,6 +60,12 @@ type SubmissionsApi = {
 			body: T.DeleteSubmissionBody;
 		};
 	};
+	"/api/submissions/send-email": {
+		POST: {
+			response: T.StatusResponse;
+			body: T.SendEmailToSubmissionBody;
+		};
+	};
 };
 
 type SettingsApi = {
