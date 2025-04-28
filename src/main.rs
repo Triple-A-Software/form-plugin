@@ -20,7 +20,7 @@ use model::{CleverreachFormCondition, Email, Form, Settings};
 use render::render_form;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use sqlx::{PgConnection, PgPool};
+use sqlx::PgPool;
 use tera::Tera;
 use tokio::net::TcpListener;
 use tower_http::{
@@ -58,7 +58,8 @@ async fn main() {
     let db = create_db().await;
 
     // this query needs the do update part, because otherwise we would need another query to fetch
-    // the settings
+    // the settings, because insert on conflict do nothing only returns something when inserting,
+    // not when doing nothing
     let settings: Settings = sqlx::query_as(
         r#"insert into settings (id) values ('settings') on conflict (id) do update set id = 'settings' returning *"#,
     )
