@@ -52,7 +52,11 @@ const deleteMutation = useApiMutation(
 <template>
     <UTable :columns="columns" :data="submissions.data.value" v-model:expanded="expanded">
         <template #expanded="{ row }">
-            <pre>{{ row.original }}</pre>
+            <div v-for="(value, key) in row.original.data">
+                <p class="pl-2 -indent-2">
+                    <span class="font-bold">{{ key }}:</span> {{ value }}
+                </p>
+            </div>
         </template>
         <template #form-cell="{ row }">
             <FormLink :id="row.original.form_id" />
