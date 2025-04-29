@@ -25,12 +25,18 @@ async fn update_settings(
     sqlx::query(
         r#"update settings set
             cleverreach_client_id = $1,
-            cleverreach_secret = $2
+            cleverreach_secret = $2,
+            h_captcha_secret = $3,
+            re_captcha_secret = $4,
+            captcha_sitekey = $5
         where id = 'settings'
         "#,
     )
     .bind(body.cleverreach_client_id)
     .bind(body.cleverreach_secret)
+    .bind(body.h_captcha_secret)
+    .bind(body.re_captcha_secret)
+    .bind(body.captcha_sitekey)
     .execute(&state.db)
     .await
     .unwrap();

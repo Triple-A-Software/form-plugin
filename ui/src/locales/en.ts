@@ -7,6 +7,11 @@ export default {
 			"This secret is used to authenticate api calls to cleverreach",
 		cleverreach_condition:
 			"When should the user be added to the cleverreach group?",
+		reCaptchaSecret:
+			"This secret will be used to authenticate api calls to reCaptcha",
+		hCaptchaSecret:
+			"This secret will be used to authenticate api calls to hCaptcha",
+		captchaSitekey: "",
 	},
 	action: {
 		goto: {
@@ -92,6 +97,13 @@ export default {
 			cleverreachSalutation: "Cleverreach salutation",
 			cleverreach_condition_field: "Field name",
 			emailFieldName: "Email field name",
+			captchaType: "Captcha type",
+			activateCaptcha: "Activate captcha",
+			reCaptchaSecret: "ReCaptcha secret",
+			hCaptchaSecret: "HCaptcha secret",
+			captchaSitekey: "Captcha sitekey",
+			captchaCallback: "Captcha callback",
+			captchaExpiredCallback: "Captcha expired callback",
 		},
 		option: {
 			type: {
@@ -119,6 +131,10 @@ export default {
 				on_submit: "On submit",
 				when_field_is_set: "When field is set",
 			},
+			captchaType: {
+				hCaptcha: "HCaptcha",
+				reCaptcha: "ReCaptcha",
+			},
 		},
 		placeholder: {
 			confirmationEmail: "Select confirmation email",
@@ -142,6 +158,7 @@ export default {
 				range: "Range",
 				buttongroup: "Buttongroup",
 				button: "Button",
+				captcha: "Captcha",
 			},
 		},
 	},

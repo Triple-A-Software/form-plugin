@@ -29,6 +29,15 @@ const updateMutation = useApiMutation(
         <UFormField :label="$t('field.label.cleverreachSecret')" :help="$t('hint.cleverreachSecret')">
             <UInput type="password" v-model="settings.data.value.cleverreachSecret" />
         </UFormField>
+        <UFormField :label="$t('field.label.hCaptchaSecret')" :help="$t('hint.hCaptchaSecret')">
+            <UInput type="password" v-model="settings.data.value.hCaptchaSecret" />
+        </UFormField>
+        <UFormField :label="$t('field.label.reCaptchaSecret')" :help="$t('hint.reCaptchaSecret')">
+            <UInput type="password" v-model="settings.data.value.reCaptchaSecret" />
+        </UFormField>
+        <UFormField :label="$t('field.label.captchaSitekey')" :help="$t('hint.captchaSitekey')">
+            <UInput v-model="settings.data.value.captchaSitekey" />
+        </UFormField>
         <div>
             <UButton icon="i-tabler-device-floppy" type="submit">{{ $t("action.save") }}</UButton>
         </div>

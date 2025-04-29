@@ -22,6 +22,8 @@ create table if not exists form (
     cleverreach_firstname_field_name text,
     cleverreach_lastname_field_name text,
     cleverreach_salutation text,
+    activate_captcha boolean not null default false,
+    captcha_type text,
     props jsonb not null default '[]'::jsonb,
 
     primary key (id),
@@ -40,5 +42,8 @@ create table if not exists submission (
 create table if not exists settings (
     id text not null primary key,
     cleverreach_client_id text,
-    cleverreach_secret text
+    cleverreach_secret text,
+    h_captcha_secret text,
+    re_captcha_secret text,
+    captcha_sitekey text
 );

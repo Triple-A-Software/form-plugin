@@ -10,7 +10,7 @@ use ts_rs::TS;
 
 use crate::{
     AppState,
-    model::{Form, StatusResponse},
+    model::{Form, Settings, StatusResponse},
     render::render_form,
 };
 
@@ -46,6 +46,10 @@ async fn list_forms_for_select(State(state): State<AppState>) -> impl IntoRespon
 }
 
 async fn preview_form(State(state): State<AppState>, Json(form): Json<Form>) -> impl IntoResponse {
+    let settings: Settings = sqlx::query_as(r#"select * from settings where id = 'settings'"#)
+        .fetch_one(&state.db)
+        .await
+        .unwrap();
     let rendered = render_form(
         state,
         "en",
@@ -66,6 +70,7 @@ async fn preview_form(State(state): State<AppState>, Json(form): Json<Form>) -> 
         br#"
 </body>
 </html>"#,
+        settings,
     );
     Json(json!({
         "html": rendered

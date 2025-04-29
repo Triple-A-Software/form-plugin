@@ -6,7 +6,7 @@ use sqlx::{prelude::*, types::Json};
 use tera::Context;
 use ts_rs::TS;
 
-use crate::date::JavascriptDate;
+use crate::{captcha::CaptchaType, date::JavascriptDate};
 
 #[derive(Serialize, Clone, Debug, TS)]
 #[ts(export, export_to = "index.ts")]
@@ -59,6 +59,10 @@ pub struct Form {
     pub cleverreach_firstname_field_name: Option<String>,
     pub cleverreach_lastname_field_name: Option<String>,
     pub cleverreach_salutation: Option<String>,
+    pub activate_captcha: bool,
+    pub captcha_type: Option<CaptchaType>,
+    pub captcha_callback: Option<String>,
+    pub captcha_expired_callback: Option<String>,
     #[ts(as = "Vec<Property>")]
     pub props: Json<Vec<Property>>,
 }
@@ -115,6 +119,7 @@ pub enum Property {
     Range(RangeProperty),
     Buttongroup(ButtongroupProperty),
     Button(ButtonProperty),
+    Captcha(CaptchaProperty),
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug, TS)]
@@ -289,6 +294,19 @@ pub struct ButtonGroupOption {
 }
 
 #[derive(Deserialize, Serialize, Clone, Debug, TS)]
+#[serde(rename_all = "camelCase")]
+#[ts(export, export_to = "index.ts")]
+pub struct CaptchaProperty {
+    /// this is automatically filled based on the captcha_type
+    pub captcha_class: String,
+    /// this is automatically filled from the settings
+    pub sitekey: String,
+    pub callback: Option<String>,
+    pub expired_callback: Option<String>,
+    pub captcha_type: CaptchaType,
+}
+
+#[derive(Deserialize, Serialize, Clone, Debug, TS)]
 #[serde(rename_all = "kebab-case")]
 #[ts(export, export_to = "index.ts")]
 pub enum TailwindColor {
@@ -330,4 +348,16 @@ pub enum Variant {
 pub struct Settings {
     pub cleverreach_client_id: Option<String>,
     pub cleverreach_secret: Option<String>,
+    pub h_captcha_secret: Option<String>,
+    pub re_captcha_secret: Option<String>,
+    pub captcha_sitekey: Option<String>,
+}
+
+impl Settings {
+    pub fn get_captcha_secret(&self, captcha_type: &CaptchaType) -> Option<&str> {
+        match captcha_type {
+            CaptchaType::HCaptcha => self.h_captcha_secret.as_deref(),
+            CaptchaType::ReCaptcha => self.re_captcha_secret.as_deref(),
+        }
+    }
 }

@@ -17,6 +17,7 @@ export function createElement(
 	else if (type === "buttongroup") return createButtongroup();
 	else if (type === "select") return createSelect();
 	else if (type === "range") return createRange();
+	else if (type === "captcha") return createCaptcha();
 }
 
 export function createButton(): PropertySelector<"button"> {
@@ -80,6 +81,7 @@ export function createText(): PropertySelector<"text"> {
 		default_value: undefined,
 		color: "neutral",
 		placeholder: {},
+		input_type: "text",
 	};
 }
 
@@ -141,5 +143,19 @@ export function createRange(): PropertySelector<"range"> {
 		max_label: {},
 		min_label: {},
 		step: undefined,
+	};
+}
+
+// this function is not exported, because the captcha element doesn't have a
+// specific form, it is configured through the form of the form
+function createCaptcha(): PropertySelector<"captcha"> {
+	return {
+		type: "captcha",
+		captchaClass: "",
+		sitekey: "",
+		// this is just a placeholder type
+		captchaType: "h-captcha",
+		callback: "",
+		expiredCallback: "",
 	};
 }

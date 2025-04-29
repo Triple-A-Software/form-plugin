@@ -12,6 +12,7 @@ declare module 'vue' {
     BuilderItemSelectCard: typeof import('./src/components/BuilderItemSelectCard.vue')['default']
     ButtonForm: typeof import('./src/components/element/form/ButtonForm.vue')['default']
     ButtongroupForm: typeof import('./src/components/element/form/ButtongroupForm.vue')['default']
+    CaptchaForm: typeof import('./src/components/element/form/CaptchaForm.vue')['default']
     CheckboxForm: typeof import('./src/components/element/form/CheckboxForm.vue')['default']
     CommonElementForm: typeof import('./src/components/element/form/CommonElementForm.vue')['default']
     DeleteModal: typeof import('./src/components/DeleteModal.vue')['default']

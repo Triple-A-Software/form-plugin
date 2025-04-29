@@ -20,17 +20,21 @@ const { locale } = useI18n();
             <span class="font-bold">
                 {{ $t(`builder.item.label.${element.type}`) }}
             </span>
-            <span class="ms-4">
+            <span class="ms-4" v-if="element.type !== 'captcha'">
                 {{ element.label[locale] }}
             </span>
-            <span class="text-red-600" v-if="element.required"> * </span>
+            <span class="text-red-600" v-if="element.type === 'captcha' || element.required"> * </span>
         </label>
-        <USeparator orientation="vertical" class="h-4" v-if="element.name || element.hint?.[locale]" />
-        <p class="italic text-gray-600 dark:text-gray-400 text-sm" v-if="element.name">{{ element.name }}</p>
-        <USeparator orientation="vertical" class="h-4" v-if="element.name && element.hint?.[locale]" />
-        <p class="italic text-gray-600 dark:text-gray-400 text-sm" v-if="element.hint?.[locale]">{{ element.hint[locale] }}</p>
+        <template v-if="element.type !== 'captcha'">
+            <USeparator orientation="vertical" class="h-4" v-if="element.name || element.hint?.[locale]" />
+            <p class="italic text-gray-600 dark:text-gray-400 text-sm" v-if="element.name">{{ element.name }}</p>
+            <USeparator orientation="vertical" class="h-4" v-if="element.name && element.hint?.[locale]" />
+            <p class="italic text-gray-600 dark:text-gray-400 text-sm" v-if="element.hint?.[locale]">
+                {{ element.hint[locale] }}
+            </p>
+        </template>
         <div class="flex-1"></div>
-        <UButton color="neutral" variant="ghost" icon="i-tabler-edit" @click="$emit('edit')" />
+        <UButton v-if="element.type !== 'captcha'" color="neutral" variant="ghost" icon="i-tabler-edit" @click="$emit('edit')" />
         <UButton color="error" variant="ghost" icon="i-tabler-trash" @click="$emit('delete')" />
     </div>
 </template>

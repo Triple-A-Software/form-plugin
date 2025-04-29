@@ -15,6 +15,7 @@ use axum::{
     response::{Html, IntoResponse, Redirect},
     routing::{get, post},
 };
+use captcha::Captcha;
 use cleverreach::{Cleverreach, ReceiverRequest};
 use model::{CleverreachFormCondition, Email, Form, Settings};
 use render::render_form;
@@ -30,6 +31,7 @@ use tower_http::{
 };
 use tracing::Level;
 
+mod captcha;
 mod cleverreach;
 mod date;
 mod model;
@@ -120,12 +122,17 @@ async fn test_page(
         .fetch_one(&state.db)
         .await
         .unwrap();
+    let settings: Settings = sqlx::query_as(r#"select * from settings where id = 'settings'"#)
+        .fetch_one(&state.db)
+        .await
+        .unwrap();
     let rendered = render_form(
         state,
         "en".to_string(),
         form,
         format!(r#"<form action="/form-plugin/submit?id={id}&redirect=/test" method="POST">"#,),
         "</form>",
+        settings,
     );
     Html(rendered)
 }
@@ -182,6 +189,11 @@ async fn render_form_helper(
                     )));
                 }
             };
+            let settings: Settings =
+                sqlx::query_as(r#"select * from settings where id = 'settings'"#)
+                    .fetch_one(&state.db)
+                    .await
+                    .unwrap();
 
             let rendered = render_form(
                 state,
@@ -191,6 +203,7 @@ async fn render_form_helper(
                     r#"<form action="/form-plugin/submit?id={id}&redirect={route}" method="POST">"#,
                 ),
                 "</form>",
+                settings,
             );
             Json(ServicePluginApiResponse::Data(Value::String(rendered)))
         } else {
@@ -235,6 +248,30 @@ async fn form_submit(
         .await
         .unwrap();
     if let Some(form) = form {
+        let settings: Settings = sqlx::query_as(r#"select * from settings where id = 'settings'"#)
+            .fetch_one(&state.db)
+            .await
+            .unwrap();
+        if form.activate_captcha {
+            let captcha_response = match form.captcha_type {
+                Some(ref r#type) => {
+                    Captcha {
+                        body: &body,
+                        r#type,
+                    }
+                    .handle(settings)
+                    .await
+                }
+                None => None,
+            };
+            if let Some(captcha_response) = captcha_response {
+                if !captcha_response.success {
+                    return StatusCode::UNAUTHORIZED.into_response();
+                }
+            } else {
+                return StatusCode::UNAUTHORIZED.into_response();
+            }
+        }
         if form.activate_cleverreach {
             let should_create_receiver = match form.cleverreach_condition.0 {
                 CleverreachFormCondition::OnSubmit => {

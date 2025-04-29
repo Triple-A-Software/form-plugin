@@ -11,6 +11,18 @@ export type ButtonType = "button" | "submit" | "reset";
 
 export type ButtongroupProperty = { options: Array<ButtonGroupOption>, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | null, class: string, name: string, required: boolean, color: TailwindColor, };
 
+export type CaptchaProperty = { 
+/**
+ * this is automatically filled based on the captcha_type
+ */
+captchaClass: string, 
+/**
+ * this is automatically filled from the settings
+ */
+sitekey: string, callback: string | null, expiredCallback: string | null, captchaType: CaptchaType, };
+
+export type CaptchaType = "h-captcha" | "re-captcha";
+
 export type CheckboxProperty = { hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | null, class: string, name: string, required: boolean, color: TailwindColor, };
 
 export type CleverreachFormCondition = { "type": "OnSubmit" } | { "type": "WhenFieldIsSet", field: string, };
@@ -29,11 +41,11 @@ export type Email = { id: number, subject: string,
  */
 content: string, };
 
-export type Form = { id: number, name: string, send_confirmation_email: boolean, confirmation_email_id: number | null, confirmation_email_recipient_field_name: string | null, send_submission_as_email_enabled: boolean, send_submission_as_email: string | null, submissions_email_id: number | null, activate_cleverreach: boolean, cleverreach_condition: CleverreachFormCondition, cleverreach_group_id: string | null, cleverreach_email_field_name: string | null, cleverreach_firstname_field_name: string | null, cleverreach_lastname_field_name: string | null, cleverreach_salutation: string | null, props: Array<Property>, };
+export type Form = { id: number, name: string, send_confirmation_email: boolean, confirmation_email_id: number | null, confirmation_email_recipient_field_name: string | null, send_submission_as_email_enabled: boolean, send_submission_as_email: string | null, submissions_email_id: number | null, activate_cleverreach: boolean, cleverreach_condition: CleverreachFormCondition, cleverreach_group_id: string | null, cleverreach_email_field_name: string | null, cleverreach_firstname_field_name: string | null, cleverreach_lastname_field_name: string | null, cleverreach_salutation: string | null, activate_captcha: boolean, captcha_type: CaptchaType | null, captcha_callback: string | null, captcha_expired_callback: string | null, props: Array<Property>, };
 
 export type NumberProperty = { min: number | null, max: number | null, step: number | null, placeholder: Record<string, string>, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | null, class: string, name: string, required: boolean, color: TailwindColor, };
 
-export type Property = { "type": "textarea" } & TextareaProperty | { "type": "text" } & TextProperty | { "type": "checkbox" } & CheckboxProperty | { "type": "number" } & NumberProperty | { "type": "select" } & SelectProperty | { "type": "range" } & RangeProperty | { "type": "buttongroup" } & ButtongroupProperty | { "type": "button" } & ButtonProperty;
+export type Property = { "type": "textarea" } & TextareaProperty | { "type": "text" } & TextProperty | { "type": "checkbox" } & CheckboxProperty | { "type": "number" } & NumberProperty | { "type": "select" } & SelectProperty | { "type": "range" } & RangeProperty | { "type": "buttongroup" } & ButtongroupProperty | { "type": "button" } & ButtonProperty | { "type": "captcha" } & CaptchaProperty;
 
 export type PropertyCommon = { hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | null, class: string, name: string, required: boolean, color: TailwindColor, };
 
@@ -49,7 +61,7 @@ export type SelectProperty = { multiple: boolean | null, data_type: SelectDataTy
 
 export type SendEmailToSubmissionBody = { email_id: number, submission_id: number, email_field_name: string | null, };
 
-export type Settings = { cleverreachClientId: string | null, cleverreachSecret: string | null, };
+export type Settings = { cleverreachClientId: string | null, cleverreachSecret: string | null, hCaptchaSecret: string | null, reCaptchaSecret: string | null, captchaSitekey: string | null, };
 
 export type StatusResponse = { success: boolean, };
 

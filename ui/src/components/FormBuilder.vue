@@ -117,6 +117,11 @@ const builderItems = computed<Array<Item>>(() => [
         label: t("builder.item.label.button"),
         type: "button",
     },
+    {
+        icon: "i-tabler-hand-click",
+        label: t("builder.item.label.captcha"),
+        type: "captcha",
+    },
 ]);
 const currentlySelectedElement = ref<number | null>(null);
 watch(elementEditOpen, (open) => {

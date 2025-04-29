@@ -39,6 +39,38 @@ const emails = useApiQuery("/api/emails", {
                 </UCard>
             </template>
         </UCollapsible>
+        <UCollapsible v-model:open="model.activate_captcha">
+            <UButton color="neutral" variant="ghost" :icon="model.activate_captcha ? 'i-tabler-square-check' : 'i-tabler-square'">
+                {{ $t("field.label.activateCaptcha") }}
+            </UButton>
+            <template #content v-if="model.captcha_type">
+                <UCard class="m-1" :ui="{ body: 'space-y-2' }">
+                    <UFormField :label="$t('field.label.captchaType')" required>
+                        <USelect
+                            v-model="model.captcha_type"
+                            :items="[
+                                {
+                                    value: 'h-captcha',
+                                    label: $t('field.option.captchaType.hCaptcha'),
+                                },
+                                {
+                                    value: 're-captcha',
+                                    label: $t('field.option.captchaType.reCaptcha'),
+                                },
+                            ]"
+                            value-key="value"
+                            label-key="label"
+                        />
+                    </UFormField>
+                    <UFormField :label="$t('field.label.captchaCallback')" required>
+                        <UInput v-model="model.captcha_callback" />
+                    </UFormField>
+                    <UFormField :label="$t('field.label.captchaExpiredCallback')" required>
+                        <UInput v-model="model.captcha_expired_callback" />
+                    </UFormField>
+                </UCard>
+            </template>
+        </UCollapsible>
         <UCollapsible v-model:open="model.activate_cleverreach">
             <UButton
                 color="neutral"

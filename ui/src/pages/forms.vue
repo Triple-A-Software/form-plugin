@@ -46,6 +46,10 @@ const emptyForm: NullToUndefined<Form> = {
     cleverreach_salutation: undefined,
     name: "",
     props: [],
+    activate_captcha: false,
+    captcha_type: "h-captcha",
+    captcha_callback: undefined,
+    captcha_expired_callback: undefined,
 };
 function create() {
     editingForm.value = clone(emptyForm);

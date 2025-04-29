@@ -5,9 +5,11 @@ use tera::Tera;
 
 use crate::{
     AppState,
+    captcha::CaptchaType,
     model::{
-        ButtonProperty, ButtongroupProperty, CheckboxProperty, Form, NumberProperty, Property,
-        RangeProperty, SelectProperty, TextProperty, TextareaProperty,
+        ButtonProperty, ButtongroupProperty, CaptchaProperty, CheckboxProperty, Form,
+        NumberProperty, Property, RangeProperty, SelectProperty, Settings, TextProperty,
+        TextareaProperty,
     },
 };
 
@@ -17,12 +19,34 @@ pub fn render_form(
     form: Form,
     prefix: impl AsRef<[u8]>,
     suffix: impl AsRef<[u8]>,
+    settings: Settings,
 ) -> String {
     let renderer = Renderer::new(language, state.tera);
     let mut output = BufWriter::new(Vec::new());
     output.write_all(prefix.as_ref()).unwrap();
     for prop in form.props.iter() {
-        prop.render(&renderer, &mut output);
+        if let Property::Captcha(_) = prop {
+            // if the property is a captcha we need to replace its data with the data from the settings and the
+            // form itself
+            if let (Some(captcha_type), Some(captcha_sitekey)) =
+                (&form.captcha_type, &settings.captcha_sitekey)
+            {
+                CaptchaProperty {
+                    captcha_class: match captcha_type {
+                        CaptchaType::HCaptcha => "h-captcha",
+                        CaptchaType::ReCaptcha => "g-recaptcha",
+                    }
+                    .to_string(),
+                    captcha_type: *captcha_type,
+                    sitekey: captcha_sitekey.to_string(),
+                    callback: form.captcha_callback.clone(),
+                    expired_callback: form.captcha_expired_callback.clone(),
+                }
+                .render(&renderer, &mut output);
+            }
+        } else {
+            prop.render(&renderer, &mut output);
+        }
     }
     output.write_all(suffix.as_ref()).unwrap();
     String::from_utf8(output.into_inner().unwrap()).unwrap()
@@ -62,6 +86,7 @@ impl Render for Property {
             Property::Range(prop) => prop.render(renderer, output),
             Property::Buttongroup(prop) => prop.render(renderer, output),
             Property::Button(prop) => prop.render(renderer, output),
+            Property::Captcha(prop) => prop.render(renderer, output),
         }
     }
 }
@@ -85,3 +110,4 @@ impl_render!(SelectProperty, "select_property.html");
 impl_render!(RangeProperty, "range_property.html");
 impl_render!(ButtongroupProperty, "buttongroup_property.html");
 impl_render!(ButtonProperty, "button_property.html");
+impl_render!(CaptchaProperty, "captcha.html");
