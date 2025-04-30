@@ -32,6 +32,7 @@ export default {
 		no: "Nein",
 		yes: "Ja",
 		sendEmail: "E-mail senden",
+		exportSubmissions: "Einsendungen exportieren",
 	},
 	modal: {
 		edit: {
@@ -145,6 +146,8 @@ export default {
 		},
 		tooltip: {
 			sendEmail: "E-mail an diesen User senden",
+			exportSubmissions:
+				"Alle Einsendungen mit dem aktuellen filter exportieren",
 		},
 	},
 	builder: {

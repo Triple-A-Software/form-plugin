@@ -1,13 +1,15 @@
 use axum::{
     Json, Router,
     extract::{Query, State},
+    http::{HeaderMap, HeaderValue},
+    response::IntoResponse,
     routing::{get, post},
 };
 use serde::Deserialize;
 use ts_rs::TS;
 
 use crate::{
-    AppState, extract_field_as_string,
+    AppState, convert_to_csv, extract_field_as_string,
     model::{Form, StatusResponse, Submission},
     send_email,
 };
@@ -23,6 +25,7 @@ pub fn submission_router() -> Router<AppState> {
             post(send_email_to_submission),
         )
         .route("/api/submissions/count", get(count_submissions))
+        .route("/api/submissions/export", get(export_submissions))
 }
 
 #[derive(Deserialize, TS)]
@@ -111,6 +114,42 @@ async fn count_submissions(
                 .unwrap(),
         )
     }
+}
+
+async fn export_submissions(
+    State(state): State<AppState>,
+    Query(query): Query<ListSubmissionsQuery>,
+) -> impl IntoResponse {
+    let submissions: Vec<Submission> = if let Some(form_id) = query.form_id {
+        sqlx::query_as(r#"select * from submission where form_id = $1 order by timestamp asc"#)
+            .bind(form_id)
+            .fetch_all(&state.db)
+            .await
+            .unwrap()
+    } else {
+        sqlx::query_as(r#"select * from submission order by timestamp asc"#)
+            .fetch_all(&state.db)
+            .await
+            .unwrap()
+    };
+    let mut headers = HeaderMap::new();
+    headers.insert(
+        "Content-disposition",
+        HeaderValue::from_str(
+            r#"Attachment;filename="submissions_export_${new Date().toDateString()}.csv"#,
+        )
+        .unwrap(),
+    );
+    headers.insert("Content-type", HeaderValue::from_static("text/csv"));
+    (
+        headers,
+        convert_to_csv(
+            &submissions
+                .into_iter()
+                .map(|s| serde_json::to_value(s).unwrap())
+                .collect::<Vec<_>>(),
+        ),
+    )
 }
 
 #[derive(Deserialize, TS)]

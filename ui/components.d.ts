@@ -47,6 +47,7 @@ declare module 'vue' {
     UIcon: typeof import('./node_modules/@nuxt/ui/dist/runtime/vue/components/Icon.vue')['default']
     UInput: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Input.vue')['default']
     UInputNumber: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/InputNumber.vue')['default']
+    ULink: typeof import('./node_modules/@nuxt/ui/dist/runtime/vue/components/Link.vue')['default']
     ULinkBase: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/LinkBase.vue')['default']
     UModal: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/Modal.vue')['default']
     UNavigationMenu: typeof import('./node_modules/@nuxt/ui/dist/runtime/components/NavigationMenu.vue')['default']

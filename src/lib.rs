@@ -1,3 +1,4 @@
+use std::collections::HashSet;
 use std::env;
 
 use cleverreach::Cleverreach;
@@ -61,4 +62,69 @@ pub fn extract_field_as_string(data: &Value, field_name: Option<&str>) -> Option
     } else {
         None
     }
+}
+
+pub fn convert_to_csv(arr: &[serde_json::Value]) -> String {
+    // Collect all unique keys from all objects
+    let mut all_keys = HashSet::new();
+
+    fn extract_keys(obj: &serde_json::Value, prefix: &str, all_keys: &mut HashSet<String>) {
+        if let Some(obj_map) = obj.as_object() {
+            for (key, value) in obj_map {
+                let mut _key = key.clone();
+                if !prefix.is_empty() {
+                    _key = format!("{}.{}", prefix, key);
+                }
+                if value.is_object() {
+                    extract_keys(value, &_key, all_keys);
+                } else {
+                    all_keys.insert(_key);
+                }
+            }
+        }
+    }
+
+    for obj in arr {
+        extract_keys(obj, "", &mut all_keys);
+    }
+
+    let headers: Vec<String> = all_keys.into_iter().collect();
+
+    // Create the header row
+    let mut csv_rows = vec![headers.join(",")];
+
+    // Create the data rows
+    for row in arr {
+        let values: Vec<String> = headers
+            .iter()
+            .map(|header| {
+                let header_path: Vec<&str> = header.split('.').collect();
+                let mut value = row.clone();
+                for key in header_path {
+                    if let Some(v) = value.get(key) {
+                        value = v.clone();
+                    } else {
+                        value = serde_json::Value::String(String::new());
+                        break;
+                    }
+                }
+
+                let escaped_value = match value.as_str() {
+                    Some(v) => v.replace("\"", "\"\""),
+                    None => value.to_string(),
+                };
+
+                if escaped_value.contains(',') || escaped_value.contains('"') {
+                    format!("\"{}\"", escaped_value)
+                } else {
+                    escaped_value
+                }
+            })
+            .collect();
+
+        csv_rows.push(values.join(","));
+    }
+
+    // Join all rows with newline characters
+    csv_rows.join("\n")
 }

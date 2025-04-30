@@ -30,6 +30,7 @@ export default {
 		no: "No",
 		yes: "Yes",
 		sendEmail: "Send email",
+		exportSubmissions: "Export submissions",
 	},
 	modal: {
 		edit: {
@@ -143,6 +144,7 @@ export default {
 		},
 		tooltip: {
 			sendEmail: "Send email to this user",
+			exportSubmissions: "Export all submissions matching the current filter",
 		},
 	},
 	builder: {
