@@ -54,10 +54,17 @@ type SubmissionsApi = {
 	"/api/submissions": {
 		GET: {
 			response: Array<T.Submission>;
+			query: T.ListSubmissionsQuery;
 		};
 		DELETE: {
 			response: T.StatusResponse;
 			body: T.DeleteSubmissionBody;
+		};
+	};
+	"/api/submissions/count": {
+		GET: {
+			response: number;
+			query: T.ListSubmissionsQuery;
 		};
 	};
 	"/api/submissions/send-email": {

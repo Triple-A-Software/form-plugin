@@ -1,14 +1,31 @@
 <script setup lang="ts">
 import { useApiMutation, useApiQuery } from "@/utils/api";
 import type { TableColumn } from "@nuxt/ui";
-import { computed, ref } from "vue";
+import { computed, ref, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Submission } from "../../../bindings";
+import { useForms } from "@/store/forms";
 
 const { t, locale } = useI18n();
 
 const submissions = useApiQuery("/api/submissions", {
     method: "GET",
+    query: () => {
+        console.log(page.value);
+        return {
+            form_id: filterByForm.value ?? null,
+            page: page.value - 1,
+            items_per_page: itemsPerPage.value,
+        };
+    },
+});
+const submissionCount = useApiQuery("/api/submissions/count", {
+    method: "GET",
+    query: () => ({
+        form_id: filterByForm.value ?? null,
+        page: page.value - 1,
+        items_per_page: itemsPerPage.value,
+    }),
 });
 
 const columns = computed<TableColumn<Submission>[]>(() => [
@@ -47,9 +64,35 @@ const deleteMutation = useApiMutation(
         invalidate: [submissions],
     },
 );
+
+const filterByForm = ref<number | undefined>(undefined);
+const page = ref(1);
+const itemsPerPage = ref(100);
+watch(
+    () => [filterByForm.value, page.value, itemsPerPage.value],
+    () => {
+        submissions.refetch();
+        submissionCount.refetch();
+    },
+);
+const forms = useForms();
 </script>
 
 <template>
+    <div class="flex items-center justify-between gap-2 px-4 py-3.5 overflow-x-auto">
+        <UButtonGroup class="w-full max-w-48">
+            <USelectMenu
+                v-model="filterByForm"
+                :placeholder="$t('field.placeholder.filterByForm')"
+                :items="forms.forms.data"
+                value-key="id"
+                label-key="name"
+                class="w-full"
+            />
+            <UButton icon="i-tabler-filter-off" color="neutral" variant="subtle" @click="filterByForm = undefined" />
+        </UButtonGroup>
+        <UPagination v-model:page="page" :total="submissionCount.data.value" :items-per-page="itemsPerPage" />
+    </div>
     <UTable :columns="columns" :data="submissions.data.value" v-model:expanded="expanded">
         <template #expanded="{ row }">
             <div v-for="(value, key) in row.original.data">

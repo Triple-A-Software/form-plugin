@@ -1,6 +1,6 @@
 use axum::{
     Json, Router,
-    extract::State,
+    extract::{Query, State},
     routing::{get, post},
 };
 use serde::Deserialize;
@@ -22,6 +22,7 @@ pub fn submission_router() -> Router<AppState> {
             "/api/submissions/send-email",
             post(send_email_to_submission),
         )
+        .route("/api/submissions/count", get(count_submissions))
 }
 
 #[derive(Deserialize, TS)]
@@ -57,13 +58,59 @@ async fn send_email_to_submission(
     }
 }
 
-async fn list_submissions(State(state): State<AppState>) -> Json<Vec<Submission>> {
-    Json(
-        sqlx::query_as(r#"select * from submission"#)
-            .fetch_all(&state.db)
-            .await
-            .unwrap(),
-    )
+#[derive(Deserialize, TS)]
+#[ts(export, export_to = "index.ts")]
+struct ListSubmissionsQuery {
+    form_id: Option<i32>,
+    page: i32,
+    items_per_page: i32,
+}
+async fn list_submissions(
+    State(state): State<AppState>,
+    Query(query): Query<ListSubmissionsQuery>,
+) -> Json<Vec<Submission>> {
+    if let Some(form_id) = query.form_id {
+        Json(
+            sqlx::query_as(r#"select * from submission where form_id = $1 order by timestamp asc limit $2 offset $3"#)
+                .bind(form_id)
+                .bind(query.items_per_page)
+                .bind(query.page)
+                .fetch_all(&state.db)
+                .await
+                .unwrap(),
+        )
+    } else {
+        Json(
+            sqlx::query_as(r#"select * from submission order by timestamp asc limit $1 offset $2"#)
+                .bind(query.items_per_page)
+                .bind(query.page)
+                .fetch_all(&state.db)
+                .await
+                .unwrap(),
+        )
+    }
+}
+
+async fn count_submissions(
+    State(state): State<AppState>,
+    Query(query): Query<ListSubmissionsQuery>,
+) -> Json<i64> {
+    if let Some(form_id) = query.form_id {
+        Json(
+            sqlx::query_scalar(r#"select count(*) from submission where form_id = $1"#)
+                .bind(form_id)
+                .fetch_one(&state.db)
+                .await
+                .unwrap(),
+        )
+    } else {
+        Json(
+            sqlx::query_scalar(r#"select count(*) from submission"#)
+                .fetch_one(&state.db)
+                .await
+                .unwrap(),
+        )
+    }
 }
 
 #[derive(Deserialize, TS)]

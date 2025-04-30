@@ -139,6 +139,7 @@ export default {
 		placeholder: {
 			confirmationEmail: "Select confirmation email",
 			selectEmail: "Select an email",
+			filterByForm: "Filter by form",
 		},
 		tooltip: {
 			sendEmail: "Send email to this user",

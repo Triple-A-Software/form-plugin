@@ -15,3 +15,6 @@ reset-db:
 build:
     cargo build
     cd ui && bun vite build
+
+seed:
+    cargo run -p seed

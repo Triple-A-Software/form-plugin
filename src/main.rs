@@ -4,10 +4,6 @@ use std::{
     net::{IpAddr, SocketAddr},
 };
 
-use api::{
-    email::email_router, form::form_router, settings::settings_router,
-    submission::submission_router,
-};
 use axum::{
     Json, Router,
     extract::{self, Query, State},
@@ -15,13 +11,25 @@ use axum::{
     response::{Html, IntoResponse, Redirect},
     routing::{get, post},
 };
-use captcha::Captcha;
-use cleverreach::{Cleverreach, ReceiverRequest};
-use model::{CleverreachFormCondition, Email, Form, Settings};
-use render::render_form;
+use form_plugin::render::render_form;
+use form_plugin::{
+    AppState,
+    api::{
+        email::email_router, form::form_router, settings::settings_router,
+        submission::submission_router,
+    },
+};
+use form_plugin::{captcha::Captcha, extract_field_as_string, send_email};
+use form_plugin::{
+    cleverreach::{Cleverreach, ReceiverRequest},
+    create_db,
+};
+use form_plugin::{
+    database::create_submission,
+    model::{CleverreachFormCondition, Form, Settings, Submission},
+};
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use sqlx::PgPool;
 use tera::Tera;
 use tokio::net::TcpListener;
 use tower_http::{
@@ -30,25 +38,6 @@ use tower_http::{
     trace::{self, TraceLayer},
 };
 use tracing::Level;
-
-mod captcha;
-mod cleverreach;
-mod date;
-mod model;
-mod render;
-mod api {
-    pub mod email;
-    pub mod form;
-    pub mod settings;
-    pub mod submission;
-}
-
-#[derive(Clone)]
-struct AppState {
-    db: PgPool,
-    tera: Tera,
-    cleverreach: Cleverreach,
-}
 
 #[tokio::main]
 async fn main() {
@@ -222,16 +211,6 @@ async fn render_form_helper(
     }
 }
 
-async fn create_db() -> PgPool {
-    let db_url = env::var("DATABASE_URL").expect("DATABASE_URL must be set");
-    let db = sqlx::PgPool::connect(&db_url).await.unwrap();
-    sqlx::migrate!("./migrations")
-        .run(&db)
-        .await
-        .expect("Failed to run migrations");
-    db
-}
-
 #[derive(Deserialize, Debug, Clone)]
 struct FormSubmitQuery {
     id: i32,
@@ -323,12 +302,16 @@ async fn form_submit(
                 .await;
             }
         }
-        sqlx::query(r#"insert into submission (form_id, data) values ($1, $2)"#)
-            .bind(query.id)
-            .bind(body)
-            .execute(&state.db)
-            .await
-            .unwrap();
+        create_submission(
+            Submission {
+                form_id: query.id,
+                data: sqlx::types::Json(body),
+                ..Default::default()
+            },
+            &state.db,
+        )
+        .await
+        .unwrap();
         if let Some(redirect) = query.redirect {
             Redirect::to(&redirect).into_response()
         } else {
@@ -336,33 +319,6 @@ async fn form_submit(
         }
     } else {
         StatusCode::NOT_FOUND.into_response()
-    }
-}
-
-pub async fn send_email(db: &PgPool, id: i32, form: &Form, body: &Value, to: &str) {
-    let email: Email = sqlx::query_as(r#"select * from email where id = $1"#)
-        .bind(id)
-        .fetch_one(db)
-        .await
-        .unwrap();
-    let mut context = tera::Context::new();
-    context.insert("form", &form);
-    context.insert("submission", &body);
-    email.send(to, context).await.unwrap();
-}
-
-pub fn extract_field_as_string(data: &Value, field_name: Option<&str>) -> Option<String> {
-    if let Some(field_name) = field_name {
-        Some(data.get(field_name).map(|v| {
-            if let Value::String(v) = v {
-                v.to_string()
-            } else {
-                v.to_string()
-            }
-        }))
-        .flatten()
-    } else {
-        None
     }
 }
 

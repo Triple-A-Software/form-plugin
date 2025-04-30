@@ -3,7 +3,7 @@ use serde::Deserialize;
 use ts_rs::TS;
 
 use crate::{
-    AppState,
+    AppState, database,
     model::{Email, StatusResponse},
 };
 
@@ -27,17 +27,7 @@ async fn list_emails(State(state): State<AppState>) -> Json<Vec<Email>> {
 }
 
 async fn create_email(State(state): State<AppState>, Json(body): Json<Email>) -> Json<Email> {
-    let email: Email = sqlx::query_as(
-        r#"insert into email (
-            subject,
-            content
-        ) values ($1, $2) returning *"#,
-    )
-    .bind(body.subject)
-    .bind(body.content)
-    .fetch_one(&state.db)
-    .await
-    .unwrap();
+    let email = database::create_email(body, &state.db).await.unwrap();
     Json(email)
 }
 

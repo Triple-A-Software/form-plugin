@@ -1,3 +1,5 @@
+#[cfg(feature = "seed")]
+use fake::Dummy;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use sqlx::prelude::Type;
@@ -11,6 +13,7 @@ pub struct Captcha<'a> {
 }
 
 #[derive(Deserialize, Serialize, Clone, Copy, Debug, TS, Type)]
+#[cfg_attr(feature = "seed", derive(Dummy))]
 #[ts(export, export_to = "index.ts")]
 #[sqlx(type_name = "text", rename_all = "kebab-case")]
 #[serde(rename_all = "kebab-case")]

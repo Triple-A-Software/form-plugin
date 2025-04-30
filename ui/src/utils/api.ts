@@ -84,7 +84,7 @@ export async function fetchApi<
 			if (value.length === 0) {
 				query.append(key, "");
 			}
-		} else if (value) {
+		} else if (value != null) {
 			query.set(key, String(value));
 		}
 	}

@@ -9,7 +9,7 @@ use serde_json::json;
 use ts_rs::TS;
 
 use crate::{
-    AppState,
+    AppState, database,
     model::{Form, Settings, StatusResponse},
     render::render_form,
 };
@@ -78,23 +78,7 @@ async fn preview_form(State(state): State<AppState>, Json(form): Json<Form>) -> 
 }
 
 async fn create_form(State(state): State<AppState>, Json(body): Json<Form>) -> Json<Form> {
-    let created = sqlx::query_as(
-        r#"insert into form (
-            name,
-            send_confirmation_email,
-            confirmation_email_id,
-            confirmation_email_recipient_field_name,
-            props
-        ) values ($1, $2, $3, $4, $5) returning *"#,
-    )
-    .bind(body.name)
-    .bind(body.send_confirmation_email)
-    .bind(body.confirmation_email_id)
-    .bind(body.confirmation_email_recipient_field_name)
-    .bind(body.props)
-    .fetch_one(&state.db)
-    .await
-    .unwrap();
+    let created = database::create_form(body, &state.db).await.unwrap();
     Json(created)
 }
 

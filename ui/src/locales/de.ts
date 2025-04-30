@@ -141,6 +141,7 @@ export default {
 		placeholder: {
 			confirmationEmail: "Bestätigungs-Email auswählen",
 			selectEmail: "E-mail auswählen",
+			filterByForm: "Nach Formular filtern",
 		},
 		tooltip: {
 			sendEmail: "E-mail an diesen User senden",

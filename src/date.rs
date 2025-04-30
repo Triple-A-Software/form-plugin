@@ -1,9 +1,12 @@
 use chrono::{DateTime, FixedOffset, NaiveDateTime, TimeZone, Utc};
+#[cfg(feature = "seed")]
+use fake::Dummy;
 use serde::{Deserialize, Serialize};
 use sqlx::{Decode, Encode, Postgres, prelude::Type};
 use ts_rs::TS;
 
-#[derive(Clone, Debug, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Clone, Debug, Default, PartialEq, Eq, PartialOrd, Ord)]
+#[cfg_attr(feature = "seed", derive(Dummy))]
 pub struct JavascriptDate {
     inner: DateTime<Utc>,
 }
