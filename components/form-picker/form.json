@@ -21,7 +21,7 @@
 			"id": "form_id",
 			"type": "pluginData",
 			"pluginId": "form-plugin",
-			"plugin_endpoint": {
+			"pluginEndpoint": {
 				"list": "/api/form-select/list",
 				"byId": "/api/form-select/by-id"
 			},
