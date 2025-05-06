@@ -33,8 +33,8 @@ impl Captcha<'_> {
     pub async fn handle(&self, settings: Settings) -> Option<CaptchaResponse> {
         let secret = settings.get_captcha_secret(self.r#type);
         let url = match self.r#type {
-            CaptchaType::HCaptcha {} => "https://api.hcaptcha.com/siteverify",
-            CaptchaType::ReCaptcha {} => "https://www.google.com/recaptcha/api/siteverify",
+            CaptchaType::HCaptcha => "https://api.hcaptcha.com/siteverify",
+            CaptchaType::ReCaptcha => "https://www.google.com/recaptcha/api/siteverify",
         };
         let response = match self.r#type {
             CaptchaType::HCaptcha => self.body.get("g-recaptcha-response"),

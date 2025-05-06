@@ -1,6 +1,6 @@
 use axum::{
     Json, Router,
-    extract::State,
+    extract::{Query, State},
     response::IntoResponse,
     routing::{get, post},
 };
@@ -24,7 +24,24 @@ pub fn form_router() -> Router<AppState> {
                 .delete(delete_form),
         )
         .route("/api/forms/preview", post(preview_form))
-        .route("/api/form-select", get(list_forms_for_select))
+        .route("/api/form-select/list", get(list_forms_for_select))
+        .route("/api/form-select/by-id", get(get_form_by_id_for_select))
+}
+
+#[derive(Deserialize)]
+struct SelectFormQuery {
+    value: i32,
+}
+async fn get_form_by_id_for_select(
+    State(state): State<AppState>,
+    Query(query): Query<SelectFormQuery>,
+) -> impl IntoResponse {
+    let form: Form = sqlx::query_as(r#"select * from form where id = $1"#)
+        .bind(query.value)
+        .fetch_one(&state.db)
+        .await
+        .unwrap();
+    Json(form)
 }
 
 async fn list_forms_for_select(State(state): State<AppState>) -> impl IntoResponse {

@@ -29,7 +29,11 @@
 			"allowed_roles": ["admin", "developer"]
 		},
 		{
-			"route": "/api/form-select",
+			"route": "/api/form-select/list",
+			"allowed_roles": ["admin", "developer", "editor", "author"]
+		},
+		{
+			"route": "/api/form-select/by-id",
 			"allowed_roles": ["admin", "developer", "editor", "author"]
 		},
 		{
