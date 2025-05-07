@@ -1,1 +1,3 @@
-{{ render_form(relations.form_id.id, properties.redirect) }}
+{{#if relations.form_id as form}}
+    {{ render_form(form.id, properties.redirect) }}
+{{/if}}
