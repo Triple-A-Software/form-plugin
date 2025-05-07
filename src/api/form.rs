@@ -28,7 +28,7 @@ pub fn form_router() -> Router<AppState> {
         .route("/api/form-select/by-id", get(get_form_by_id_for_select))
 }
 
-#[derive(Deserialize)]
+#[derive(Debug, Deserialize)]
 struct SelectFormQuery {
     value: i32,
 }
@@ -54,7 +54,7 @@ async fn list_forms_for_select(State(state): State<AppState>) -> impl IntoRespon
             .into_iter()
             .map(|form| {
                 json!({
-                    "value": form.id,
+                    "value": form.id.to_string(),
                     "label": form.name,
                 })
             })
