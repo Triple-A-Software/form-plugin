@@ -55,6 +55,59 @@ pub async fn create_form(
     .await
 }
 
+pub async fn update_form(
+    id: i32,
+    form: Form,
+    db: impl Executor<'_, Database = Postgres>,
+) -> sqlx::Result<Form> {
+    sqlx::query_as(
+        r#"update form set
+            name = $1,
+            send_confirmation_email = $2,
+            confirmation_email_id = $3,
+            confirmation_email_recipient_field_name = $4,
+            send_submission_as_email_enabled = $5,
+            send_submission_as_email = $6,
+            submissions_email_id = $7,
+            activate_cleverreach = $8,
+            cleverreach_condition = $9,
+            cleverreach_group_id = $10,
+            cleverreach_email_field_name = $11,
+            cleverreach_firstname_field_name = $12,
+            cleverreach_lastname_field_name = $13,
+            cleverreach_salutation = $14,
+            activate_captcha = $15,
+            captcha_type = $16,
+            captcha_callback = $17,
+            captcha_expired_callback = $18,
+            props = $19
+        where id = $20
+        returning *"#,
+    )
+    .bind(form.name)
+    .bind(form.send_confirmation_email)
+    .bind(form.confirmation_email_id)
+    .bind(form.confirmation_email_recipient_field_name)
+    .bind(form.send_submission_as_email_enabled)
+    .bind(form.send_submission_as_email)
+    .bind(form.submissions_email_id)
+    .bind(form.activate_cleverreach)
+    .bind(form.cleverreach_condition)
+    .bind(form.cleverreach_group_id)
+    .bind(form.cleverreach_email_field_name)
+    .bind(form.cleverreach_firstname_field_name)
+    .bind(form.cleverreach_lastname_field_name)
+    .bind(form.cleverreach_salutation)
+    .bind(form.activate_captcha)
+    .bind(form.captcha_type)
+    .bind(form.captcha_callback)
+    .bind(form.captcha_expired_callback)
+    .bind(form.props)
+    .bind(id)
+    .fetch_one(db)
+    .await
+}
+
 pub async fn create_email(
     email: Email,
     db: impl Executor<'_, Database = Postgres>,

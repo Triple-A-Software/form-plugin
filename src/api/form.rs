@@ -103,23 +103,9 @@ async fn update_form(
     State(state): State<AppState>,
     Json(body): Json<Form>,
 ) -> Json<StatusResponse> {
-    sqlx::query(
-        r#"update form set
-            name = $1,
-            send_confirmation_email = $2,
-            confirmation_email_id = $3,
-            confirmation_email_recipient_field_name = $4,
-            props = $5 where id = $6"#,
-    )
-    .bind(body.name)
-    .bind(body.send_confirmation_email)
-    .bind(body.confirmation_email_id)
-    .bind(body.confirmation_email_recipient_field_name)
-    .bind(body.props)
-    .bind(body.id)
-    .execute(&state.db)
-    .await
-    .unwrap();
+    database::update_form(body.id, body, &state.db)
+        .await
+        .unwrap();
     Json(StatusResponse::success())
 }
 
