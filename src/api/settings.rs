@@ -32,13 +32,15 @@ async fn update_settings(
         where id = 'settings'
         "#,
     )
-    .bind(body.cleverreach_client_id)
-    .bind(body.cleverreach_secret)
+    .bind(&body.cleverreach_client_id)
+    .bind(&body.cleverreach_secret)
     .bind(body.h_captcha_secret)
     .bind(body.re_captcha_secret)
     .bind(body.captcha_sitekey)
     .execute(&state.db)
     .await
     .unwrap();
+    let mut cleverreach = state.cleverreach.write().await;
+    cleverreach.set_client_credentials(body.cleverreach_client_id, body.cleverreach_secret);
     Json(StatusResponse::success())
 }

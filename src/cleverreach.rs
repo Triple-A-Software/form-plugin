@@ -4,7 +4,7 @@ use serde_json::json;
 const CR_TOKEN_URL: &str = "https://rest.cleverreach.com/oauth/token.php";
 const CR_API_URL: &str = "https://rest.cleverreach.com/v3";
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct Cleverreach {
     access_token: Option<AccessToken>,
     client: reqwest::Client,
@@ -20,6 +20,15 @@ impl Cleverreach {
             client_id,
             client_secret,
         }
+    }
+
+    pub fn set_client_credentials(
+        &mut self,
+        client_id: Option<String>,
+        client_secret: Option<String>,
+    ) {
+        self.client_id = client_id;
+        self.client_secret = client_secret;
     }
 
     async fn update_access_token(&mut self) -> anyhow::Result<()> {
@@ -73,11 +82,10 @@ impl Cleverreach {
     }
 }
 
-#[derive(Deserialize, Clone)]
+#[derive(Deserialize, Clone, Debug)]
 pub struct AccessToken {
     access_token: String,
     expires_in: usize,
-    refresh_token: String,
 }
 
 pub struct ReceiverRequest {

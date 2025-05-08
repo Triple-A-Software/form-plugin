@@ -2,6 +2,7 @@ use std::{
     collections::HashMap,
     env,
     net::{IpAddr, SocketAddr},
+    sync::Arc,
 };
 
 use axum::{
@@ -31,7 +32,7 @@ use form_plugin::{
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use tera::Tera;
-use tokio::net::TcpListener;
+use tokio::{net::TcpListener, sync::RwLock};
 use tower_http::{
     normalize_path::NormalizePathLayer,
     services::ServeDir,
@@ -63,7 +64,10 @@ async fn main() {
     let state = AppState {
         db,
         tera,
-        cleverreach: Cleverreach::new(settings.cleverreach_client_id, settings.cleverreach_secret),
+        cleverreach: Arc::new(RwLock::new(Cleverreach::new(
+            settings.cleverreach_client_id,
+            settings.cleverreach_secret,
+        ))),
     };
     let router = Router::new()
         .nest_service("/ui", ServeDir::new("ui/dist"))
@@ -275,6 +279,8 @@ async fn form_submit(
                         // the form is used to sign up for a cleverreach newsletter
                         state
                             .cleverreach
+                            .write()
+                            .await
                             .create_receiver(ReceiverRequest {
                                 group_id: group_id.to_string(),
                                 email,

@@ -1,11 +1,12 @@
-use std::collections::HashSet;
 use std::env;
+use std::{collections::HashSet, sync::Arc};
 
 use cleverreach::Cleverreach;
 use model::{Email, Form};
 use serde_json::Value;
 use sqlx::PgPool;
 use tera::Tera;
+use tokio::sync::RwLock;
 
 pub mod captcha;
 pub mod cleverreach;
@@ -24,7 +25,7 @@ pub mod api {
 pub struct AppState {
     pub db: PgPool,
     pub tera: Tera,
-    pub cleverreach: Cleverreach,
+    pub cleverreach: Arc<RwLock<Cleverreach>>,
 }
 
 pub async fn create_db() -> PgPool {
