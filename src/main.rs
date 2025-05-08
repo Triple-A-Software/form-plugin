@@ -165,7 +165,11 @@ async fn render_form_helper(
         body.json_args.split_first_chunk::<2>()
     {
         if let Some(id) = id.as_i64() {
-            let form: Form = match sqlx::query_as(r#"select * from form where id = $1"#)
+            // we need to cast the id to an int with `id::int`, because otherwise we randomly get an error,
+            // that there is not enough data left in message or the binary data in the parameter 1 is
+            // incorrect, even though the id column is defined as an `int` which according to the
+            // documentation of sqlx, is mapped to an i32
+            let form: Form = match sqlx::query_as(r#"select * from form where id::int = $1"#)
                 .bind(id)
                 .fetch_one(&state.db)
                 .await
