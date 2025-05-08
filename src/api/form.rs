@@ -36,7 +36,11 @@ async fn get_form_by_id_for_select(
     State(state): State<AppState>,
     Query(query): Query<SelectFormQuery>,
 ) -> impl IntoResponse {
-    let form: Form = sqlx::query_as(r#"select * from form where id = $1"#)
+    // we need to cast the id to an int with `id::int`, because otherwise we randomly get an error,
+    // that there is not enough data left in message or the binary data in the parameter 1 is
+    // incorrect, even though the id column is defined as an `int` which according to the
+    // documentation of sqlx, is mapped to an i32
+    let form: Form = sqlx::query_as(r#"select * from form where id::int = $1"#)
         .bind(query.value)
         .fetch_one(&state.db)
         .await

@@ -221,7 +221,7 @@ struct FormSubmitQuery {
     redirect: Option<String>,
 }
 async fn form_submit(
-    State(mut state): State<AppState>,
+    State(state): State<AppState>,
     Query(query): Query<FormSubmitQuery>,
     extract::Form(body): extract::Form<Value>,
 ) -> impl IntoResponse {
