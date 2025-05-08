@@ -74,7 +74,7 @@ async fn list_submissions(
 ) -> Json<Vec<Submission>> {
     if let Some(form_id) = query.form_id {
         Json(
-            sqlx::query_as(r#"select * from submission where form_id = $1 order by timestamp asc limit $2 offset $3"#)
+            sqlx::query_as(r#"select * from submission where form_id = $1 order by timestamp desc limit $2 offset $3"#)
                 .bind(form_id)
                 .bind(query.items_per_page)
                 .bind(query.page)
@@ -84,12 +84,14 @@ async fn list_submissions(
         )
     } else {
         Json(
-            sqlx::query_as(r#"select * from submission order by timestamp asc limit $1 offset $2"#)
-                .bind(query.items_per_page)
-                .bind(query.page)
-                .fetch_all(&state.db)
-                .await
-                .unwrap(),
+            sqlx::query_as(
+                r#"select * from submission order by timestamp desc limit $1 offset $2"#,
+            )
+            .bind(query.items_per_page)
+            .bind(query.page)
+            .fetch_all(&state.db)
+            .await
+            .unwrap(),
         )
     }
 }
