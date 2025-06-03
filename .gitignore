@@ -1,4 +1,9 @@
 *.tar.gz
-node_modules/*
+node_modules
 .env
 build/
+
+
+# Added by cargo
+
+/target

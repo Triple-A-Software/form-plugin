@@ -1,0 +1,102 @@
+{% set active_classes = [
+    "bg-" ~ property.color ~ "-500",
+    "dark:bg-" ~ property.color ~ "-400",
+    "hover:bg-" ~ property.color ~ "-600",
+    "dark:hover:bg-" ~ property.color ~ "-600",
+    "text-white",
+    "hover:text-white",
+    "border-" ~ property.color ~ "-500",
+    "dark:border-" ~ property.color ~ "-400",
+    "hover:border-" ~ property.color ~ "-600",
+    "dark:hover:border-" ~ property.color ~ "-600",
+] %}
+{% set inactive_classes = [
+    "bg-white",
+    "dark:bg-gray-800",
+    "hover:bg-gray-100",
+    "dark:hover:bg-gray-700",
+    "text-gray-900",
+    "hover:text-" ~ property.color ~ "-700",
+    "border-gray-200",
+    "dark:border-gray-700",
+] %}
+<div class="inline-flex rounded-md shadow-xs {{ property.class }}" id="{{property.name}}__wrapper" role="group">
+    <input type="text" class="hidden output" name="{{property.name}}" />
+    {% for item in property.options %}
+    <button
+        type="button"
+        data-value="{{ item.value }}"
+        {% if item.value == property.default_value %}
+        data-active="true"
+        {%endif%}
+        class="
+px-4
+py-2
+text-sm
+font-medium
+border
+{%if loop.first %}
+    rounded-s-lg
+{% elif loop.last %}
+    rounded-e-lg
+{%endif%}
+focus:z-10
+focus:ring-2
+focus:ring-{{ property.color }}-700
+dark:text-white
+dark:hover:text-white
+dark:focus:ring-{{ property.color }}-500
+dark:focus:text-white
+{% if item.value == property.default_value %}
+    {% for cl in active_classes %}
+        {{cl}}
+    {%endfor%}
+{%else%}
+    {% for cl in inactive_classes %}
+        {{cl}}
+    {%endfor%}
+{%endif%}
+    ">
+        {{ item.label[language] }}
+    </button>
+    {% endfor %}
+</div>
+<script>
+document.addEventListener("DOMContentLoaded", function () {
+    const group = document.querySelector("#{{property.name}}__wrapper");
+
+    // Select all buttons within the group
+    const buttons = group.querySelectorAll("button[type='button']");
+    const hiddenInput = group.querySelector("input.output");
+    const nonActiveClasses = [
+        {% for cl in inactive_classes %}
+            "{{cl}}",
+        {%endfor%}
+    ];
+
+    const activeClasses = [
+        {% for cl in active_classes %}
+        "{{cl}}",
+        {%endfor%}
+    ];
+
+    buttons.forEach((button) => {
+        button.addEventListener("click", function () {
+            // Update the hidden input value
+            hiddenInput.value = button.getAttribute("data-value");
+
+            // Remove active state from all buttons
+            buttons.forEach((btn) => {
+                btn.removeAttribute("data-active");
+                btn.classList.remove(...activeClasses);
+                btn.classList.add(...nonActiveClasses);
+            });
+
+            // Add active state to the clicked button
+            button.setAttribute("data-active", "true");
+            button.classList.add(...activeClasses);
+            button.classList.remove(...nonActiveClasses);
+        });
+    });
+});
+</script>

@@ -1,7 +1,65 @@
 {
+	"$schema": "https://neleto.io/schemas/fix/pluginsystem-rework-improvements/plugin_manifest_schema.json",
 	"name": "form-plugin",
-	"version": "2.1.8",
-	"main": "index.js",
-	"type": "module",
-	"build": "bun run build"
+	"version": "3.0.0",
+	"bin": "./target/release/form-plugin",
+	"include_files": [
+		"ui/dist/**/*",
+		"target/release/form-plugin",
+		"templates/**/*.html",
+		"components/**/*"
+	],
+	"components": "./components",
+	"ui": "/ui",
+	"pages": [
+		{
+			"name": "form-submit",
+			"route": "/form-plugin/submit",
+			"enable_tailwind": false,
+			"allow_select_layout": false
+		}
+	],
+	"api": [
+		{
+			"route": "/api/forms",
+			"allowed_roles": ["admin", "developer"]
+		},
+		{
+			"route": "/api/forms/preview",
+			"allowed_roles": ["admin", "developer"]
+		},
+		{
+			"route": "/api/form-select/list",
+			"allowed_roles": ["admin", "developer", "editor", "author"]
+		},
+		{
+			"route": "/api/form-select/by-id",
+			"allowed_roles": ["admin", "developer", "editor", "author"]
+		},
+		{
+			"route": "/api/emails",
+			"allowed_roles": ["admin", "developer"]
+		},
+		{
+			"route": "/api/submissions",
+			"allowed_roles": ["admin", "developer"]
+		},
+		{
+			"route": "/api/settings",
+			"allowed_roles": ["admin", "developer"]
+		},
+		{
+			"route": "/api/submissins/send-email",
+			"allowed_roles": ["admin", "developer"]
+		}
+	],
+	"helpers": [
+		{
+			"name": "render_form",
+			"route": "/helper/render_form",
+			"type": "inline",
+			"return_value": "String",
+			"arguments": ["Number", "String"]
+		}
+	]
 }

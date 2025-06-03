@@ -1,40 +1,22 @@
-# form-plugin
+# Form-plugin
 
-Plugin to Create and Manage Forms!
+This is a plugin for [neleto](https://neleto.io/) to create and manage forms and newsletters.
 
-# Installation
+## Overview
 
-1. Create a new Element Type using the Element Picker Template
-2. Create a Form (refer to [Create Forms](#create-form) for Instructions)
-3. Add the Form Picker Element to Your Page and select Your created Form
+### Forms
 
-For real-time updates to your forms as you make changes, it's recommended to set the page to 'dynamic'.
+In the forms tab you can create forms and manage build their interface. A form can serve as a newsletter signup form, as a contact form or to submit to a survey.
 
-## Submissions:
-The Submissions tab allows you to view and delete the entries of various forms submitted by users. Here, you can review the information submitted through forms and manage them accordingly.
+### Emails
 
-### Submissions runterladen
-[Submissions runterladen (.csv, excel-kompatibel)](/api/plugins/form-plugin/submissions/download)
+Here you can create and manage Email-templates, which can be sent when someone submits a form, either to you or the submitter themselves.
 
-## Forms:
-In the Forms tab, you can access all the forms you've created. This section enables you to edit or delete existing forms as needed. It provides a centralized location to manage the forms' content and settings efficiently.
+### Submissions
 
-## Newsletter
+When a user submits a form, you can inspect the data they've entered here. You can also send them any of you predefined emails by just pressing a button.
 
-Damit das Newsletter funktioniert, braucht man folgende inputs mit name
-- email
-- firstName
-- lastName
-- salutation
+### Settings
 
-Erstellt man eine Checkbox mit dem name = "subscribe_newsletter" kann man sich auch zum newsletter subscriben, sofern die checkbox gechecked ist
-
-## Create Form:
-The Create Form tab is where you can design new forms. You can specify recipients for the form submissions and get a preview of how the form will appear to users. This feature streamlines the process of creating customized forms tailored to your specific needs.
-
-## Builder:
-The Builder section offers a user-friendly interface where you can select predefined elements to include in your form. By clicking on the Edit button of each element, you can customize properties such as the label, placeholder text, or whether the field is required. Additionally, you have the flexibility to rearrange individual elements within the form. A real-time preview is available directly below the Builder, allowing you to visualize the changes as you make them.
-
-### Builder (Addendum):
-It's important to note that before saving your form, ensure you include a submit button. This button is essential for users to submit their responses. Without it, the form won't function as intended.
+You can manage the settings of this form-plugin here. This is where you configure the cleverreach integration.
 

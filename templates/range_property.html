@@ -1,0 +1,19 @@
+<div class="relative {{ property.class }}">
+    <label for="{{ property.name }}" class="block mb-2 text-sm font-medium text-gray-900 dark:text-white">
+        {{ property.label[language] }}
+    </label>
+    <input id="{{ property.name }}" type="range" max="{{ property.max }}" min="{{ property.min }}" {% if
+        property.step %} step="{{ property.step }}" {%endif%} {% if property.default_value %}
+        value="{{property.default_value}}" {%endif%}
+        class="w-full h-2 bg-gray-200 rounded-lg cursor-pointer dark:bg-gray-700">
+    {%if property.min_label[language] %}
+    <span class="text-sm text-gray-500 dark:text-gray-400 absolute start-0 -bottom-6">
+        {{ property.min_label[language] }}
+    </span>
+    {%endif%}
+    {%if property.max_label[language] %}
+    <span class="text-sm text-gray-500 dark:text-gray-400 absolute end-0 -bottom-6">
+        {{ property.max_label[language] }}
+    </span>
+    {%endif%}
+</div>

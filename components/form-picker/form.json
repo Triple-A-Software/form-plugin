@@ -1,0 +1,98 @@
+{
+	"$schema": "https://neleto.io/schemas/fix/pluginsystem-rework-improvements/form_schema.json",
+	"label": {
+		"de": "Formular",
+		"en": "Form"
+	},
+	"properties": [
+		{
+			"id": "redirect",
+			"type": "text",
+			"label": {
+				"en": "Redirect to after submit",
+				"de": "Weiterleiten nach Absenden zu"
+			},
+			"hint": {
+				"en": "The user will be redirected to this page after submitting the form",
+				"de": "Der Besucher wird zu dieser Seite weitergeleitet, nachdem er das Formular abgesendet hat"
+			}
+		},
+		{
+			"id": "form_id",
+			"type": "pluginData",
+			"pluginId": "form-plugin",
+			"pluginEndpoint": {
+				"list": "/api/form-select/list",
+				"byId": "/api/form-select/by-id"
+			},
+			"valueType": {
+				"Object": {
+					"id": "Number",
+					"name": "String",
+					"send_confirmation_email": "Boolean",
+					"confirmation_email_id": {
+						"Union": ["Nullish", "Number"]
+					},
+					"confirmation_email_recipient_field_name": {
+						"Union": ["Nullish", "String"]
+					},
+					"send_submissions_as_email_enabled": "Boolean",
+					"send_submissions_as_email": {
+						"Union": ["Nullish", "String"]
+					},
+					"submissions_email_id": {
+						"Union": ["Nullish", "Number"]
+					},
+					"activate_cleverreach": "Boolean",
+					"cleverreach_condition": {
+						"Union": [
+							"Nullish",
+							"String",
+							{
+								"Object": {
+									"field": "String"
+								}
+							}
+						]
+					},
+					"cleverreach_group_id": {
+						"Union": ["Nullish", "String"]
+					},
+					"cleverreach_email_field_name": {
+						"Union": ["Nullish", "String"]
+					},
+					"cleverreach_firstname_field_name": {
+						"Union": ["Nullish", "String"]
+					},
+					"cleverreach_lastname_field_name": {
+						"Union": ["Nullish", "String"]
+					},
+					"cleverreach_salutation": {
+						"Union": ["Nullish", "String"]
+					},
+					"activate_captcha": "Boolean",
+					"captcha_type": {
+						"Union": [
+							"Nullish",
+							{ "Literal": "h-captcha" },
+							{ "Literal": "re-captcha" }
+						]
+					},
+					"captcha_fallback": {
+						"Union": ["Nullish", "String"]
+					},
+					"captcha_expired_fallback": {
+						"Union": ["Nullish", "String"]
+					},
+					"props": {
+						"Array": "Any"
+					}
+				}
+			},
+			"label": {
+				"de": "Formular",
+				"en": "Form"
+			}
+		}
+	]
+}
