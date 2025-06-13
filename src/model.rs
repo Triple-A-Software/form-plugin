@@ -1,5 +1,6 @@
 use std::{collections::HashMap, env, fmt::Display};
 
+use axum::http::{HeaderName, HeaderValue};
 #[cfg(feature = "seed")]
 use fake::{
     Dummy, Fake, Faker, Rng,
@@ -151,6 +152,10 @@ impl Email {
                 "http://localhost:{}/email/send",
                 internal_backend_port
             ))
+            .header(
+                HeaderName::from_static("Content-type"),
+                HeaderValue::from_static("application/json"),
+            )
             .body(serde_json::to_string(&EmailSendRequest {
                 receiver,
                 subject: self.subject.clone(),
