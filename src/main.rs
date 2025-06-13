@@ -312,6 +312,24 @@ async fn form_submit(
                 .await;
             }
         }
+        if form.send_confirmation_email {
+            if let (Some(confirmation_email_recipient), Some(confirmation_email_id)) = (
+                extract_field_as_string(
+                    &body,
+                    form.confirmation_email_recipient_field_name.as_deref(),
+                ),
+                &form.confirmation_email_id,
+            ) {
+                send_email(
+                    &state.db,
+                    *confirmation_email_id,
+                    &form,
+                    &body,
+                    &confirmation_email_recipient,
+                )
+                .await;
+            }
+        }
         create_submission(
             Submission {
                 form_id: query.id,
