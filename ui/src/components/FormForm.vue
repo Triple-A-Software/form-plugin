@@ -39,6 +39,31 @@ const emails = useApiQuery("/api/emails", {
                 </UCard>
             </template>
         </UCollapsible>
+        <UCollapsible v-model:open="model.send_submission_as_email_enabled">
+            <UButton
+                color="neutral"
+                variant="ghost"
+                :icon="model.send_submission_as_email_enabled ? 'i-tabler-square-check' : 'i-tabler-square'"
+            >
+                {{ $t("field.label.sendSubmissionAsEmail") }}
+            </UButton>
+            <template #content v-if="model.send_submission_as_email_enabled">
+                <UCard class="m-1" :ui="{ body: 'space-y-2' }">
+                    <UFormField :label="$t('field.label.submissionEmail')" required :help="$t('hint.submissionEmail')">
+                        <USelect
+                            v-model="model.submissions_email_id"
+                            :items="emails.data.value"
+                            value-key="id"
+                            label-key="subject"
+                            :placeholder="$t('field.label.submissionEmail')"
+                        />
+                    </UFormField>
+                    <UFormField :label="$t('field.label.submissionEmailRecipient')" required :help="$t('hint.submissionEmailRecipient')">
+                        <UInput v-model="model.send_submission_as_email" />
+                    </UFormField>
+                </UCard>
+            </template>
+        </UCollapsible>
         <UCollapsible v-model:open="model.activate_captcha">
             <UButton color="neutral" variant="ghost" :icon="model.activate_captcha ? 'i-tabler-square-check' : 'i-tabler-square'">
                 {{ $t("field.label.activateCaptcha") }}

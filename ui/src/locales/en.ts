@@ -12,6 +12,8 @@ export default {
 		hCaptchaSecret:
 			"This secret will be used to authenticate api calls to hCaptcha",
 		captchaSitekey: "",
+		submissionEmail: "This email will be sent to the specified email address for every submission",
+		submissionEmailRecipient: "This email address will receive every submission",
 	},
 	action: {
 		goto: {
@@ -77,6 +79,9 @@ export default {
 			sendConfirmationEmail: "Send confirmation email",
 			confirmationEmail: "Confirmation email",
 			confirmationEmailRecipientFieldName: "Recipient field name",
+			sendSubmissionAsEmail: "Send submission as email",
+			submissionEmail: "Submission email",
+			submissionEmailRecipient: "Submission email recipient",
 			subject: "Subject",
 			content: "Content",
 			color: "Color",

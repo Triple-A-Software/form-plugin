@@ -147,7 +147,10 @@ impl Email {
     pub async fn send(&self, receiver: &str, render_context: Context) -> anyhow::Result<()> {
         let internal_backend_port = env::var("INTERNAL_BACKEND_PORT")?;
         reqwest::Client::new()
-            .post(format!("localhost:{}/email/send", internal_backend_port))
+            .post(format!(
+                "http://localhost:{}/email/send",
+                internal_backend_port
+            ))
             .body(serde_json::to_string(&EmailSendRequest {
                 receiver,
                 subject: self.subject.clone(),
