@@ -170,7 +170,7 @@ async fn render_form_helper(
             // incorrect, even though the id column is defined as an `int` which according to the
             // documentation of sqlx, is mapped to an i32
             let form: Form = match sqlx::query_as(r#"select * from form where id::int = $1"#)
-                .bind(id)
+                .bind(id as i32)
                 .fetch_one(&state.db)
                 .await
             {
