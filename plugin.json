@@ -1,7 +1,7 @@
 {
 	"$schema": "https://neleto.io/schemas/fix/pluginsystem-rework-improvements/plugin_manifest_schema.json",
 	"name": "form-plugin",
-	"version": "3.0.2",
+	"version": "3.0.3",
 	"bin": "./target/release/form-plugin",
 	"include_files": [
 		"ui/dist/**/*",
