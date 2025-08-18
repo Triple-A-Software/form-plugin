@@ -43,7 +43,7 @@ impl Captcha<'_> {
         if let (Some(Value::String(response)), Some(secret)) = (response, secret) {
             reqwest::Client::new()
                 .post(url)
-                .body(format!("secret={}&response={}", secret, response))
+                .body(format!("secret={secret}&response={response}"))
                 .header("Content-type", "application/x-www-form-urlencoded")
                 .send()
                 .await

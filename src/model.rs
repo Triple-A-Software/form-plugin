@@ -148,8 +148,7 @@ impl Email {
         let internal_backend_port = env::var("INTERNAL_BACKEND_PORT")?;
         reqwest::Client::new()
             .post(format!(
-                "http://localhost:{}/email/send",
-                internal_backend_port
+                "http://localhost:{internal_backend_port}/email/send"
             ))
             .json(&EmailSendRequest {
                 receiver,
