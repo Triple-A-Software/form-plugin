@@ -3,7 +3,7 @@
     data-expired-callback="{{ property.expiredCallback }}" {%endif%}></div>
 
 {% if property.captchaType == "h-captcha" %}
-<script src="https://js.hcaptcha.com/1/api.js?hl=fr" async defer></script>
+<script src="https://js.hcaptcha.com/1/api.js" async defer></script>
 {%elif property.captchaType == "re-captcha" %}
 <script src="https://www.google.com/recaptcha/api.js" async defer></script>
 {%endif%}
