@@ -73,7 +73,6 @@ async fn submission_stats(State(state): State<AppState>) -> Json<SubmissionStats
     .fetch_one(&state.db)
     .await
     .unwrap();
-    dbg!(&graph);
     let graph = graph
         .into_iter()
         .fold(Vec::new(), |mut acc: Vec<ApiGraphValue>, g: GraphValue| {
