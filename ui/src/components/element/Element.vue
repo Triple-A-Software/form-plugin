@@ -1,10 +1,9 @@
 <script setup lang="ts">
 import { useI18n } from "vue-i18n";
 import type { Property } from "../../../../bindings";
-import type { NullToUndefined } from "@/utils/types/utils";
 
 defineProps<{
-    element: NullToUndefined<Property>;
+    element: Property;
 }>();
 
 defineEmits<{

@@ -1,1 +1,3 @@
-<template>hello from submission-stats</template>
+<template>
+    <RouterView />
+</template>

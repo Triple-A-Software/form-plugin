@@ -1,3 +1,5 @@
+use std::collections::HashMap;
+
 use axum::{
     Json, Router,
     extract::{Query, State},
@@ -5,11 +7,14 @@ use axum::{
     response::IntoResponse,
     routing::{get, post},
 };
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
+use sqlx::prelude::FromRow;
 use ts_rs::TS;
 
 use crate::{
-    AppState, convert_to_csv, extract_field_as_string,
+    AppState, convert_to_csv,
+    date::JavascriptDate,
+    extract_field_as_string,
     model::{Form, StatusResponse, Submission},
     send_email,
 };
@@ -25,7 +30,76 @@ pub fn submission_router() -> Router<AppState> {
             post(send_email_to_submission),
         )
         .route("/api/submissions/count", get(count_submissions))
+        .route("/api/submissions/recent", get(recent_submissions))
+        .route("/api/submissions/stats", get(submission_stats))
         .route("/api/submissions/export", get(export_submissions))
+}
+
+#[derive(Serialize, TS)]
+#[ts(export, export_to = "index.ts")]
+struct SubmissionStats {
+    total: i32,
+    #[ts(type = "Array<{ date: string } & Record<string, number>>")]
+    graph: Vec<ApiGraphValue>,
+}
+#[derive(Serialize, FromRow)]
+struct ApiGraphValue {
+    date: JavascriptDate,
+    #[serde(flatten)]
+    values: HashMap<String, i32>,
+}
+#[derive(FromRow, Debug)]
+struct GraphValue {
+    date: JavascriptDate,
+    form_id: i32,
+    value: i64,
+}
+async fn submission_stats(State(state): State<AppState>) -> Json<SubmissionStats> {
+    let graph: Vec<GraphValue> = sqlx::query_as(
+        r#"
+        select date_trunc('day', "timestamp") as date, count(timestamp) as value, form_id 
+        from "submission"
+        group by date, form_id order by date
+        "#,
+    )
+    .fetch_all(&state.db)
+    .await
+    .unwrap();
+    let total: i64 = sqlx::query_scalar(
+        r#"
+            select count(*) from "submission"
+        "#,
+    )
+    .fetch_one(&state.db)
+    .await
+    .unwrap();
+    dbg!(&graph);
+    let graph = graph
+        .into_iter()
+        .fold(Vec::new(), |mut acc: Vec<ApiGraphValue>, g: GraphValue| {
+            if let Some(value) = acc.iter_mut().find(|a| a.date == g.date) {
+                value.values.insert(g.form_id.to_string(), g.value as i32);
+            } else {
+                acc.push(ApiGraphValue {
+                    date: g.date,
+                    values: HashMap::from([(g.form_id.to_string(), g.value as i32)]),
+                });
+            }
+            acc
+        });
+    Json(SubmissionStats {
+        graph,
+        total: total as i32,
+    })
+}
+
+async fn recent_submissions(State(state): State<AppState>) -> Json<Vec<Submission>> {
+    let submissions: Vec<Submission> =
+        sqlx::query_as(r#"select * from submission order by timestamp desc limit 10"#)
+            .fetch_all(&state.db)
+            .await
+            .unwrap();
+    Json(submissions)
 }
 
 #[derive(Deserialize, TS)]

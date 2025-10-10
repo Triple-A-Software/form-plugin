@@ -1,14 +1,12 @@
 import type { Property } from "../../bindings";
-import type { NullToUndefined } from "./utils/types/utils";
 
 export type PropertyType = Property["type"];
-export type PropertySelector<TType extends PropertyType> = NullToUndefined<
-	Extract<Property, { type: TType }>
+export type PropertySelector<TType extends PropertyType> = Extract<
+	Property,
+	{ type: TType }
 >;
 
-export function createElement(
-	type: PropertyType,
-): NullToUndefined<Property> | undefined {
+export function createElement(type: PropertyType): Property | undefined {
 	if (type === "button") return createButton();
 	else if (type === "number") return createNumber();
 	else if (type === "textarea") return createTextarea();
@@ -30,7 +28,7 @@ export function createButton(): PropertySelector<"button"> {
 		name: "",
 		button_type: "button",
 		variant: "solid",
-		default_value: null,
+		default_value: undefined,
 		color: "neutral",
 	};
 }

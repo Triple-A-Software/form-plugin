@@ -1,1 +1,3 @@
-<template>hello from recent-submissions</template>
+<template>
+    <RouterView />
+</template>

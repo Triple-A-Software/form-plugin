@@ -1912,6 +1912,7 @@ version = "0.1.0"
 dependencies = [
  "fake",
  "form-plugin",
+ "rand 0.9.1",
  "tokio",
 ]
 

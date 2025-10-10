@@ -2,6 +2,7 @@ set dotenv-load := true
 
 codegen:
     cargo test export_bindings
+    ./codegen.sh
 
 dev:
     cargo watch -x run

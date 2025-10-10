@@ -50,14 +50,13 @@ import type { Property } from "../../../bindings";
 import { useI18n } from "vue-i18n";
 import type { Item } from "./BuilderItemSelectCard.vue";
 import { createElement } from "@/utils";
-import type { NullToUndefined } from "@/utils/types/utils";
 
 const elementEditOpen = ref(false);
 const elementSelectorOpen = ref(false);
 
 const { t } = useI18n();
 
-const model = defineModel<Array<NullToUndefined<Property>>>({
+const model = defineModel<Array<Property>>({
     required: true,
 });
 

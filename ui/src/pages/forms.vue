@@ -4,7 +4,6 @@ import type { Form } from "../../../bindings";
 import { useI18n } from "vue-i18n";
 import { useApiMutation } from "@/utils/api";
 import clone from "just-clone";
-import type { NullToUndefined } from "@/utils/types/utils";
 import { useForms } from "@/store/forms";
 import { useUrlSearchParams } from "@vueuse/core";
 
@@ -26,8 +25,8 @@ const expanded = ref({});
 
 const formStore = useForms();
 
-const editingForm = ref<NullToUndefined<Form> | undefined>(undefined);
-const emptyForm: NullToUndefined<Form> = {
+const editingForm = ref<Form | undefined>(undefined);
+const emptyForm: Form = {
     id: -1,
     send_confirmation_email: false,
     confirmation_email_id: undefined,
@@ -77,12 +76,7 @@ async function saveForm() {
         saveEditMutation.mutate(editingForm.value);
     } else {
         const result = await saveCreateMutation.mutateAsync(editingForm.value);
-        result.match(
-            (ok) => {
-                editingForm.value = ok;
-            },
-            (_) => {},
-        );
+        editingForm.value = result;
     }
 }
 

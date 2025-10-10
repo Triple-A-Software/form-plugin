@@ -1,15 +1,9 @@
-import { useApiQuery } from "@/utils/api";
 import { defineStore } from "pinia";
+import { useApiQuery } from "@/utils/api";
 
 export const useForms = defineStore("forms", () => {
-	const forms = useApiQuery(
-		"/api/forms",
-		{
-			method: "GET",
-		},
-		{
-			initialData: () => [],
-		},
-	);
+	const forms = useApiQuery("/api/forms", {
+		method: "GET",
+	});
 	return { forms };
 });

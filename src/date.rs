@@ -5,10 +5,20 @@ use serde::{Deserialize, Serialize};
 use sqlx::{Decode, Encode, Postgres, prelude::Type};
 use ts_rs::TS;
 
-#[derive(Clone, Debug, Default, PartialEq, Eq, PartialOrd, Ord)]
-#[cfg_attr(feature = "seed", derive(Dummy))]
+#[derive(Clone, Debug, Default, PartialEq, Eq, PartialOrd, Ord, Hash)]
 pub struct JavascriptDate {
     inner: DateTime<Utc>,
+}
+
+#[cfg(feature = "seed")]
+impl<T> Dummy<T> for JavascriptDate {
+    fn dummy_with_rng<R: fake::Rng + ?Sized>(_config: &T, rng: &mut R) -> Self {
+        use fake::{Fake, Faker};
+
+        Self {
+            inner: Faker.fake_with_rng(rng),
+        }
+    }
 }
 
 impl TS for JavascriptDate {

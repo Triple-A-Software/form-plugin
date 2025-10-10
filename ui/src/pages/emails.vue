@@ -4,7 +4,6 @@ import type { Email } from "../../../bindings";
 import { useI18n } from "vue-i18n";
 import { useApiMutation, useApiQuery } from "@/utils/api";
 import clone from "just-clone";
-import type { NullToUndefined } from "@/utils/types/utils";
 
 const { t } = useI18n();
 
@@ -26,8 +25,8 @@ const emails = useApiQuery("/api/emails", {
     method: "GET",
 });
 
-const editingEmail = ref<NullToUndefined<Email> | undefined>(undefined);
-const emptyEmail: NullToUndefined<Email> = {
+const editingEmail = ref<Email | undefined>(undefined);
+const emptyEmail: Email = {
     id: -1,
     subject: "",
     content: "",
@@ -58,10 +57,7 @@ async function saveEmail() {
         saveEditMutation.mutate(editingEmail.value);
     } else {
         const result = await saveCreateMutation.mutateAsync(editingEmail.value);
-        result.match(
-            (ok) => (editingEmail.value = ok),
-            (_) => {},
-        );
+        editingEmail.value = result;
     }
 }
 

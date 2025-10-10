@@ -8,26 +8,6 @@ import { useForms } from "@/store/forms";
 
 const { t, locale } = useI18n();
 
-const submissions = useApiQuery("/api/submissions", {
-    method: "GET",
-    query: () => {
-        console.log(page.value);
-        return {
-            form_id: filterByForm.value ?? null,
-            page: page.value - 1,
-            items_per_page: itemsPerPage.value,
-        };
-    },
-});
-const submissionCount = useApiQuery("/api/submissions/count", {
-    method: "GET",
-    query: () => ({
-        form_id: filterByForm.value ?? null,
-        page: page.value - 1,
-        items_per_page: itemsPerPage.value,
-    }),
-});
-
 const columns = computed<TableColumn<Submission>[]>(() => [
     {
         id: "expand",
@@ -54,16 +34,6 @@ const columns = computed<TableColumn<Submission>[]>(() => [
     },
 ]);
 const expanded = ref({});
-
-const deleteMutation = useApiMutation(
-    "/api/submissions",
-    {
-        method: "DELETE",
-    },
-    {
-        invalidate: [submissions],
-    },
-);
 
 const filterByForm = ref<number | undefined>(undefined);
 const page = ref(1);
@@ -92,6 +62,35 @@ async function exportSubmissions() {
     const file = window.URL.createObjectURL(blob);
     window.location.assign(file);
 }
+
+const submissions = useApiQuery("/api/submissions", {
+    method: "GET",
+    query: () => {
+        return {
+            form_id: filterByForm.value,
+            page: page.value - 1,
+            items_per_page: itemsPerPage.value,
+        };
+    },
+});
+const submissionCount = useApiQuery("/api/submissions/count", {
+    method: "GET",
+    query: () => ({
+        form_id: filterByForm.value,
+        page: page.value - 1,
+        items_per_page: itemsPerPage.value,
+    }),
+});
+
+const deleteMutation = useApiMutation(
+    "/api/submissions",
+    {
+        method: "DELETE",
+    },
+    {
+        invalidate: [submissions],
+    },
+);
 </script>
 
 <template>

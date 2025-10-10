@@ -7,3 +7,4 @@ edition = "2024"
 fake = { version = "4", features = ["derive", "serde_json", "chrono"] }
 tokio = { version = "1", features = ["rt-multi-thread"] }
 form-plugin = { path = "../", features = ["seed"] }
+rand = "0.9"

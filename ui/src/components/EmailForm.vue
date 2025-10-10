@@ -1,8 +1,7 @@
 <script setup lang="ts">
-import type { NullToUndefined } from "@/utils/types/utils";
 import type { Email } from "../../../bindings";
 
-const model = defineModel<NullToUndefined<Email>>({ required: true });
+const model = defineModel<Email>({ required: true });
 </script>
 <template>
     <div class="grid gap-4">

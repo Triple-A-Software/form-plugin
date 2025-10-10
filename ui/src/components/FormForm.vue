@@ -1,9 +1,8 @@
 <script setup lang="ts">
 import { useApiQuery } from "@/utils/api";
 import type { Form } from "../../../bindings";
-import type { NullToUndefined } from "@/utils/types/utils";
 
-const model = defineModel<NullToUndefined<Form>>({ required: true });
+const model = defineModel<Form>({ required: true });
 
 const emails = useApiQuery("/api/emails", {
     method: "GET",
@@ -58,7 +57,11 @@ const emails = useApiQuery("/api/emails", {
                             :placeholder="$t('field.label.submissionEmail')"
                         />
                     </UFormField>
-                    <UFormField :label="$t('field.label.submissionEmailRecipient')" required :help="$t('hint.submissionEmailRecipient')">
+                    <UFormField
+                        :label="$t('field.label.submissionEmailRecipient')"
+                        required
+                        :help="$t('hint.submissionEmailRecipient')"
+                    >
                         <UInput v-model="model.send_submission_as_email" />
                     </UFormField>
                 </UCard>

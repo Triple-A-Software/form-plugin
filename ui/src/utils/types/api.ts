@@ -23,7 +23,7 @@ type FormsApi = {
 	"/api/forms/preview": {
 		POST: {
 			response: {
-				html: string | null;
+				html: string | undefined;
 			};
 			body: T.Form;
 		};
@@ -67,10 +67,20 @@ type SubmissionsApi = {
 			query: T.ListSubmissionsQuery;
 		};
 	};
+	"/api/submissions/recent": {
+		GET: {
+			response: Array<T.Submission>;
+		};
+	};
 	"/api/submissions/send-email": {
 		POST: {
 			response: T.StatusResponse;
 			body: T.SendEmailToSubmissionBody;
+		};
+	};
+	"/api/submissions/stats": {
+		GET: {
+			response: T.SubmissionStats;
 		};
 	};
 };

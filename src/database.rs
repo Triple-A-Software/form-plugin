@@ -2,6 +2,10 @@ use sqlx::{Executor, Postgres, postgres::PgQueryResult};
 
 use crate::model::{Email, Form, Submission};
 
+pub async fn list_forms(db: impl Executor<'_, Database = Postgres>) -> sqlx::Result<Vec<Form>> {
+    sqlx::query_as(r#"select * from form"#).fetch_all(db).await
+}
+
 pub async fn create_form(
     form: Form,
     db: impl Executor<'_, Database = Postgres>,

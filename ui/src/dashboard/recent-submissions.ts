@@ -8,9 +8,15 @@ import { createRouter, createWebHashHistory } from "vue-router";
 import de from "../locales/de";
 import en from "../locales/en";
 import App from "./recent-submissions/App.vue";
+import RecentSubmissionsPage from "./recent-submissions/page.vue";
 
 const router = createRouter({
-	routes: [],
+	routes: [
+		{
+			path: "/",
+			component: RecentSubmissionsPage,
+		},
+	],
 	history: createWebHashHistory(),
 });
 
