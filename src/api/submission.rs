@@ -150,7 +150,7 @@ async fn list_submissions(
             sqlx::query_as(r#"select * from submission where form_id = $1 order by timestamp desc limit $2 offset $3"#)
                 .bind(form_id)
                 .bind(query.items_per_page)
-                .bind(query.page)
+                .bind(query.page * query.items_per_page)
                 .fetch_all(&state.db)
                 .await
                 .unwrap(),
@@ -161,7 +161,7 @@ async fn list_submissions(
                 r#"select * from submission order by timestamp desc limit $1 offset $2"#,
             )
             .bind(query.items_per_page)
-            .bind(query.page)
+            .bind(query.page * query.items_per_page)
             .fetch_all(&state.db)
             .await
             .unwrap(),
