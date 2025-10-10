@@ -12,7 +12,6 @@ use axum::{
     response::{Html, IntoResponse, Redirect},
     routing::{get, post},
 };
-use form_plugin::render::render_form;
 use form_plugin::{
     AppState,
     api::{
@@ -20,6 +19,7 @@ use form_plugin::{
         submission::submission_router,
     },
 };
+use form_plugin::{api::dashboard::dashboard_router, render::render_form};
 use form_plugin::{captcha::Captcha, extract_field_as_string, send_email};
 use form_plugin::{
     cleverreach::{Cleverreach, ReceiverRequest},
@@ -75,6 +75,7 @@ async fn main() {
         .merge(email_router())
         .merge(submission_router())
         .merge(settings_router())
+        .merge(dashboard_router())
         .route("/helper/render_form", post(render_form_helper))
         .route("/form-plugin/submit", post(form_submit))
         .route("/test", get(test_page))
