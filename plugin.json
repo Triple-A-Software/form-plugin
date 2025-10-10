@@ -1,91 +1,91 @@
 {
-	"$schema": "https://neleto.io/schemas/main/plugin_manifest_schema.json",
-	"name": "form-plugin",
-	"version": "3.0.5",
-	"bin": "./target/release/form-plugin",
-	"include_files": [
-		"ui/dist/**/*",
-		"target/release/form-plugin",
-		"templates/**/*.html",
-		"components/**/*"
-	],
-	"components": "./components",
-	"ui": "/ui",
-	"pages": [
-		{
-			"name": "form-submit",
-			"route": "/form-plugin/submit",
-			"enable_tailwind": false,
-			"allow_select_layout": false
-		}
-	],
-	"api": [
-		{
-			"route": "/api/forms",
-			"allowed_roles": ["admin", "developer"]
-		},
-		{
-			"route": "/api/forms/preview",
-			"allowed_roles": ["admin", "developer"]
-		},
-		{
-			"route": "/api/form-select/list",
-			"allowed_roles": ["admin", "developer", "editor", "author"]
-		},
-		{
-			"route": "/api/form-select/by-id",
-			"allowed_roles": ["admin", "developer", "editor", "author"]
-		},
-		{
-			"route": "/api/emails",
-			"allowed_roles": ["admin", "developer"]
-		},
-		{
-			"route": "/api/submissions",
-			"allowed_roles": ["admin", "developer"]
-		},
-		{
-			"route": "/api/settings",
-			"allowed_roles": ["admin", "developer"]
-		},
-		{
-			"route": "/api/submissions/send-email",
-			"allowed_roles": ["admin", "developer"]
-		}
-	],
-	"helpers": [
-		{
-			"name": "render_form",
-			"route": "/helper/render_form",
-			"type": "inline",
-			"return_value": "String",
-			"arguments": ["Number", "String"]
-		}
-	],
-	"dashboard_cards": [
-		{
-			"name": "recent-submissions",
-			"route": "/dashboard/recent-submissions",
-			"label": {
-				"de": "Neueste Einreichungen",
-				"en": "Recent Submissions"
-			},
-			"description": {
-				"de": "Zeigt die neuesten 10 Einreichungen",
-				"en": "Shows the latest 10 submissions"
-			}
-		},
-		{
-			"name": "submission-stats",
-			"route": "/dashboard/submission-stats",
-			"label": {
-				"de": "Einreichungsstatistik",
-				"en": "Submission Stats"
-			},
-			"description": {
-				"de": "Zeigt die Statistik der Einreichungen",
-				"en": "Shows the submission stats"
-			}
-		}
-	]
+    "$schema": "https://neleto.io/schemas/main/plugin_manifest_schema.json",
+    "name": "form-plugin",
+    "version": "3.1.0",
+    "bin": "./target/release/form-plugin",
+    "include_files": [
+        "ui/dist/**/*",
+        "target/release/form-plugin",
+        "templates/**/*.html",
+        "components/**/*"
+    ],
+    "components": "./components",
+    "ui": "/ui",
+    "pages": [
+        {
+            "name": "form-submit",
+            "route": "/form-plugin/submit",
+            "enable_tailwind": false,
+            "allow_select_layout": false
+        }
+    ],
+    "api": [
+        {
+            "route": "/api/forms",
+            "allowed_roles": ["admin", "developer"]
+        },
+        {
+            "route": "/api/forms/preview",
+            "allowed_roles": ["admin", "developer"]
+        },
+        {
+            "route": "/api/form-select/list",
+            "allowed_roles": ["admin", "developer", "editor", "author"]
+        },
+        {
+            "route": "/api/form-select/by-id",
+            "allowed_roles": ["admin", "developer", "editor", "author"]
+        },
+        {
+            "route": "/api/emails",
+            "allowed_roles": ["admin", "developer"]
+        },
+        {
+            "route": "/api/submissions",
+            "allowed_roles": ["admin", "developer"]
+        },
+        {
+            "route": "/api/settings",
+            "allowed_roles": ["admin", "developer"]
+        },
+        {
+            "route": "/api/submissions/send-email",
+            "allowed_roles": ["admin", "developer"]
+        }
+    ],
+    "helpers": [
+        {
+            "name": "render_form",
+            "route": "/helper/render_form",
+            "type": "inline",
+            "return_value": "String",
+            "arguments": ["Number", "String"]
+        }
+    ],
+    "dashboard_cards": [
+        {
+            "name": "recent-submissions",
+            "route": "/dashboard/recent-submissions",
+            "label": {
+                "de": "Neueste Einreichungen",
+                "en": "Recent Submissions"
+            },
+            "description": {
+                "de": "Zeigt die neuesten 10 Einreichungen",
+                "en": "Shows the latest 10 submissions"
+            }
+        },
+        {
+            "name": "submission-stats",
+            "route": "/dashboard/submission-stats",
+            "label": {
+                "de": "Einreichungsstatistik",
+                "en": "Submission Stats"
+            },
+            "description": {
+                "de": "Zeigt die Statistik der Einreichungen",
+                "en": "Shows the submission stats"
+            }
+        }
+    ]
 }
