@@ -1,5 +1,5 @@
 {
-	"$schema": "https://neleto.io/schemas/fix/pluginsystem-rework-improvements/plugin_manifest_schema.json",
+	"$schema": "https://neleto.io/schemas/main/plugin_manifest_schema.json",
 	"name": "form-plugin",
 	"version": "3.0.5",
 	"bin": "./target/release/form-plugin",
@@ -60,6 +60,32 @@
 			"type": "inline",
 			"return_value": "String",
 			"arguments": ["Number", "String"]
+		}
+	],
+	"dashboard_cards": [
+		{
+			"name": "recent-submissions",
+			"route": "/dashboard/recent-submissions",
+			"label": {
+				"de": "Neueste Einreichungen",
+				"en": "Recent Submissions"
+			},
+			"description": {
+				"de": "Zeigt die neuesten 10 Einreichungen",
+				"en": "Shows the latest 10 submissions"
+			}
+		},
+		{
+			"name": "submission-stats",
+			"route": "/dashboard/submission-stats",
+			"label": {
+				"de": "Einreichungsstatistik",
+				"en": "Submission Stats"
+			},
+			"description": {
+				"de": "Zeigt die Statistik der Einreichungen",
+				"en": "Shows the submission stats"
+			}
 		}
 	]
 }

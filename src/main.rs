@@ -278,57 +278,56 @@ async fn form_submit(
                     extract_field_as_string(&body, form.cleverreach_lastname_field_name.as_deref());
                 let email =
                     extract_field_as_string(&body, form.cleverreach_email_field_name.as_deref());
-                if let Some(email) = email {
-                    if let Some(group_id) = &form.cleverreach_group_id {
-                        // the form is used to sign up for a cleverreach newsletter
-                        state
-                            .cleverreach
-                            .write()
-                            .await
-                            .create_receiver(ReceiverRequest {
-                                group_id: group_id.to_string(),
-                                email,
-                                first_name,
-                                last_name,
-                                salutation: form.cleverreach_salutation.clone().unwrap_or_default(),
-                            })
-                            .await
-                            .unwrap();
-                    }
+                if let Some(email) = email
+                    && let Some(group_id) = &form.cleverreach_group_id
+                {
+                    // the form is used to sign up for a cleverreach newsletter
+                    state
+                        .cleverreach
+                        .write()
+                        .await
+                        .create_receiver(ReceiverRequest {
+                            group_id: group_id.to_string(),
+                            email,
+                            first_name,
+                            last_name,
+                            salutation: form.cleverreach_salutation.clone().unwrap_or_default(),
+                        })
+                        .await
+                        .unwrap();
                 }
             }
         }
-        if form.send_submission_as_email_enabled {
-            if let (Some(submission_receiver_email), Some(submissions_email_id)) =
+        if form.send_submission_as_email_enabled
+            && let (Some(submission_receiver_email), Some(submissions_email_id)) =
                 (&form.send_submission_as_email, &form.submissions_email_id)
-            {
-                send_email(
-                    &state.db,
-                    *submissions_email_id,
-                    &form,
-                    &body,
-                    submission_receiver_email,
-                )
-                .await;
-            }
+        {
+            send_email(
+                &state.db,
+                *submissions_email_id,
+                &form,
+                &body,
+                submission_receiver_email,
+            )
+            .await;
         }
-        if form.send_confirmation_email {
-            if let (Some(confirmation_email_recipient), Some(confirmation_email_id)) = (
+        if form.send_confirmation_email
+            && let (Some(confirmation_email_recipient), Some(confirmation_email_id)) = (
                 extract_field_as_string(
                     &body,
                     form.confirmation_email_recipient_field_name.as_deref(),
                 ),
                 &form.confirmation_email_id,
-            ) {
-                send_email(
-                    &state.db,
-                    *confirmation_email_id,
-                    &form,
-                    &body,
-                    &confirmation_email_recipient,
-                )
-                .await;
-            }
+            )
+        {
+            send_email(
+                &state.db,
+                *confirmation_email_id,
+                &form,
+                &body,
+                &confirmation_email_recipient,
+            )
+            .await;
         }
         create_submission(
             Submission {

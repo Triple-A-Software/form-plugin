@@ -1,0 +1,30 @@
+// this file is the entry point for the dashboard recent-submissions card
+import { createApp } from "vue";
+import "../style.css";
+import ui from "@nuxt/ui/vue-plugin";
+import { createPinia } from "pinia";
+import { createI18n } from "vue-i18n";
+import { createRouter, createWebHashHistory } from "vue-router";
+import de from "../locales/de";
+import en from "../locales/en";
+import App from "./recent-submissions/App.vue";
+
+const router = createRouter({
+	routes: [],
+	history: createWebHashHistory(),
+});
+
+const i18n = createI18n({
+	legacy: false,
+	availableLocales: ["en", "de"],
+	fallbackLocale: "en",
+	locale: "en",
+	messages: {
+		en,
+		de,
+	},
+});
+
+const pinia = createPinia();
+
+createApp(App).use(router).use(ui).use(pinia).use(i18n).mount("#app");

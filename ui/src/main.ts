@@ -1,14 +1,14 @@
 import { createApp } from "vue";
 import "./style.css";
-import App from "./App.vue";
-import ui from "@nuxt/ui/vue-plugin";
-import { createRouter, createWebHashHistory } from "vue-router";
-import { createI18n } from "vue-i18n";
-import en from "./locales/en";
-import de from "./locales/de";
-import { handleHotUpdate, routes } from "vue-router/auto-routes";
 import { setupLayouts } from "virtual:generated-layouts";
+import ui from "@nuxt/ui/vue-plugin";
 import { createPinia } from "pinia";
+import { createI18n } from "vue-i18n";
+import { createRouter, createWebHashHistory } from "vue-router";
+import { handleHotUpdate, routes } from "vue-router/auto-routes";
+import App from "./App.vue";
+import de from "./locales/de";
+import en from "./locales/en";
 
 const router = createRouter({
 	routes: setupLayouts(routes),

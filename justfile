@@ -6,6 +6,9 @@ codegen:
 dev:
     cargo watch -x run
 
+uidev:
+    cd ui && bun run dev
+
 create-migration name:
     sqlx migrate add {{name}}
 

@@ -15,6 +15,7 @@ pub mod date;
 pub mod model;
 pub mod render;
 pub mod api {
+    pub mod dashboard;
     pub mod email;
     pub mod form;
     pub mod settings;
