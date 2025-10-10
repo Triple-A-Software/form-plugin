@@ -62,7 +62,7 @@
         },
         {
             "route": "/api/submissions/export",
-            "allowed_roles": ["admin", "developer"],
+            "allowed_roles": ["admin", "developer"]
         }
     ],
     "helpers": [
