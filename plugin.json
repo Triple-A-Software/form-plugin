@@ -41,16 +41,28 @@
             "allowed_roles": ["admin", "developer"]
         },
         {
+            "route": "/api/settings",
+            "allowed_roles": ["admin", "developer"]
+        },
+        {
             "route": "/api/submissions",
             "allowed_roles": ["admin", "developer"]
         },
         {
-            "route": "/api/settings",
+            "route": "/api/submissions/count",
             "allowed_roles": ["admin", "developer"]
         },
         {
             "route": "/api/submissions/send-email",
             "allowed_roles": ["admin", "developer"]
+        },
+        {
+            "route": "/api/submissions/stats",
+            "allowed_roles": ["admin", "developer"]
+        },
+        {
+            "route": "/api/submissions/export",
+            "allowed_roles": ["admin", "developer"],
         }
     ],
     "helpers": [
