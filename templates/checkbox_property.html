@@ -1,16 +1,21 @@
 <div class="flex items-center {% if property.class %} {{ property.class }} {%endif%}">
-    <input {% if property.default_value %}checked{% endif %} {% if property.required %}required{% endif %}
-        type="checkbox" id="{{ property.name }}" name="{{ property.name }}"
-        class="w-4 h-4 text-{{ property.color }}-600 border-black">
+    <input
+        {% if property.default_value %} checked {% endif %}
+        {% if property.required %} required {% endif %}
+        type="checkbox"
+        id="{{ property.name }}"
+        name="{{ property.name }}"
+        class="w-4 h-4 text-{{ property.color }}-600 border-black"
+    >
     <div class="ms-2 text-sm">
         <label for="{{ property.name }}" class="font-medium text-gray-900 dark:text-gray-300">
             {{ property.label[language] }}
             {% if property.required %} <span>*</span> {% endif %}
         </label>
         {% if property.hint[language] %}
-        <p class="font-normal text-gray-500 dark:text-gray-300 text-xs">
-            {{ property.hint[language] }}
-        </p>
+            <p class="font-normal text-gray-500 dark:text-gray-300 text-xs">
+                {{ property.hint[language] }}
+            </p>
         {% endif %}
     </div>
 </div>

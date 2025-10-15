@@ -10,12 +10,12 @@ const model = defineModel<PropertySelector<"range">>({
 <template>
     <CommonElementForm v-model="model" />
     <UFormField :label="$t('field.label.default_value')">
-        <UInputNumber v-model="model.default_value" class="w-full" />
+        <UInputNumber v-model="model.default_value as number" class="w-full" />
     </UFormField>
-    <UFormField :label="$t('field.label.min')">
+    <UFormField :label="$t('field.label.min')" required>
         <UInputNumber v-model="model.min" class="w-full" />
     </UFormField>
-    <UFormField :label="$t('field.label.max')">
+    <UFormField :label="$t('field.label.max')" required>
         <UInputNumber v-model="model.max" class="w-full" />
     </UFormField>
     <UFormField :label="$t('field.label.step')">

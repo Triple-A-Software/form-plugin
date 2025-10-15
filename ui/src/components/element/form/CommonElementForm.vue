@@ -53,7 +53,7 @@ const colorOptions = computed<ColorOption[]>(
     <UFormField :label="$t('field.label.required')">
         <UCheckbox v-model="model.required" class="w-full" />
     </UFormField>
-    <UFormField :label="$t('field.label.color')">
+    <UFormField :label="$t('field.label.color')" required>
         <USelect v-model="model.color" :items="colorOptions" class="w-full" />
     </UFormField>
 </template>

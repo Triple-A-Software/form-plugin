@@ -2,6 +2,7 @@
 import { computed } from "vue";
 import { useI18n } from "vue-i18n";
 import { createSelect, type PropertySelector } from "@/utils";
+import type { SelectData } from "../../../../../bindings";
 
 const model = defineModel<PropertySelector<"select">>({
     required: true,
@@ -29,7 +30,7 @@ const empty = computed(() => ({
 <template>
     <CommonElementForm v-model="model" />
     <UFormField :label="$t('field.label.default_value')">
-        <USelect v-model="model.default_value" :items="model.options" class="w-full" />
+        <USelect v-model="model.default_value as SelectData | undefined" :items="model.options" class="w-full" />
     </UFormField>
     <UFormField :label="$t('field.label.multiple')">
         <UCheckbox v-model="model.multiple" class="w-full" />
@@ -40,10 +41,10 @@ const empty = computed(() => ({
     <UFormField :label="$t('field.label.options')">
         <ArrayInput v-model="model.options" :empty="empty" class="w-full">
             <template #edit-item="{ item }">
-                <UFormField :label="$t('field.label.label')">
+                <UFormField :label="$t('field.label.label')" required>
                     <LocalizedTextInput v-model="item.label" />
                 </UFormField>
-                <UFormField :label="$t('field.label.value')">
+                <UFormField :label="$t('field.label.value')" required>
                     <UInput v-if="typeof item.value === 'string'" v-model="item.value" />
                     <UInputNumber v-else-if="typeof item.value === 'number'" v-model="item.value" />
                 </UFormField>

@@ -3,8 +3,17 @@
         {{ property.label[language] }}
         {% if property.required %} <span>*</span> {% endif %}
     </label>
-    <input type="{{ property.input_type }}" {% if property.max %} max="{{ property.max }}" {%endif%}
-        id="{{ property.name }}" name="{{ property.name }}" class="" {% if property.placeholder[language] %}
-        placeholder="{{ property.placeholder[language] }}" {%endif%} {% if property.default_value %}
-        value="{{property.default_value}}" {%endif%} {% if property.required %} required {%endif%} />
+    <input
+        type="{{ property.input_type }}"
+        {% if property.max %} max="{{ property.max }}" {%endif%}
+        id="{{ property.name }}"
+        name="{{ property.name }}"
+        class=""
+        {% if property.placeholder[language] %}
+            placeholder="{{ property.placeholder[language] }}"
+        {%endif%}
+        {% if property.default_value %}
+            value="{{property.default_value}}"
+        {%endif%}
+        {% if property.required %} required {%endif%} />
 </div>

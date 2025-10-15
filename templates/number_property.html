@@ -3,9 +3,20 @@
         {{ property.label[language] }}
         {% if property.required %} <span>*</span> {% endif %}
     </label>
-    <input type="number" {% if property.max %} max="{{ property.max }}" {%endif%} {% if property.min %}
-        min="{{ property.min }}" {%endif%} id="{{ property.name }}" {% if property.step %} step="{{ property.step }}"
-        {%endif%} class="" {% if property.placeholder[language] %} placeholder="{{ property.placeholder[language] }}"
-        {%endif%} {% if property.default_value %} value="{{property.default_value}}" {%endif%} {% if property.required
-        %} required {%endif%} />
+    <input
+        type="number"
+        {% if property.max %} max="{{ property.max }}" {%endif%}
+        {% if property.min %} min="{{ property.min }}" {%endif%}
+        id="{{ property.name }}"
+        name="{{ property.name }}"
+        {% if property.step %} step="{{ property.step }}" {%endif%}
+        class=""
+        {% if property.placeholder[language] %}
+            placeholder="{{ property.placeholder[language] }}"
+        {%endif%}
+        {% if property.default_value %}
+            value="{{property.default_value}}"
+        {%endif%}
+        {% if property.required %} required {%endif%}
+    />
 </div>
