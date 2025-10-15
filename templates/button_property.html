@@ -15,7 +15,8 @@
     mb-2
     dark:bg-{{property.color}}-600
     dark:hover:bg-{{property.color}}-700
-    dark:focus:ring-{{property.color}}-800">
+    dark:focus:ring-{{property.color}}-800
+    {{ property.class }}">
     {{ property.label[language] }}
 </button>
 {% elif property.variant == "alternative" %}
@@ -42,7 +43,8 @@
     dark:text-{{ property.color }}-400
     dark:border-{{ property.color }}-600
     dark:hover:text-white
-    dark:hover:bg-{{ property.color }}-700">
+    dark:hover:bg-{{ property.color }}-700
+    {{ property.class }}">
     {{ property.label[language] }}
 </button>
 {% endif %}
