@@ -38,7 +38,7 @@ const colorOptions = computed<ColorOption[]>(
 );
 </script>
 <template>
-    <UFormField :label="$t('field.label.label')">
+    <UFormField :label="$t('field.label.label')" required>
         <LocalizedTextInput v-model="model.label" class="w-full" />
     </UFormField>
     <UFormField :label="$t('field.label.hint')">
@@ -47,7 +47,7 @@ const colorOptions = computed<ColorOption[]>(
     <UFormField :label="$t('field.label.class')">
         <UInput v-model="model.class" class="w-full" />
     </UFormField>
-    <UFormField :label="$t('field.label.name')">
+    <UFormField :label="$t('field.label.name')" required>
         <UInput v-model="model.name" class="w-full" />
     </UFormField>
     <UFormField :label="$t('field.label.required')">
