@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { useApiQuery } from "@/utils/api";
+import { useWindowSize } from "@vueuse/core";
 import dayjs from "dayjs";
 import { computed } from "vue";
 import { BarChart, LegendPosition } from "vue-chrts";
@@ -45,13 +46,14 @@ const categories = computed(() =>
 );
 
 const xFormatter = (i: number): string => `${dayjs.utc(stats.data.value?.graph.at(i)?.date).format("YYYY-MM-DD")}`;
+const winSize = useWindowSize();
 </script>
 
 <template>
     <BarChart
         v-if="stats.data.value?.graph.length && forms.data.value?.length"
         :data="stats.data.value.graph"
-        :height="300"
+        :height="winSize.height.value - 60 /* 60 is just enough pixels for the dashboard card to not be scrollable */"
         :categories
         :y-axis="forms.data.value.map((f) => `${f.id}`)"
         :group-padding="0"
