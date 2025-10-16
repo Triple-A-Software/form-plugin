@@ -53,14 +53,8 @@ async function exportSubmissions() {
     }
     const query = new URLSearchParams();
     if (filterByForm.value) query.set("form_id", String(filterByForm.value));
-    // these 2 are not used in the endpoint on the server, so it doesn't matter what is in here
-    query.set("page", "1");
-    query.set("items_per_page", "1");
     _path += `?${query.toString()}`;
-    const response = await fetch(_path, { method: "GET" });
-    const blob = await response.blob();
-    const file = window.URL.createObjectURL(blob);
-    window.location.assign(file);
+    window.location.assign(_path);
 }
 
 const submissions = useApiQuery("/api/submissions", {
@@ -107,7 +101,7 @@ const deleteMutation = useApiMutation(
             <UButton icon="i-tabler-filter-off" color="neutral" variant="subtle" @click="filterByForm = undefined" />
         </UButtonGroup>
         <UTooltip :text="$t('field.tooltip.exportSubmissions')">
-            <UButton color="neutral" target="_blank" icon="i-tabler-table-export" @click="exportSubmissions">
+            <UButton color="neutral" icon="i-tabler-table-export" @click="exportSubmissions">
                 {{ $t("action.exportSubmissions") }}
             </UButton>
         </UTooltip>

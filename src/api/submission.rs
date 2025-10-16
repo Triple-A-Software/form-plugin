@@ -7,6 +7,7 @@ use axum::{
     response::IntoResponse,
     routing::{get, post},
 };
+use reqwest::header;
 use serde::{Deserialize, Serialize};
 use sqlx::prelude::FromRow;
 use ts_rs::TS;
@@ -191,9 +192,15 @@ async fn count_submissions(
     }
 }
 
+#[derive(Deserialize, TS)]
+#[ts(export, export_to = "index.ts")]
+struct ExportSubmissionsQuery {
+    form_id: Option<i32>,
+}
+
 async fn export_submissions(
     State(state): State<AppState>,
-    Query(query): Query<ListSubmissionsQuery>,
+    Query(query): Query<ExportSubmissionsQuery>,
 ) -> impl IntoResponse {
     let submissions: Vec<Submission> = if let Some(form_id) = query.form_id {
         sqlx::query_as(r#"select * from submission where form_id = $1 order by timestamp asc"#)
@@ -208,14 +215,15 @@ async fn export_submissions(
             .unwrap()
     };
     let mut headers = HeaderMap::new();
+    let date = chrono::Utc::now().format("%Y-%m-%d_%H-%M-%S");
+    headers.insert("Content-type", HeaderValue::from_static("text/csv"));
     headers.insert(
-        "Content-disposition",
+        header::CONTENT_DISPOSITION,
         HeaderValue::from_str(
-            r#"Attachment;filename="submissions_export_${new Date().toDateString()}.csv"#,
+            format!("attachment; filename=\"submissions_export_{date}.csv\"").as_str(),
         )
         .unwrap(),
     );
-    headers.insert("Content-type", HeaderValue::from_static("text/csv"));
     (
         headers,
         convert_to_csv(
