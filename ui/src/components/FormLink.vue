@@ -7,7 +7,7 @@ const props = defineProps<{
 }>();
 
 const formStore = useForms();
-const form = computed(() => formStore.forms.data.find((f) => f.id === props.id));
+const form = computed(() => formStore.forms.data?.find((f) => f.id === props.id));
 </script>
 <template>
     <UButton v-if="form" variant="link" color="neutral" :to="`/forms?edit=true&id=${form.id}`">

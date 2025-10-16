@@ -4,6 +4,7 @@ import type { TableColumn } from "@nuxt/ui";
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Submission } from "../../../../bindings";
+import { useForms } from "@/store/forms";
 
 const { t, locale } = useI18n();
 
@@ -47,6 +48,7 @@ const deleteMutation = useApiMutation(
         invalidate: [submissions],
     },
 );
+const formStore = useForms();
 </script>
 
 <template>
@@ -59,7 +61,7 @@ const deleteMutation = useApiMutation(
             </div>
         </template>
         <template #form-cell="{ row }">
-            <FormLink :id="row.original.form_id" />
+            {{ formStore.forms.data?.find((f) => f.id === row.original.form_id)?.name }}
         </template>
         <template #expand-cell="{ row }">
             <UButton

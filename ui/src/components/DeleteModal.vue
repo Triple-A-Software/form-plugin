@@ -36,7 +36,9 @@ const props = defineProps<{
 const emit = defineEmits<{
     (e: "confirm", id: TId): void;
 }>();
-const open = defineModel<boolean>("open");
+const open = defineModel<boolean>("open", {
+    default: false,
+});
 const { t } = useI18n();
 
 async function confirm() {
