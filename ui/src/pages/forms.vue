@@ -130,6 +130,9 @@ watch(
             }
         }
     },
+    {
+        immediate: true,
+    },
 );
 function editForm(id: number) {
     search.id = String(id);
