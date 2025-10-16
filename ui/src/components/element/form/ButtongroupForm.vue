@@ -13,7 +13,7 @@ const model = defineModel<PropertySelector<"buttongroup">>({
 <template>
     <CommonElementForm v-model="model" />
     <UFormField :label="$t('field.label.default_value')">
-        <UButtonGroup class="w-full">
+        <UFieldGroup class="w-full">
             <UButton
                 :variant="!model.default_value ? 'solid' : 'subtle'"
                 :color="!model.default_value ? 'primary' : 'neutral'"
@@ -29,7 +29,7 @@ const model = defineModel<PropertySelector<"buttongroup">>({
             >
                 {{ option.label[locale] }}
             </UButton>
-        </UButtonGroup>
+        </UFieldGroup>
     </UFormField>
     <UFormField :label="$t('field.label.options')">
         <ArrayInput

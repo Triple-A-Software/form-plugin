@@ -2,6 +2,7 @@
 import { useUrlSearchParams } from "@vueuse/core";
 import { onMounted, watch } from "vue";
 import { useI18n } from "vue-i18n";
+import { en, de } from "@nuxt/ui/locale";
 
 const searchParams = useUrlSearchParams();
 const { locale } = useI18n();
@@ -23,7 +24,7 @@ watch(
 </script>
 
 <template>
-    <UApp>
+    <UApp :locale="locale === 'en' ? en : de">
         <RouterView />
     </UApp>
 </template>

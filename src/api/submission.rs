@@ -196,24 +196,29 @@ async fn count_submissions(
 #[ts(export, export_to = "index.ts")]
 struct ExportSubmissionsQuery {
     form_id: Option<i32>,
+    start_date: Option<JavascriptDate>,
+    end_date: Option<JavascriptDate>,
 }
 
 async fn export_submissions(
     State(state): State<AppState>,
     Query(query): Query<ExportSubmissionsQuery>,
 ) -> impl IntoResponse {
-    let submissions: Vec<Submission> = if let Some(form_id) = query.form_id {
-        sqlx::query_as(r#"select * from submission where form_id = $1 order by timestamp asc"#)
-            .bind(form_id)
-            .fetch_all(&state.db)
-            .await
-            .unwrap()
-    } else {
-        sqlx::query_as(r#"select * from submission order by timestamp asc"#)
-            .fetch_all(&state.db)
-            .await
-            .unwrap()
-    };
+    let submissions: Vec<Submission> = sqlx::query_as(
+        r#"
+        select * from submission
+        where
+            (form_id = coalesce($1, form_id) or $1 is null)
+            and (timestamp >= coalesce($2, timestamp) or $2 is null)
+            and (timestamp <= coalesce($3, timestamp) or $3 is null)
+        "#,
+    )
+    .bind(query.form_id)
+    .bind(query.start_date)
+    .bind(query.end_date)
+    .fetch_all(&state.db)
+    .await
+    .unwrap();
     let mut headers = HeaderMap::new();
     let date = chrono::Utc::now().format("%Y-%m-%d_%H-%M-%S");
     headers.insert("Content-type", HeaderValue::from_static("text/csv"));

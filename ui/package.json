@@ -1,40 +1,41 @@
 {
-	"name": "ui",
-	"private": true,
-	"version": "0.0.0",
-	"type": "module",
-	"scripts": {
-		"dev": "vite",
-		"build": "vite build",
-		"check": "vue-tsc -b",
-		"preview": "vite preview"
-	},
-	"dependencies": {
-		"@nuxt/ui": "^3.0.1",
-		"@pinia/colada": "^0.14.2",
-		"@tailwindcss/typography": "^0.5.16",
-		"@unovis/vue": "^1.6.1",
-		"@vueuse/core": "^13.0.0",
-		"@vueuse/router": "^13.1.0",
-		"api-toolkit": "git+ssh://git@codeberg.org/blechlawine/api-toolkit.git#87b0765d59f4",
-		"dayjs": "^1.11.18",
-		"just-clone": "^6.2.0",
-		"neverthrow": "^8.2.0",
-		"pinia": "^3.0.1",
-		"typescript-utils": "git+ssh://git@codeberg.org/blechlawine/typescript-utils.git#ad7dc82947",
-		"unplugin-vue-router": "^0.12.0",
-		"vite-plugin-vue-layouts": "^0.11.0",
-		"vue": "^3.5.13",
-		"vue-chrts": "^0.2.4",
-		"vue-draggable-next": "^2.2.1",
-		"vue-i18n": "^11.1.2",
-		"vue-router": "^4.5.0"
-	},
-	"devDependencies": {
-		"@vitejs/plugin-vue": "^5.2.1",
-		"@vue/tsconfig": "^0.7.0",
-		"typescript": "~5.7.2",
-		"vite": "^6.2.0",
-		"vue-tsc": "^2.2.4"
-	}
+    "name": "ui",
+    "private": true,
+    "version": "0.0.0",
+    "type": "module",
+    "scripts": {
+        "dev": "vite",
+        "build": "vite build",
+        "check": "vue-tsc -b",
+        "preview": "vite preview"
+    },
+    "dependencies": {
+        "@internationalized/date": "^3.10.0",
+        "@nuxt/ui": "^4.0.1",
+        "@pinia/colada": "^0.14.2",
+        "@tailwindcss/typography": "^0.5.16",
+        "@unovis/vue": "^1.6.1",
+        "@vueuse/core": "^13.0.0",
+        "@vueuse/router": "^13.1.0",
+        "api-toolkit": "git+ssh://git@codeberg.org/blechlawine/api-toolkit.git#87b0765d59f4",
+        "dayjs": "^1.11.18",
+        "just-clone": "^6.2.0",
+        "neverthrow": "^8.2.0",
+        "pinia": "^3.0.1",
+        "typescript-utils": "git+ssh://git@codeberg.org/blechlawine/typescript-utils.git#ad7dc82947",
+        "unplugin-vue-router": "^0.12.0",
+        "vite-plugin-vue-layouts": "^0.11.0",
+        "vue": "^3.5.13",
+        "vue-chrts": "^0.2.4",
+        "vue-draggable-next": "^2.2.1",
+        "vue-i18n": "^11.1.2",
+        "vue-router": "^4.5.0"
+    },
+    "devDependencies": {
+        "@vitejs/plugin-vue": "^5.2.1",
+        "@vue/tsconfig": "^0.7.0",
+        "typescript": "~5.7.2",
+        "vite": "^6.2.0",
+        "vue-tsc": "^2.2.4"
+    }
 }

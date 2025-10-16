@@ -111,7 +111,7 @@ const emails = useApiQuery("/api/emails", {
                 <UCard class="m-1">
                     <div class="grid grid-cols-2 gap-2 w-max">
                         <UFormField :label="$t('field.label.cleverreach_condition')" required>
-                            <UButtonGroup>
+                            <UFieldGroup>
                                 <UButton
                                     @click="model.cleverreach_condition = { type: 'OnSubmit' }"
                                     color="neutral"
@@ -126,7 +126,7 @@ const emails = useApiQuery("/api/emails", {
                                 >
                                     {{ $t("field.option.cleverreach_condition.when_field_is_set") }}
                                 </UButton>
-                            </UButtonGroup>
+                            </UFieldGroup>
                             <UFormField
                                 v-if="model.cleverreach_condition?.type === 'WhenFieldIsSet'"
                                 :label="$t('field.label.cleverreach_condition_field')"

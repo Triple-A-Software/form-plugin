@@ -10,9 +10,9 @@ const model = defineModel<Record<string, string>>({ required: true, default: {} 
 </script>
 <template>
     <div class="flex flex-row gap-4">
-        <UButtonGroup class="w-full">
+        <UFieldGroup class="w-full">
             <UInput v-model="model[selectedLang]" class="w-full" />
             <USelect :items="i18n.availableLocales" v-model="selectedLang" />
-        </UButtonGroup>
+        </UFieldGroup>
     </div>
 </template>

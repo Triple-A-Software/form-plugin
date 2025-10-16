@@ -1,10 +1,13 @@
 <script setup lang="ts">
 import { useApiMutation, useApiQuery } from "@/utils/api";
 import type { TableColumn } from "@nuxt/ui";
-import { computed, ref, watch } from "vue";
+import InputDate from "@/components/input/Date.vue";
+import { computed, ref, shallowRef, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Submission } from "../../../bindings";
 import { useForms } from "@/store/forms";
+import { CalendarDate, getLocalTimeZone } from "@internationalized/date";
+import dayjs from "dayjs";
 
 const { t, locale } = useI18n();
 
@@ -45,14 +48,20 @@ watch(
         submissionCount.refetch();
     },
 );
+
 const forms = useForms();
+const onlyExportForm = ref<number | undefined>(undefined);
+const startDate = shallowRef<CalendarDate | undefined>(undefined);
+const endDate = shallowRef<CalendarDate | undefined>(undefined);
 async function exportSubmissions() {
     let _path = "/api/submissions/export";
     if (import.meta.env.MODE === "production") {
         _path = `${__API_BASE__}${_path}`;
     }
     const query = new URLSearchParams();
-    if (filterByForm.value) query.set("form_id", String(filterByForm.value));
+    if (onlyExportForm.value) query.set("form_id", String(onlyExportForm.value));
+    if (startDate.value) query.set("start_date", startDate.value.toDate(getLocalTimeZone()).toISOString());
+    if (endDate.value) query.set("end_date", endDate.value.toDate(getLocalTimeZone()).toISOString());
     _path += `?${query.toString()}`;
     window.location.assign(_path);
 }
@@ -89,7 +98,7 @@ const deleteMutation = useApiMutation(
 
 <template>
     <div class="flex items-center justify-between gap-2 px-4 py-3.5 overflow-x-auto">
-        <UButtonGroup class="w-full max-w-48">
+        <UFieldGroup class="w-full max-w-48">
             <USelectMenu
                 v-model="filterByForm"
                 :placeholder="$t('field.placeholder.filterByForm')"
@@ -99,14 +108,54 @@ const deleteMutation = useApiMutation(
                 class="w-full"
             />
             <UButton icon="i-tabler-filter-off" color="neutral" variant="subtle" @click="filterByForm = undefined" />
-        </UButtonGroup>
-        <UTooltip :text="$t('field.tooltip.exportSubmissions')">
-            <UButton color="neutral" icon="i-tabler-table-export" @click="exportSubmissions">
-                {{ $t("action.exportSubmissions") }}
-            </UButton>
-        </UTooltip>
+        </UFieldGroup>
+
+        <UModal :title="$t('modal.exportSubmissions.title')" :ui="{ body: 'space-y-4' }">
+            <UTooltip :text="$t('field.tooltip.exportSubmissions')">
+                <UButton color="neutral" icon="i-tabler-table-export">
+                    {{ $t("action.exportSubmissions") }}
+                </UButton>
+            </UTooltip>
+
+            <template #body>
+                <UFormField :label="$t('field.label.onlyExportForm')">
+                    <UFieldGroup class="w-full max-w-48">
+                        <USelectMenu
+                            v-model="onlyExportForm"
+                            :placeholder="$t('field.placeholder.selectForm')"
+                            :items="forms.forms.data"
+                            value-key="id"
+                            label-key="name"
+                            class="w-full"
+                        />
+                        <UButton
+                            icon="i-tabler-filter-off"
+                            color="neutral"
+                            variant="subtle"
+                            @click="onlyExportForm = undefined"
+                        />
+                    </UFieldGroup>
+                </UFormField>
+
+                <UFormField :label="$t('field.label.startDate')">
+                    <InputDate v-model="startDate" past />
+                </UFormField>
+
+                <UFormField :label="$t('field.label.endDate')">
+                    <InputDate v-model="endDate" past />
+                </UFormField>
+            </template>
+
+            <template #footer>
+                <UButton @click="exportSubmissions" icon="i-tabler-table-export">
+                    {{ $t("action.exportSubmissions") }}
+                </UButton>
+            </template>
+        </UModal>
+
         <UPagination v-model:page="page" :total="submissionCount.data.value" :items-per-page="itemsPerPage" />
     </div>
+
     <UTable :columns="columns" :data="submissions.data.value" v-model:expanded="expanded">
         <template #expanded="{ row }">
             <div v-for="(value, key) in row.original.data">
@@ -115,9 +164,11 @@ const deleteMutation = useApiMutation(
                 </p>
             </div>
         </template>
+
         <template #form-cell="{ row }">
             <FormLink :id="row.original.form_id" />
         </template>
+
         <template #expand-cell="{ row }">
             <UButton
                 color="neutral"
@@ -129,6 +180,7 @@ const deleteMutation = useApiMutation(
                 @click="row.toggleExpanded()"
             />
         </template>
+
         <template #actions-cell="{ row }">
             <div class="flex flex-row gap-2 items-center">
                 <SendEmailModal :submission="row.original" />
