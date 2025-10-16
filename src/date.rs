@@ -40,6 +40,18 @@ impl TS for JavascriptDate {
     }
 }
 
+impl From<DateTime<Utc>> for JavascriptDate {
+    fn from(value: DateTime<Utc>) -> Self {
+        Self { inner: value }
+    }
+}
+
+impl From<JavascriptDate> for DateTime<Utc> {
+    fn from(value: JavascriptDate) -> Self {
+        value.inner
+    }
+}
+
 impl Type<Postgres> for JavascriptDate {
     fn type_info() -> <Postgres as sqlx::Database>::TypeInfo {
         NaiveDateTime::type_info()

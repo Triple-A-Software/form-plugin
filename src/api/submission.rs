@@ -229,15 +229,7 @@ async fn export_submissions(
         )
         .unwrap(),
     );
-    (
-        headers,
-        convert_to_csv(
-            &submissions
-                .into_iter()
-                .map(|s| serde_json::to_value(s).unwrap())
-                .collect::<Vec<_>>(),
-        ),
-    )
+    (headers, convert_to_csv(&submissions))
 }
 
 #[derive(Deserialize, TS)]

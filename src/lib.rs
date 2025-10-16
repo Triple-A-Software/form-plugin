@@ -1,12 +1,17 @@
+use std::collections::{HashMap, HashSet};
 use std::env;
-use std::{collections::HashSet, sync::Arc};
+use std::io::Cursor;
+use std::sync::Arc;
 
+use chrono::{DateTime, Utc};
 use cleverreach::Cleverreach;
 use model::{Email, Form};
 use serde_json::Value;
 use sqlx::PgPool;
 use tera::Tera;
 use tokio::sync::RwLock;
+
+use crate::model::Submission;
 
 pub mod captcha;
 pub mod cleverreach;
@@ -66,67 +71,51 @@ pub fn extract_field_as_string(data: &Value, field_name: Option<&str>) -> Option
     }
 }
 
-pub fn convert_to_csv(arr: &[serde_json::Value]) -> String {
-    // Collect all unique keys from all objects
-    let mut all_keys = HashSet::new();
+pub fn convert_to_csv(submissions: &[Submission]) -> String {
+    let mut all_keys = HashSet::from(["id", "form_id", "timestamp"]);
+    let mut output = Vec::new();
+    {
+        let cursor = Cursor::new(&mut output);
+        let mut writer = csv::Writer::from_writer(cursor);
 
-    fn extract_keys(obj: &serde_json::Value, prefix: &str, all_keys: &mut HashSet<String>) {
-        if let Some(obj_map) = obj.as_object() {
-            for (key, value) in obj_map {
-                let mut _key = key.clone();
-                if !prefix.is_empty() {
-                    _key = format!("{}.{}", prefix, key);
-                }
-                if value.is_object() {
-                    extract_keys(value, &_key, all_keys);
-                } else {
-                    all_keys.insert(_key);
-                }
-            }
-        }
-    }
-
-    for obj in arr {
-        extract_keys(obj, "", &mut all_keys);
-    }
-
-    let headers: Vec<String> = all_keys.into_iter().collect();
-
-    // Create the header row
-    let mut csv_rows = vec![headers.join(",")];
-
-    // Create the data rows
-    for row in arr {
-        let values: Vec<String> = headers
+        let submissions: Vec<HashMap<String, Value>> = submissions
             .iter()
-            .map(|header| {
-                let header_path: Vec<&str> = header.split('.').collect();
-                let mut value = row.clone();
-                for key in header_path {
-                    if let Some(v) = value.get(key) {
-                        value = v.clone();
-                    } else {
-                        value = serde_json::Value::String(String::new());
-                        break;
+            .map(|submission| {
+                let mut map = HashMap::new();
+                map.insert("id".to_string(), Value::from(submission.id));
+                map.insert("form_id".to_string(), Value::from(submission.form_id));
+                map.insert(
+                    "timestamp".to_string(),
+                    Value::from(DateTime::<Utc>::from(submission.timestamp.clone()).to_rfc3339()),
+                );
+                if let Value::Object(ref data) = *submission.data {
+                    for (key, value) in data.iter() {
+                        all_keys.insert(key);
+                        map.insert(key.to_string(), value.clone());
                     }
                 }
-
-                let escaped_value = match value.as_str() {
-                    Some(v) => v.replace("\"", "\"\""),
-                    None => value.to_string(),
-                };
-
-                if escaped_value.contains(',') || escaped_value.contains('"') {
-                    format!("\"{}\"", escaped_value)
-                } else {
-                    escaped_value
-                }
+                map
             })
             .collect();
 
-        csv_rows.push(values.join(","));
+        writer.write_record(&all_keys).unwrap();
+        for row in submissions {
+            let record = all_keys
+                .iter()
+                .map(|k| {
+                    row.get(*k)
+                        .map(|v| match v {
+                            Value::String(v) => v.to_string(),
+                            Value::Number(v) => v.to_string(),
+                            Value::Bool(v) => v.to_string(),
+                            Value::Null => "".to_string(),
+                            v => v.to_string(),
+                        })
+                        .unwrap_or_default()
+                })
+                .collect::<Vec<_>>();
+            writer.write_record(&record).unwrap();
+        }
     }
-
-    // Join all rows with newline characters
-    csv_rows.join("\n")
+    String::from_utf8(output).unwrap()
 }
