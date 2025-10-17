@@ -47,6 +47,7 @@ dark:text-white
 dark:hover:text-white
 dark:focus:ring-{{ property.color }}-500
 dark:focus:text-white
+{{ property.button_class }}
 {% if item.value == property.default_value %}
     {% for cl in active_classes %}
         {{cl}}

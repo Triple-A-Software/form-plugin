@@ -24,4 +24,10 @@ const model = defineModel<PropertySelector<"number">>({
     <UFormField :label="$t('field.label.placeholder')">
         <LocalizedTextInput v-model="model.placeholder" class="w-full" />
     </UFormField>
+    <UFormField :label="$t('field.label.label_class')">
+        <UInput v-model="model.label_class" class="w-full" />
+    </UFormField>
+    <UFormField :label="$t('field.label.input_class')">
+        <UInput v-model="model.input_class" class="w-full" />
+    </UFormField>
 </template>

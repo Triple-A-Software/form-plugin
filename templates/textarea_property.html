@@ -1,5 +1,8 @@
 <div {% if property.class %} class="{{ property.class }}" {%endif%}>
-    <label for="{{ property.name }}" class="block mb-2 font-medium text-gray-900 dark:text-white text-sm">
+    <label
+        for="{{ property.name }}"
+        class="block mb-2 font-medium text-gray-900 dark:text-white text-sm {{ property.label_class }}"
+    >
         {{ property.label[language] }}
     </label>
     <textarea
@@ -7,7 +10,7 @@
         name="{{ property.name }}"
         {% if property.rows %} rows="{{ property.rows }}" {% endif %}
         {% if property.max_length %} maxlength="{{ property.max_length }}" {% endif %}
-        class=""
+        class="{{ property.input_class }}"
         {% if property.placeholder[language] %}
             placeholder="{{ property.placeholder[language] }}"
         {%endif%}

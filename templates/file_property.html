@@ -1,0 +1,21 @@
+<div {% if property.class %} class="{{ property.class }}" {%endif%}>
+    <label
+        for="{{ property.name }}"
+        class="block mb-2 font-medium text-gray-900 dark:text-white text-sm {{ property.label_class }}"
+    >
+        {{ property.label[language] }}
+        {% if property.required %} <span>*</span> {% endif %}
+    </label>
+    <input
+        type="file"
+        id="{{ property.name }}"
+        name="{{ property.name }}"
+        class="{{ property.input_class }}"
+        {% if property.placeholder[language] %}
+            placeholder="{{ property.placeholder[language] }}"
+        {%endif%}
+        {% if property.default_value %}
+            value="{{property.default_value}}"
+        {%endif%}
+        {% if property.required %} required {%endif%} />
+</div>

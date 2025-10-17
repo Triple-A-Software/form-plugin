@@ -9,7 +9,7 @@ export type ButtonProperty = { button_type: ButtonType, variant: Variant, hint: 
 
 export type ButtonType = "button" | "submit" | "reset";
 
-export type ButtongroupProperty = { options: Array<ButtonGroupOption>, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | undefined, class: string, name: string, required: boolean, color: TailwindColor, };
+export type ButtongroupProperty = { options: Array<ButtonGroupOption>, button_class: string | undefined, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | undefined, class: string, name: string, required: boolean, color: TailwindColor, };
 
 export type CaptchaProperty = { 
 /**
@@ -23,9 +23,11 @@ sitekey: string, callback: string | undefined, expiredCallback: string | undefin
 
 export type CaptchaType = "h-captcha" | "re-captcha";
 
-export type CheckboxProperty = { hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | undefined, class: string, name: string, required: boolean, color: TailwindColor, };
+export type CheckboxProperty = { label_class: string | undefined, input_class: string | undefined, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | undefined, class: string, name: string, required: boolean, color: TailwindColor, };
 
 export type CleverreachFormCondition = { "type": "OnSubmit" } | { "type": "WhenFieldIsSet", field: string, };
+
+export type DateProperty = { placeholder: Record<string, string>, label_class: string | undefined, input_class: string | undefined, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | undefined, class: string, name: string, required: boolean, color: TailwindColor, };
 
 export type DeleteEmailBody = { id: number, };
 
@@ -39,17 +41,21 @@ export type Email = { id: number, subject: string,
  */
 content: string, };
 
+export type ExportSubmissionsQuery = { form_id: number | undefined, start_date: string | undefined, end_date: string | undefined, };
+
+export type FileProperty = { label_class: string | undefined, input_class: string | undefined, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | undefined, class: string, name: string, required: boolean, color: TailwindColor, };
+
 export type Form = { id: number, name: string, send_confirmation_email: boolean, confirmation_email_id: number | undefined, confirmation_email_recipient_field_name: string | undefined, send_submission_as_email_enabled: boolean, send_submission_as_email: string | undefined, submissions_email_id: number | undefined, activate_cleverreach: boolean, cleverreach_condition: CleverreachFormCondition, cleverreach_group_id: string | undefined, cleverreach_email_field_name: string | undefined, cleverreach_firstname_field_name: string | undefined, cleverreach_lastname_field_name: string | undefined, cleverreach_salutation: string | undefined, activate_captcha: boolean, captcha_type: CaptchaType | undefined, captcha_callback: string | undefined, captcha_expired_callback: string | undefined, props: Array<Property>, };
 
 export type ListSubmissionsQuery = { form_id: number | undefined, page: number, items_per_page: number, };
 
-export type NumberProperty = { min: number | undefined, max: number | undefined, step: number | undefined, placeholder: Record<string, string>, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | undefined, class: string, name: string, required: boolean, color: TailwindColor, };
+export type NumberProperty = { min: number | undefined, max: number | undefined, step: number | undefined, placeholder: Record<string, string>, label_class: string | undefined, input_class: string | undefined, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | undefined, class: string, name: string, required: boolean, color: TailwindColor, };
 
-export type Property = { "type": "textarea" } & TextareaProperty | { "type": "text" } & TextProperty | { "type": "checkbox" } & CheckboxProperty | { "type": "number" } & NumberProperty | { "type": "select" } & SelectProperty | { "type": "range" } & RangeProperty | { "type": "buttongroup" } & ButtongroupProperty | { "type": "button" } & ButtonProperty | { "type": "captcha" } & CaptchaProperty;
+export type Property = { "type": "textarea" } & TextareaProperty | { "type": "text" } & TextProperty | { "type": "checkbox" } & CheckboxProperty | { "type": "number" } & NumberProperty | { "type": "select" } & SelectProperty | { "type": "range" } & RangeProperty | { "type": "buttongroup" } & ButtongroupProperty | { "type": "button" } & ButtonProperty | { "type": "file" } & FileProperty | { "type": "date" } & DateProperty | { "type": "captcha" } & CaptchaProperty;
 
 export type PropertyCommon = { hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | undefined, class: string, name: string, required: boolean, color: TailwindColor, };
 
-export type RangeProperty = { min: number, max: number, step: number | undefined, max_label: Record<string, string>, min_label: Record<string, string>, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | undefined, class: string, name: string, required: boolean, color: TailwindColor, };
+export type RangeProperty = { min: number, max: number, step: number | undefined, max_label: Record<string, string>, min_label: Record<string, string>, label_class: string | undefined, input_class: string | undefined, min_label_class: string | undefined, max_label_class: string | undefined, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | undefined, class: string, name: string, required: boolean, color: TailwindColor, };
 
 export type SelectData = string | number;
 
@@ -57,7 +63,7 @@ export type SelectDataType = "string" | "number";
 
 export type SelectOption = { label: Record<string, string>, value: SelectData, };
 
-export type SelectProperty = { multiple: boolean | undefined, data_type: SelectDataType, options: Array<SelectOption>, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | undefined, class: string, name: string, required: boolean, color: TailwindColor, };
+export type SelectProperty = { multiple: boolean | undefined, data_type: SelectDataType, options: Array<SelectOption>, label_class: string | undefined, input_class: string | undefined, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | undefined, class: string, name: string, required: boolean, color: TailwindColor, };
 
 export type SendEmailToSubmissionBody = { email_id: number, submission_id: number, email_field_name: string | undefined, };
 
@@ -73,8 +79,8 @@ export type TailwindColor = "red" | "orange" | "amber" | "yellow" | "lime" | "gr
 
 export type TextInputType = "text" | "email" | "password" | "color" | "tel";
 
-export type TextProperty = { max: number | undefined, placeholder: Record<string, string>, input_type: TextInputType, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | undefined, class: string, name: string, required: boolean, color: TailwindColor, };
+export type TextProperty = { max: number | undefined, placeholder: Record<string, string>, input_type: TextInputType, input_class: string | undefined, label_class: string | undefined, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | undefined, class: string, name: string, required: boolean, color: TailwindColor, };
 
-export type TextareaProperty = { max_length: number | undefined, placeholder: Record<string, string>, rows: number | undefined, columns: number | undefined, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | undefined, class: string, name: string, required: boolean, color: TailwindColor, };
+export type TextareaProperty = { max_length: number | undefined, placeholder: Record<string, string>, rows: number | undefined, columns: number | undefined, input_class: string | undefined, label_class: string | undefined, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | undefined, class: string, name: string, required: boolean, color: TailwindColor, };
 
 export type Variant = "solid" | "alternative";

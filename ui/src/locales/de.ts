@@ -125,6 +125,11 @@ export default {
             yesterday: "Gestern",
             oneWeekAgo: "Vor einer Woche",
             oneMonthAgo: "Vor einem Monat",
+            input_class: "Input class",
+            label_class: "Label class",
+            button_class: "Button class",
+            min_label_class: "Min label class",
+            max_label_class: "Max label class",
         },
         option: {
             type: {

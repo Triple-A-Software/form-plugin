@@ -11,4 +11,10 @@ const model = defineModel<PropertySelector<"checkbox">>({
     <UFormField :label="$t('field.label.default_value')">
         <UCheckbox v-model="model.default_value" class="w-full" />
     </UFormField>
+    <UFormField :label="$t('field.label.label_class')">
+        <UInput v-model="model.label_class" class="w-full" />
+    </UFormField>
+    <UFormField :label="$t('field.label.input_class')">
+        <UInput v-model="model.input_class" class="w-full" />
+    </UFormField>
 </template>

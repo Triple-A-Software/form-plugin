@@ -14,4 +14,6 @@ const model = defineModel<Property>({ required: true });
     <NumberForm v-else-if="model.type === 'number'" v-model="model" />
     <RangeForm v-else-if="model.type === 'range'" v-model="model" />
     <SelectForm v-else-if="model.type === 'select'" v-model="model" />
+    <DateForm v-else-if="model.type === 'date'" v-model="model" />
+    <FileForm v-else-if="model.type === 'file'" v-model="model" />
 </template>

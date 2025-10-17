@@ -7,9 +7,9 @@ use crate::{
     AppState,
     captcha::CaptchaType,
     model::{
-        ButtonProperty, ButtongroupProperty, CaptchaProperty, CheckboxProperty, Form,
-        NumberProperty, Property, RangeProperty, SelectProperty, Settings, TextProperty,
-        TextareaProperty,
+        ButtonProperty, ButtongroupProperty, CaptchaProperty, CheckboxProperty, DateProperty,
+        FileProperty, Form, NumberProperty, Property, RangeProperty, SelectProperty, Settings,
+        TextProperty, TextareaProperty,
     },
 };
 
@@ -87,6 +87,8 @@ impl Render for Property {
             Property::Buttongroup(prop) => prop.render(renderer, output),
             Property::Button(prop) => prop.render(renderer, output),
             Property::Captcha(prop) => prop.render(renderer, output),
+            Property::File(prop) => prop.render(renderer, output),
+            Property::Date(prop) => prop.render(renderer, output),
         }
     }
 }
@@ -102,6 +104,8 @@ macro_rules! impl_render {
     };
 }
 
+impl_render!(FileProperty, "file_property.html");
+impl_render!(DateProperty, "date_property.html");
 impl_render!(TextareaProperty, "textarea_property.html");
 impl_render!(TextProperty, "text_property.html");
 impl_render!(CheckboxProperty, "checkbox_property.html");

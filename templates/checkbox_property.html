@@ -5,10 +5,10 @@
         type="checkbox"
         id="{{ property.name }}"
         name="{{ property.name }}"
-        class="w-4 h-4 text-{{ property.color }}-600 border-black"
+        class="w-4 h-4 text-{{ property.color }}-600 border-black {{ property.input_class }}"
     >
     <div class="ms-2 text-sm">
-        <label for="{{ property.name }}" class="font-medium text-gray-900 dark:text-gray-300">
+        <label for="{{ property.name }}" class="font-medium text-gray-900 dark:text-gray-300 {{ property.label_class }}">
             {{ property.label[language] }}
             {% if property.required %} <span>*</span> {% endif %}
         </label>

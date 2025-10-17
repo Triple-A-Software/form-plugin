@@ -181,6 +181,8 @@ pub enum Property {
     Range(RangeProperty),
     Buttongroup(ButtongroupProperty),
     Button(ButtonProperty),
+    File(FileProperty),
+    Date(DateProperty),
     Captcha(CaptchaProperty),
 }
 
@@ -201,6 +203,29 @@ pub struct PropertyCommon {
     name: String,
     required: bool,
     color: TailwindColor,
+}
+
+#[cfg_attr(feature = "seed", derive(Dummy))]
+#[derive(Deserialize, Serialize, Clone, Debug, TS)]
+#[ts(export, export_to = "index.ts")]
+pub struct FileProperty {
+    #[serde(flatten)]
+    common: PropertyCommon,
+    label_class: Option<String>,
+    input_class: Option<String>,
+}
+
+#[cfg_attr(feature = "seed", derive(Dummy))]
+#[derive(Deserialize, Serialize, Clone, Debug, TS)]
+#[ts(export, export_to = "index.ts")]
+pub struct DateProperty {
+    #[serde(flatten)]
+    common: PropertyCommon,
+    #[ts(type = "Record<string, string>")]
+    #[cfg_attr(feature = "seed", dummy(faker = "TranslationFaker"))]
+    placeholder: HashMap<String, String>,
+    label_class: Option<String>,
+    input_class: Option<String>,
 }
 
 #[cfg_attr(feature = "seed", derive(Dummy))]
@@ -239,6 +264,8 @@ impl Display for ButtonType {
 pub struct CheckboxProperty {
     #[serde(flatten)]
     common: PropertyCommon,
+    label_class: Option<String>,
+    input_class: Option<String>,
 }
 
 #[cfg_attr(feature = "seed", derive(Dummy))]
@@ -256,6 +283,8 @@ pub struct TextareaProperty {
     rows: Option<i32>,
     #[cfg_attr(feature = "seed", dummy(faker = "0.."))]
     columns: Option<i32>,
+    input_class: Option<String>,
+    label_class: Option<String>,
 }
 
 #[cfg_attr(feature = "seed", derive(Dummy))]
@@ -270,6 +299,8 @@ pub struct TextProperty {
     #[cfg_attr(feature = "seed", dummy(faker = "TranslationFaker"))]
     placeholder: HashMap<String, String>,
     input_type: TextInputType,
+    input_class: Option<String>,
+    label_class: Option<String>,
 }
 
 #[cfg_attr(feature = "seed", derive(Dummy))]
@@ -296,6 +327,8 @@ pub struct NumberProperty {
     #[ts(type = "Record<string, string>")]
     #[cfg_attr(feature = "seed", dummy(faker = "TranslationFaker"))]
     placeholder: HashMap<String, String>,
+    label_class: Option<String>,
+    input_class: Option<String>,
 }
 
 #[cfg_attr(feature = "seed", derive(Dummy))]
@@ -307,6 +340,8 @@ pub struct SelectProperty {
     multiple: Option<bool>,
     data_type: SelectDataType,
     options: Vec<SelectOption>,
+    label_class: Option<String>,
+    input_class: Option<String>,
 }
 
 #[cfg_attr(feature = "seed", derive(Dummy))]
@@ -353,6 +388,10 @@ pub struct RangeProperty {
     #[ts(type = "Record<string, string>")]
     #[cfg_attr(feature = "seed", dummy(faker = "TranslationFaker"))]
     min_label: HashMap<String, String>,
+    label_class: Option<String>,
+    input_class: Option<String>,
+    min_label_class: Option<String>,
+    max_label_class: Option<String>,
 }
 
 #[cfg_attr(feature = "seed", derive(Dummy))]
@@ -362,6 +401,7 @@ pub struct ButtongroupProperty {
     #[serde(flatten)]
     common: PropertyCommon,
     options: Vec<ButtonGroupOption>,
+    button_class: Option<String>,
 }
 
 #[cfg_attr(feature = "seed", derive(Dummy))]

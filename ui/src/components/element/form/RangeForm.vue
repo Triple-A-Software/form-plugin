@@ -27,4 +27,16 @@ const model = defineModel<PropertySelector<"range">>({
     <UFormField :label="$t('field.label.max_label')">
         <LocalizedTextInput v-model="model.max_label" class="w-full" />
     </UFormField>
+    <UFormField :label="$t('field.label.label_class')">
+        <UInput v-model="model.label_class" class="w-full" />
+    </UFormField>
+    <UFormField :label="$t('field.label.input_class')">
+        <UInput v-model="model.input_class" class="w-full" />
+    </UFormField>
+    <UFormField :label="$t('field.label.min_label_class')">
+        <UInput v-model="model.min_label_class" class="w-full" />
+    </UFormField>
+    <UFormField :label="$t('field.label.max_label_class')">
+        <UInput v-model="model.max_label_class" class="w-full" />
+    </UFormField>
 </template>

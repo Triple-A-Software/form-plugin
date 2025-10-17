@@ -9,7 +9,7 @@ const model = defineModel<PropertySelector<"select">>({
     default: createSelect(),
 });
 
-const { t } = useI18n();
+const { t, locale } = useI18n();
 const data_type_options = computed(() => [
     {
         label: t("field.option.data_type.string"),
@@ -25,18 +25,26 @@ const empty = computed(() => ({
     label: {},
     value: model.value.data_type === "string" ? "" : 0,
 }));
+
+const options = computed(() => model.value.options.map((option) => ({ ...option, label: option.label[locale.value] })));
 </script>
 
 <template>
     <CommonElementForm v-model="model" />
     <UFormField :label="$t('field.label.default_value')">
-        <USelect v-model="model.default_value as SelectData | undefined" :items="model.options" class="w-full" />
+        <USelect v-model="model.default_value as SelectData | undefined" :items="options" class="w-full" />
     </UFormField>
     <UFormField :label="$t('field.label.multiple')">
         <UCheckbox v-model="model.multiple" class="w-full" />
     </UFormField>
     <UFormField :label="$t('field.label.data_type')">
         <USelect v-model="model.data_type" :items="data_type_options" class="w-full" />
+    </UFormField>
+    <UFormField :label="$t('field.label.label_class')">
+        <UInput v-model="model.label_class" class="w-full" />
+    </UFormField>
+    <UFormField :label="$t('field.label.input_class')">
+        <UInput v-model="model.input_class" class="w-full" />
     </UFormField>
     <UFormField :label="$t('field.label.options')">
         <ArrayInput v-model="model.options" :empty="empty" class="w-full">

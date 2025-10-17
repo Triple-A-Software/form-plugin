@@ -50,4 +50,7 @@ const model = defineModel<PropertySelector<"buttongroup">>({
             </template>
         </ArrayInput>
     </UFormField>
+    <UFormField :label="$t('field.label.button_class')">
+        <UInput v-model="model.button_class" class="w-full" />
+    </UFormField>
 </template>
