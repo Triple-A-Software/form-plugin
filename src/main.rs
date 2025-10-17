@@ -2,22 +2,28 @@ use std::{
     collections::HashMap,
     env,
     net::{IpAddr, SocketAddr},
+    path::PathBuf,
     sync::Arc,
 };
 
 use axum::{
     Json, Router,
-    extract::{self, Query, State},
+    extract::{Multipart, Query, State},
     http::StatusCode,
     response::{Html, IntoResponse, Redirect},
     routing::{get, post},
 };
+use chrono::NaiveDate;
+use chrono::{Datelike, NaiveTime};
 use form_plugin::{
     AppState,
     api::{
         email::email_router, form::form_router, settings::settings_router,
         submission::submission_router,
     },
+    captcha::CaptchaType,
+    model::{DateInputType, Property, SelectDataType, SubmissionFile},
+    utils::stream_to_file,
 };
 use form_plugin::{api::dashboard::dashboard_router, render::render_form};
 use form_plugin::{captcha::Captcha, extract_field_as_string, send_email};
@@ -31,6 +37,7 @@ use form_plugin::{
 };
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
+use sqlx::PgPool;
 use tera::Tera;
 use tokio::{net::TcpListener, sync::RwLock};
 use tower_http::{
@@ -39,6 +46,7 @@ use tower_http::{
     trace::{self, TraceLayer},
 };
 use tracing::Level;
+use uuid::Uuid;
 
 #[tokio::main]
 async fn main() {
@@ -124,7 +132,9 @@ async fn test_page(
         state,
         "en".to_string(),
         form,
-        format!(r#"<form action="/form-plugin/submit?id={id}&redirect=/test" method="POST">"#,),
+        format!(
+            r#"<form action="/form-plugin/submit?id={id}&redirect=/test" method="POST" enctype="multipart/form-data">"#,
+        ),
         "</form>",
         settings,
     );
@@ -198,7 +208,7 @@ async fn render_form_helper(
                 body.page.language.unwrap_or("en".to_string()),
                 form,
                 format!(
-                    r#"<form action="/form-plugin/submit?id={id}&redirect={route}" method="POST">"#,
+                    r#"<form action="/form-plugin/submit?id={id}&redirect={route}" method="POST" enctype="multipart/form-data">"#,
                 ),
                 "</form>",
                 settings,
@@ -228,7 +238,7 @@ struct FormSubmitQuery {
 async fn form_submit(
     State(state): State<AppState>,
     Query(query): Query<FormSubmitQuery>,
-    extract::Form(body): extract::Form<Value>,
+    mut multipart: Multipart,
 ) -> impl IntoResponse {
     let form: Option<Form> = sqlx::query_as(r#"select * from form where id = $1"#)
         .bind(query.id)
@@ -236,6 +246,8 @@ async fn form_submit(
         .await
         .unwrap();
     if let Some(form) = form {
+        let submission_id = Uuid::new_v4();
+        let body = extract_form_body(&mut multipart, &form, state.db.clone(), &submission_id).await;
         let settings: Settings = sqlx::query_as(r#"select * from settings where id = 'settings'"#)
             .fetch_one(&state.db)
             .await
@@ -347,6 +359,194 @@ async fn form_submit(
         }
     } else {
         StatusCode::NOT_FOUND.into_response()
+    }
+}
+
+async fn extract_form_body(
+    multipart: &mut Multipart,
+    form: &Form,
+    db: PgPool,
+    submission_id: &Uuid,
+) -> Value {
+    let mut body = serde_json::Map::new();
+    while let Some(field) = multipart.next_field().await.unwrap() {
+        let name = field.name().unwrap().to_string();
+        let form_field = form.props.0.iter().find(|&f| match f {
+            Property::Textarea(prop) => prop.common.name == name,
+            Property::Text(prop) => prop.common.name == name,
+            Property::Checkbox(prop) => prop.common.name == name,
+            Property::Number(prop) => prop.common.name == name,
+            Property::Select(prop) => prop.common.name == name,
+            Property::Range(prop) => prop.common.name == name,
+            Property::Buttongroup(prop) => prop.common.name == name,
+            Property::Button(prop) => prop.common.name == name,
+            Property::File(prop) => prop.common.name == name,
+            Property::Date(prop) => prop.common.name == name,
+            Property::Captcha(prop) => match prop.captcha_type {
+                CaptchaType::HCaptcha => name == "h-captcha-response",
+                CaptchaType::ReCaptcha => name == "g-recaptcha-response",
+            },
+        });
+        let content = match form_field {
+            Some(Property::Textarea(_)) | Some(Property::Text(_)) => {
+                Some(Value::String(field.text().await.unwrap()))
+            }
+            Some(Property::Checkbox(_)) => {
+                let text = field.text().await.unwrap();
+                Some(Value::Bool(text == "on"))
+            }
+            Some(Property::Number(prop)) => {
+                let text = field.text().await.unwrap();
+                parse_number_value(&text, prop.min, prop.max, prop.step)
+            }
+            Some(Property::Select(prop)) => match prop.data_type {
+                SelectDataType::String => Some(Value::String(field.text().await.unwrap())),
+                SelectDataType::Number => {
+                    parse_number_value(&field.text().await.unwrap(), None, None, None)
+                }
+            },
+            Some(Property::Range(prop)) => {
+                let text = field.text().await.unwrap();
+                parse_number_value(&text, Some(prop.min), Some(prop.max), prop.step)
+            }
+            Some(Property::Buttongroup(prop)) => {
+                let text = field.text().await.unwrap();
+                prop.options
+                    .iter()
+                    .find(|&o| o.value == text)
+                    .map(|value| Value::String(value.value.clone()))
+            }
+            Some(Property::Button(_)) => None,
+            Some(Property::File(_)) => {
+                let file_storage_path = PathBuf::from(
+                    env::var("FILE_STORAGE_PATH").unwrap_or("/var/form-plugin".to_string()),
+                );
+                std::fs::create_dir_all(&file_storage_path).unwrap();
+                let db_file: SubmissionFile = sqlx::query_as(
+                    r#"
+                    insert into submission_file (name, submission_id) values ($1, $2) returning *
+                    "#,
+                )
+                .bind(field.name())
+                .bind(submission_id)
+                .fetch_one(&db)
+                .await
+                .unwrap();
+                let file_path = file_storage_path.join(db_file.id.to_string());
+                stream_to_file(&file_path, field).await.unwrap();
+                Some(serde_json::to_value(&db_file).unwrap())
+            }
+            Some(Property::Date(prop)) => {
+                let text = field.text().await.unwrap();
+                match prop.input_type {
+                    DateInputType::Date => Some(Value::String(
+                        chrono::NaiveDate::parse_from_str(&text, "%Y-%m-%d")
+                            .unwrap()
+                            .to_string(),
+                    )),
+                    DateInputType::DatetimeLocal => Some(Value::String(
+                        chrono::NaiveDateTime::parse_from_str(&text, "%Y-%m-%dT%H:%M")
+                            .unwrap()
+                            .to_string(),
+                    )),
+                    DateInputType::Time => {
+                        parse_time(&text).map(|time| Value::String(time.to_string()))
+                    }
+                    DateInputType::Month => {
+                        parse_month(&text).map(|date| Value::String(date.to_string()))
+                    }
+                    DateInputType::Week => {
+                        parse_week(&text).map(|date| Value::String(date.to_string()))
+                    }
+                }
+            }
+            Some(Property::Captcha(_)) => Some(Value::String(field.text().await.unwrap())),
+            None => None,
+        };
+        if let Some(content) = content {
+            body.insert(name, content);
+        }
+    }
+    Value::Object(body)
+}
+
+fn parse_month(value: &str) -> Option<NaiveDate> {
+    let parts = value.split('-').collect::<Vec<_>>();
+    if parts.len() != 2 {
+        return None;
+    }
+    let year = parts.first().unwrap().parse::<i32>().unwrap();
+    let month = parts.get(1).unwrap().parse::<u32>().unwrap();
+    if !(1..=12).contains(&month) {
+        return None;
+    }
+    Some(NaiveDate::from_ymd_opt(year, month, 1).unwrap())
+}
+
+fn parse_time(value: &str) -> Option<NaiveTime> {
+    let parts = value.split(':').collect::<Vec<_>>();
+    if parts.len() != 2 {
+        return None;
+    }
+    let hour = parts.first().unwrap().parse::<u32>().unwrap();
+    let minute = parts.get(1).unwrap().parse::<u32>().unwrap();
+    if !(0..=23).contains(&hour) || !(0..=59).contains(&minute) {
+        return None;
+    }
+    Some(NaiveTime::from_hms_opt(hour, minute, 0).unwrap())
+}
+
+fn parse_week(value: &str) -> Option<NaiveDate> {
+    let parts = value.split('-').collect::<Vec<_>>();
+    if parts.len() != 2 {
+        return None;
+    }
+    let year = parts.first().unwrap().parse::<i32>().unwrap();
+    let week_part = parts.get(1).unwrap().trim_start_matches('W');
+    let week = week_part.parse::<i32>().unwrap();
+    if !(1..=53).contains(&week) {
+        return None;
+    }
+    let first_day = chrono::NaiveDate::from_ymd_opt(year, 1, 1)?;
+    let first_weekday = first_day.weekday();
+    let days_offset = first_weekday.num_days_from_monday();
+    let first_monday_in_the_year = first_day + chrono::Duration::days(7 - days_offset as i64);
+    Some(first_monday_in_the_year + chrono::Duration::weeks(week as i64 - 1))
+}
+
+fn parse_number_value(
+    value: &str,
+    min: Option<f64>,
+    max: Option<f64>,
+    step: Option<f64>,
+) -> Option<Value> {
+    if let Ok(number) = value.parse::<i64>() {
+        let number = number.clamp(
+            min.unwrap_or(f64::MIN) as i64,
+            max.unwrap_or(f64::MAX) as i64,
+        );
+        // make sure that the number fits into the steps between min and max
+        let number = {
+            let temp = number - min.unwrap_or(f64::MIN) as i64;
+            let temp = temp - (temp % step.unwrap_or(1.0) as i64);
+            temp + min.unwrap_or(f64::MIN) as i64
+        };
+        Some(Value::Number(number.into()))
+    } else if let Ok(number) = value.parse::<f64>() {
+        let number = number.clamp(min.unwrap_or(f64::MIN), max.unwrap_or(f64::MAX));
+        // make sure that the number fits into the steps between min and max
+        let number = {
+            let temp = number - min.unwrap_or(f64::MIN);
+            let temp = if let Some(step) = step {
+                temp - (temp % step)
+            } else {
+                temp
+            };
+            temp + min.unwrap_or(f64::MIN)
+        };
+        Some(Value::Number(serde_json::Number::from_f64(number).unwrap()))
+    } else {
+        None
     }
 }
 

@@ -16,6 +16,7 @@ use serde_json::Value;
 use sqlx::{prelude::*, types::Json};
 use tera::Context;
 use ts_rs::TS;
+use uuid::Uuid;
 
 #[cfg(feature = "seed")]
 struct CustomFaker;
@@ -67,8 +68,7 @@ pub struct ApiError {
 #[cfg_attr(feature = "seed", derive(Dummy))]
 #[ts(export, export_to = "index.ts")]
 pub struct Submission {
-    #[cfg_attr(feature = "seed", dummy(faker = "0.."))]
-    pub id: i32,
+    pub id: Uuid,
     #[cfg_attr(feature = "seed", dummy(expr = "1"))]
     pub form_id: i32,
     pub timestamp: JavascriptDate,
@@ -200,7 +200,7 @@ pub struct PropertyCommon {
     #[cfg_attr(feature = "seed", dummy(faker = "Word()"))]
     class: String,
     #[cfg_attr(feature = "seed", dummy(faker = "Word()"))]
-    name: String,
+    pub name: String,
     required: bool,
     color: TailwindColor,
 }
@@ -210,7 +210,7 @@ pub struct PropertyCommon {
 #[ts(export, export_to = "index.ts")]
 pub struct FileProperty {
     #[serde(flatten)]
-    common: PropertyCommon,
+    pub common: PropertyCommon,
     label_class: Option<String>,
     input_class: Option<String>,
 }
@@ -220,12 +220,25 @@ pub struct FileProperty {
 #[ts(export, export_to = "index.ts")]
 pub struct DateProperty {
     #[serde(flatten)]
-    common: PropertyCommon,
+    pub common: PropertyCommon,
     #[ts(type = "Record<string, string>")]
     #[cfg_attr(feature = "seed", dummy(faker = "TranslationFaker"))]
     placeholder: HashMap<String, String>,
+    pub input_type: DateInputType,
     label_class: Option<String>,
     input_class: Option<String>,
+}
+
+#[cfg_attr(feature = "seed", derive(Dummy))]
+#[derive(Deserialize, Serialize, Clone, Debug, TS)]
+#[serde(rename_all = "kebab-case")]
+#[ts(export, export_to = "index.ts")]
+pub enum DateInputType {
+    Date,
+    DatetimeLocal,
+    Time,
+    Month,
+    Week,
 }
 
 #[cfg_attr(feature = "seed", derive(Dummy))]
@@ -233,7 +246,7 @@ pub struct DateProperty {
 #[ts(export, export_to = "index.ts")]
 pub struct ButtonProperty {
     #[serde(flatten)]
-    common: PropertyCommon,
+    pub common: PropertyCommon,
     button_type: ButtonType,
     variant: Variant,
 }
@@ -263,7 +276,7 @@ impl Display for ButtonType {
 #[ts(export, export_to = "index.ts")]
 pub struct CheckboxProperty {
     #[serde(flatten)]
-    common: PropertyCommon,
+    pub common: PropertyCommon,
     label_class: Option<String>,
     input_class: Option<String>,
 }
@@ -273,7 +286,7 @@ pub struct CheckboxProperty {
 #[ts(export, export_to = "index.ts")]
 pub struct TextareaProperty {
     #[serde(flatten)]
-    common: PropertyCommon,
+    pub common: PropertyCommon,
     #[cfg_attr(feature = "seed", dummy(faker = "0.."))]
     max_length: Option<i32>,
     #[ts(type = "Record<string, string>")]
@@ -292,7 +305,7 @@ pub struct TextareaProperty {
 #[ts(export, export_to = "index.ts")]
 pub struct TextProperty {
     #[serde(flatten)]
-    common: PropertyCommon,
+    pub common: PropertyCommon,
     #[cfg_attr(feature = "seed", dummy(faker = "0.."))]
     max: Option<i32>,
     #[ts(type = "Record<string, string>")]
@@ -320,10 +333,10 @@ pub enum TextInputType {
 #[ts(export, export_to = "index.ts")]
 pub struct NumberProperty {
     #[serde(flatten)]
-    common: PropertyCommon,
-    min: Option<f64>,
-    max: Option<f64>,
-    step: Option<f64>,
+    pub common: PropertyCommon,
+    pub min: Option<f64>,
+    pub max: Option<f64>,
+    pub step: Option<f64>,
     #[ts(type = "Record<string, string>")]
     #[cfg_attr(feature = "seed", dummy(faker = "TranslationFaker"))]
     placeholder: HashMap<String, String>,
@@ -336,9 +349,9 @@ pub struct NumberProperty {
 #[ts(export, export_to = "index.ts")]
 pub struct SelectProperty {
     #[serde(flatten)]
-    common: PropertyCommon,
+    pub common: PropertyCommon,
     multiple: Option<bool>,
-    data_type: SelectDataType,
+    pub data_type: SelectDataType,
     options: Vec<SelectOption>,
     label_class: Option<String>,
     input_class: Option<String>,
@@ -378,10 +391,10 @@ pub enum SelectDataType {
 #[ts(export, export_to = "index.ts")]
 pub struct RangeProperty {
     #[serde(flatten)]
-    common: PropertyCommon,
-    min: f64,
-    max: f64,
-    step: Option<f64>,
+    pub common: PropertyCommon,
+    pub min: f64,
+    pub max: f64,
+    pub step: Option<f64>,
     #[ts(type = "Record<string, string>")]
     #[cfg_attr(feature = "seed", dummy(faker = "TranslationFaker"))]
     max_label: HashMap<String, String>,
@@ -399,8 +412,8 @@ pub struct RangeProperty {
 #[ts(export, export_to = "index.ts")]
 pub struct ButtongroupProperty {
     #[serde(flatten)]
-    common: PropertyCommon,
-    options: Vec<ButtonGroupOption>,
+    pub common: PropertyCommon,
+    pub options: Vec<ButtonGroupOption>,
     button_class: Option<String>,
 }
 
@@ -412,7 +425,7 @@ pub struct ButtonGroupOption {
     #[ts(type = "Record<string, string>")]
     #[cfg_attr(feature = "seed", dummy(faker = "TranslationFaker"))]
     label: HashMap<String, String>,
-    value: String,
+    pub value: String,
 }
 
 #[cfg_attr(feature = "seed", derive(Dummy))]
@@ -489,4 +502,12 @@ impl Settings {
             CaptchaType::ReCaptcha => self.re_captcha_secret.as_deref(),
         }
     }
+}
+
+#[derive(Debug, Clone, Serialize, Deserialize, FromRow)]
+pub struct SubmissionFile {
+    /// this also serves as the file name in the FILE_STORAGE_PATH directory
+    pub id: Uuid,
+    pub name: Option<String>,
+    pub submission_id: Uuid,
 }

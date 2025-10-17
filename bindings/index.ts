@@ -27,7 +27,9 @@ export type CheckboxProperty = { label_class: string | undefined, input_class: s
 
 export type CleverreachFormCondition = { "type": "OnSubmit" } | { "type": "WhenFieldIsSet", field: string, };
 
-export type DateProperty = { placeholder: Record<string, string>, label_class: string | undefined, input_class: string | undefined, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | undefined, class: string, name: string, required: boolean, color: TailwindColor, };
+export type DateInputType = "date" | "datetime-local" | "time" | "month" | "week";
+
+export type DateProperty = { placeholder: Record<string, string>, input_type: DateInputType, label_class: string | undefined, input_class: string | undefined, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | undefined, class: string, name: string, required: boolean, color: TailwindColor, };
 
 export type DeleteEmailBody = { id: number, };
 
@@ -65,13 +67,13 @@ export type SelectOption = { label: Record<string, string>, value: SelectData, }
 
 export type SelectProperty = { multiple: boolean | undefined, data_type: SelectDataType, options: Array<SelectOption>, label_class: string | undefined, input_class: string | undefined, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | undefined, class: string, name: string, required: boolean, color: TailwindColor, };
 
-export type SendEmailToSubmissionBody = { email_id: number, submission_id: number, email_field_name: string | undefined, };
+export type SendEmailToSubmissionBody = { email_id: number, submission_id: string, email_field_name: string | undefined, };
 
 export type Settings = { cleverreachClientId: string | undefined, cleverreachSecret: string | undefined, hCaptchaSecret: string | undefined, reCaptchaSecret: string | undefined, captchaSitekey: string | undefined, };
 
 export type StatusResponse = { success: boolean, };
 
-export type Submission = { id: number, form_id: number, timestamp: string, data: JsonValue, };
+export type Submission = { id: string, form_id: number, timestamp: string, data: JsonValue, };
 
 export type SubmissionStats = { total: number, graph: Array<{ date: string } & Record<string, number>>, };
 

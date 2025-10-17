@@ -19,6 +19,7 @@ pub mod database;
 pub mod date;
 pub mod model;
 pub mod render;
+pub mod utils;
 pub mod api {
     pub mod dashboard;
     pub mod email;
@@ -82,7 +83,7 @@ pub fn convert_to_csv(submissions: &[Submission]) -> String {
             .iter()
             .map(|submission| {
                 let mut map = HashMap::new();
-                map.insert("id".to_string(), Value::from(submission.id));
+                map.insert("id".to_string(), Value::String(submission.id.to_string()));
                 map.insert("form_id".to_string(), Value::from(submission.form_id));
                 map.insert(
                     "timestamp".to_string(),

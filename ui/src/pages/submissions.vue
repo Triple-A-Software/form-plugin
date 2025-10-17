@@ -7,7 +7,6 @@ import { useI18n } from "vue-i18n";
 import type { Submission } from "../../../bindings";
 import { useForms } from "@/store/forms";
 import { CalendarDate, getLocalTimeZone } from "@internationalized/date";
-import dayjs from "dayjs";
 
 const { t, locale } = useI18n();
 

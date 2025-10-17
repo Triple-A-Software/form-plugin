@@ -102,6 +102,7 @@ export function createDate(): PropertySelector<"date"> {
         placeholder: {},
         label_class: undefined,
         input_class: undefined,
+        input_type: "date",
     };
 }
 

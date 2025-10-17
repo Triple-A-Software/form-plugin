@@ -140,6 +140,9 @@ export default {
                 email: "E-Mail",
                 color: "Color",
                 tel: "Tel",
+                date: "Date",
+                datetimeLocal: "Local Datetime",
+                time: "Time",
             },
             data_type: {
                 string: "String",

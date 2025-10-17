@@ -132,7 +132,8 @@ pub async fn create_submission(
     submission: Submission,
     db: impl Executor<'_, Database = Postgres>,
 ) -> sqlx::Result<PgQueryResult> {
-    sqlx::query(r#"insert into submission (form_id, data) values ($1, $2)"#)
+    sqlx::query(r#"insert into submission (id, form_id, data) values ($1, $2, $3)"#)
+        .bind(submission.id)
         .bind(submission.form_id)
         .bind(submission.data)
         .execute(db)

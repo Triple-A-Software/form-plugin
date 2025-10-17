@@ -7,7 +7,7 @@
         {% if property.required %} <span>*</span> {% endif %}
     </label>
     <input
-        type="date"
+        type="{{ property.input_type }}"
         id="{{ property.name }}"
         name="{{ property.name }}"
         class="{{ property.input_class }}"

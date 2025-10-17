@@ -11,6 +11,7 @@ use reqwest::header;
 use serde::{Deserialize, Serialize};
 use sqlx::prelude::FromRow;
 use ts_rs::TS;
+use uuid::Uuid;
 
 use crate::{
     AppState, convert_to_csv,
@@ -106,7 +107,7 @@ async fn recent_submissions(State(state): State<AppState>) -> Json<Vec<Submissio
 #[ts(export, export_to = "index.ts")]
 struct SendEmailToSubmissionBody {
     email_id: i32,
-    submission_id: i32,
+    submission_id: Uuid,
     email_field_name: Option<String>,
 }
 async fn send_email_to_submission(

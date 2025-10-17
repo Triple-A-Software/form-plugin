@@ -11,32 +11,30 @@ const model = defineModel<PropertySelector<"text">>({
 });
 
 const { t } = useI18n();
-const textTypeOptions = computed(
-    () =>
-        [
-            {
-                label: t("field.option.type.text"),
-                value: "text",
-            },
-            {
-                label: t("field.option.type.password"),
-                value: "password",
-            },
-            {
-                label: t("field.option.type.email"),
-                value: "email",
-            },
-            {
-                label: t("field.option.type.color"),
-                value: "color",
-            },
-            {
-                label: t("field.option.type.tel"),
-                value: "tel",
-            },
-        ] satisfies { label: string; value: TextInputType }[],
-);
+const textTypeOptions = computed<{ label: string; value: TextInputType }[]>(() => [
+    {
+        label: t("field.option.type.text"),
+        value: "text",
+    },
+    {
+        label: t("field.option.type.password"),
+        value: "password",
+    },
+    {
+        label: t("field.option.type.email"),
+        value: "email",
+    },
+    {
+        label: t("field.option.type.color"),
+        value: "color",
+    },
+    {
+        label: t("field.option.type.tel"),
+        value: "tel",
+    },
+]);
 </script>
+
 <template>
     <CommonElementForm v-model="model" />
     <UFormField :label="$t('field.label.default_value')">

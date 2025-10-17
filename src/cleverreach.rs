@@ -83,6 +83,7 @@ impl Cleverreach {
 }
 
 #[derive(Deserialize, Clone, Debug)]
+#[allow(dead_code)]
 pub struct AccessToken {
     access_token: String,
     expires_in: usize,

@@ -23,6 +23,7 @@ impl<T> Dummy<T> for JavascriptDate {
 
 impl TS for JavascriptDate {
     type WithoutGenerics = Self;
+    type OptionInnerType = Self;
     fn decl() -> String {
         panic!("JavascriptDate cannot be declared");
     }
