@@ -143,6 +143,8 @@ export default {
                 date: "Date",
                 datetimeLocal: "Local Datetime",
                 time: "Time",
+                week: "Week",
+                month: "Month",
             },
             data_type: {
                 string: "String",
@@ -191,6 +193,8 @@ export default {
                 buttongroup: "Buttongroup",
                 button: "Button",
                 captcha: "Captcha",
+                date: "Date",
+                file: "File",
             },
         },
     },

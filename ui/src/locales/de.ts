@@ -144,6 +144,8 @@ export default {
                 date: "Datum",
                 datetimeLocal: "Lokales Datum und Zeit",
                 time: "Uhrzeit",
+                week: "Woche",
+                month: "Monat",
             },
             data_type: {
                 string: "String",
@@ -192,6 +194,8 @@ export default {
                 buttongroup: "Buttongroup",
                 button: "Button",
                 captcha: "Captcha",
+                date: "Datum",
+                file: "Datei",
             },
         },
     },

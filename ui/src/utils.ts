@@ -16,6 +16,8 @@ export function createElement(type: PropertyType): Property | undefined {
     else if (type === "select") return createSelect();
     else if (type === "range") return createRange();
     else if (type === "captcha") return createCaptcha();
+    else if (type === "date") return createDate();
+    else if (type === "file") return createFile();
 }
 
 export function createButton(): PropertySelector<"button"> {

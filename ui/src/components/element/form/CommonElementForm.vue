@@ -37,6 +37,7 @@ const colorOptions = computed<ColorOption[]>(
         ] satisfies ColorOption[],
 );
 </script>
+
 <template>
     <UFormField :label="$t('field.label.label')" required>
         <LocalizedTextInput v-model="model.label" class="w-full" />

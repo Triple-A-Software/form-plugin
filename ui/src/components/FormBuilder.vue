@@ -121,6 +121,16 @@ const builderItems = computed<Array<Item>>(() => [
         label: t("builder.item.label.captcha"),
         type: "captcha",
     },
+    {
+        icon: "i-tabler-file",
+        label: t("builder.item.label.file"),
+        type: "file",
+    },
+    {
+        icon: "i-tabler-calendar",
+        label: t("builder.item.label.date"),
+        type: "date",
+    },
 ]);
 const currentlySelectedElement = ref<number | null>(null);
 watch(elementEditOpen, (open) => {
