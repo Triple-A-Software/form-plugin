@@ -344,6 +344,7 @@ async fn form_submit(
         }
         create_submission(
             Submission {
+                id: submission_id,
                 form_id: query.id,
                 data: sqlx::types::Json(body),
                 ..Default::default()
