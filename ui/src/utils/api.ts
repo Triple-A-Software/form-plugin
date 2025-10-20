@@ -15,7 +15,10 @@ function isError(v: unknown): v is ApiError {
     return false;
 }
 
-export const { useApiMutation, useApiQuery } = createApiToolkit<API, ApiError>({
+export const { useApiMutation, useApiQuery, fetchApi } = createApiToolkit<
+    API,
+    ApiError
+>({
     baseUrl: __API_BASE__,
     createError(s) {
         return {

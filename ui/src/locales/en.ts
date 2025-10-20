@@ -176,6 +176,7 @@ export default {
             sendEmail: "Send email to this user",
             exportSubmissions:
                 "Export all submissions matching the current filter",
+            downloadAttachments: "Download files from this submission",
         },
     },
     builder: {

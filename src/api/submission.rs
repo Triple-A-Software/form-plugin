@@ -1,15 +1,19 @@
 use std::collections::HashMap;
 
+use async_tempfile::TempFile;
+use async_zip::{ZipEntryBuilder, tokio::write::ZipFileWriter};
 use axum::{
     Json, Router,
+    body::Body,
     extract::{Query, State},
     http::{HeaderMap, HeaderValue},
-    response::IntoResponse,
+    response::{IntoResponse, Response},
     routing::{get, post},
 };
-use reqwest::header;
+use reqwest::{StatusCode, header};
 use serde::{Deserialize, Serialize};
 use sqlx::prelude::FromRow;
+use tokio_util::{compat::FuturesAsyncWriteCompatExt, io::ReaderStream};
 use ts_rs::TS;
 use uuid::Uuid;
 
@@ -17,8 +21,9 @@ use crate::{
     AppState, convert_to_csv,
     date::JavascriptDate,
     extract_field_as_string,
-    model::{Form, StatusResponse, Submission},
+    model::{Form, StatusResponse, Submission, SubmissionApiResponse, SubmissionFile},
     send_email,
+    utils::get_file_path,
 };
 
 pub fn submission_router() -> Router<AppState> {
@@ -35,6 +40,71 @@ pub fn submission_router() -> Router<AppState> {
         .route("/api/submissions/recent", get(recent_submissions))
         .route("/api/submissions/stats", get(submission_stats))
         .route("/api/submissions/export", get(export_submissions))
+        .route("/api/submissions/download-files", get(download_files))
+}
+
+#[derive(Deserialize, TS)]
+#[ts(export, export_to = "index.ts")]
+struct DownloadFilesQuery {
+    id: Uuid,
+}
+async fn download_files(
+    State(state): State<AppState>,
+    Query(query): Query<DownloadFilesQuery>,
+) -> impl IntoResponse {
+    let files: Vec<SubmissionFile> = sqlx::query_as(
+        r#"
+            select * from submission_file where submission_id = $1
+        "#,
+    )
+    .bind(query.id)
+    .fetch_all(&state.db)
+    .await
+    .unwrap();
+    if files.is_empty() {
+        return StatusCode::NOT_FOUND.into_response();
+    }
+    if files.len() == 1 {
+        let file_path = get_file_path(&files[0].id);
+        let file = tokio::fs::File::open(file_path).await.unwrap();
+        Response::builder()
+            .header("Content-Type", files[0].mime_type.as_str())
+            .header(
+                "Content-Disposition",
+                format!(
+                    "attachment; filename=\"{}\"",
+                    files[0].name.as_deref().unwrap_or("file")
+                ),
+            )
+            .body(Body::from_stream(ReaderStream::new(file)))
+            .unwrap()
+    } else {
+        let mut zip_file = TempFile::new().await.unwrap();
+        let mut writer = ZipFileWriter::with_tokio(&mut zip_file);
+        for file in files {
+            let file_path = get_file_path(&file.id);
+            let builder = ZipEntryBuilder::new(
+                file.name.unwrap_or_else(|| file.id.to_string()).into(),
+                async_zip::Compression::Deflate,
+            );
+            let entry_writer = writer.write_entry_stream(builder).await.unwrap();
+            let mut file_reader = tokio::fs::File::open(file_path).await.unwrap();
+            tokio::io::copy(&mut file_reader, &mut entry_writer.compat_write())
+                .await
+                .unwrap();
+        }
+        writer.close().await.unwrap();
+        zip_file.sync_all().await.unwrap();
+        let zip_file = tokio::fs::File::open(zip_file.file_path()).await.unwrap();
+        Response::builder()
+            .header("Content-Type", "application/zip")
+            .header(
+                "Content-Disposition",
+                format!("attachment; filename=\"submission_files_{}.zip\"", query.id),
+            )
+            .body(Body::from_stream(ReaderStream::new(zip_file)))
+            .unwrap()
+    }
 }
 
 #[derive(Serialize, TS)]
@@ -114,14 +184,15 @@ async fn send_email_to_submission(
     State(state): State<AppState>,
     Json(body): Json<SendEmailToSubmissionBody>,
 ) -> Json<StatusResponse> {
+    let mut tx = state.db.begin().await.unwrap();
     let submission: Submission = sqlx::query_as(r#"select * from submission where id = $1"#)
         .bind(body.submission_id)
-        .fetch_one(&state.db)
+        .fetch_one(&mut *tx)
         .await
         .unwrap();
     let form: Form = sqlx::query_as(r#"select * from form where id = $1"#)
         .bind(submission.form_id)
-        .fetch_one(&state.db)
+        .fetch_one(&mut *tx)
         .await
         .unwrap();
     let email = extract_field_as_string(
@@ -129,7 +200,16 @@ async fn send_email_to_submission(
         Some(body.email_field_name.as_deref().unwrap_or("email")),
     );
     if let Some(email) = email {
-        send_email(&state.db, body.email_id, &form, &submission.data, &email).await;
+        send_email(
+            &mut tx,
+            body.email_id,
+            &form,
+            &submission.data,
+            &email,
+            None,
+        )
+        .await;
+        tx.commit().await.unwrap();
         Json(StatusResponse::success())
     } else {
         Json(StatusResponse::fail())
@@ -146,21 +226,34 @@ struct ListSubmissionsQuery {
 async fn list_submissions(
     State(state): State<AppState>,
     Query(query): Query<ListSubmissionsQuery>,
-) -> Json<Vec<Submission>> {
+) -> Json<Vec<SubmissionApiResponse>> {
     if let Some(form_id) = query.form_id {
         Json(
-            sqlx::query_as(r#"select * from submission where form_id = $1 order by timestamp desc limit $2 offset $3"#)
-                .bind(form_id)
-                .bind(query.items_per_page)
-                .bind(query.page * query.items_per_page)
-                .fetch_all(&state.db)
-                .await
-                .unwrap(),
+            sqlx::query_as(
+                r#"
+                select submission.*, count(submission_file) as file_count from submission
+                left join submission_file on submission.id = submission_file.submission_id
+                where form_id = $1
+                group by submission.id, submission_file.id
+                order by timestamp desc limit $2 offset $3
+                "#,
+            )
+            .bind(form_id)
+            .bind(query.items_per_page)
+            .bind(query.page * query.items_per_page)
+            .fetch_all(&state.db)
+            .await
+            .unwrap(),
         )
     } else {
         Json(
             sqlx::query_as(
-                r#"select * from submission order by timestamp desc limit $1 offset $2"#,
+                r#"
+                select submission.*, count(submission_file) as file_count from submission
+                left join submission_file on submission.id = submission_file.submission_id
+                group by submission.id, submission_file.id
+                order by timestamp desc limit $1 offset $2
+                "#,
             )
             .bind(query.items_per_page)
             .bind(query.page * query.items_per_page)
@@ -236,7 +329,7 @@ async fn export_submissions(
 #[derive(Deserialize, TS)]
 #[ts(export, export_to = "index.ts")]
 struct DeleteSubmissionBody {
-    id: i32,
+    id: Uuid,
 }
 async fn delete_submission(
     State(state): State<AppState>,

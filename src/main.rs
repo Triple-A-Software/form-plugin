@@ -2,7 +2,6 @@ use std::{
     collections::HashMap,
     env,
     net::{IpAddr, SocketAddr},
-    path::PathBuf,
     sync::Arc,
 };
 
@@ -22,8 +21,8 @@ use form_plugin::{
         submission::submission_router,
     },
     captcha::CaptchaType,
-    model::{DateInputType, Property, SelectDataType, SubmissionFile},
-    utils::stream_to_file,
+    model::{DateInputType, EmailAttachment, Property, SelectDataType, SubmissionFile},
+    utils::{get_file_path, get_file_storage_path, stream_to_file},
 };
 use form_plugin::{api::dashboard::dashboard_router, render::render_form};
 use form_plugin::{captcha::Captcha, extract_field_as_string, send_email};
@@ -37,7 +36,6 @@ use form_plugin::{
 };
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use sqlx::PgPool;
 use tera::Tera;
 use tokio::{net::TcpListener, sync::RwLock};
 use tower_http::{
@@ -246,12 +244,14 @@ async fn form_submit(
         .await
         .unwrap();
     if let Some(form) = form {
+        let mut tx = state.db.begin().await.unwrap();
         let submission_id = Uuid::new_v4();
-        let body = extract_form_body(&mut multipart, &form, state.db.clone(), &submission_id).await;
+        let (body, files) = extract_form_body(&mut multipart, &form, &submission_id).await;
         let settings: Settings = sqlx::query_as(r#"select * from settings where id = 'settings'"#)
-            .fetch_one(&state.db)
+            .fetch_one(&mut *tx)
             .await
             .unwrap();
+
         if form.activate_captcha {
             let captcha_response = match form.captcha_type {
                 Some(ref r#type) => {
@@ -272,6 +272,7 @@ async fn form_submit(
                 return StatusCode::UNAUTHORIZED.into_response();
             }
         }
+
         if form.activate_cleverreach {
             let should_create_receiver = match form.cleverreach_condition.0 {
                 CleverreachFormCondition::OnSubmit => {
@@ -311,19 +312,30 @@ async fn form_submit(
                 }
             }
         }
+
         if form.send_submission_as_email_enabled
             && let (Some(submission_receiver_email), Some(submissions_email_id)) =
                 (&form.send_submission_as_email, &form.submissions_email_id)
         {
+            let attachments = files
+                .iter()
+                .map(|f| EmailAttachment {
+                    name: f.name.clone().unwrap_or_default(),
+                    path: get_file_path(&f.id),
+                    mime_type: f.mime_type.clone(),
+                })
+                .collect();
             send_email(
-                &state.db,
+                &mut tx,
                 *submissions_email_id,
                 &form,
                 &body,
                 submission_receiver_email,
+                Some(attachments),
             )
             .await;
         }
+
         if form.send_confirmation_email
             && let (Some(confirmation_email_recipient), Some(confirmation_email_id)) = (
                 extract_field_as_string(
@@ -334,14 +346,16 @@ async fn form_submit(
             )
         {
             send_email(
-                &state.db,
+                &mut tx,
                 *confirmation_email_id,
                 &form,
                 &body,
                 &confirmation_email_recipient,
+                None,
             )
             .await;
         }
+
         create_submission(
             Submission {
                 id: submission_id,
@@ -349,10 +363,27 @@ async fn form_submit(
                 data: sqlx::types::Json(body),
                 ..Default::default()
             },
-            &state.db,
+            &mut *tx,
         )
         .await
         .unwrap();
+        for file in files {
+            sqlx::query(
+                r#"
+                    insert into submission_file (id, name, submission_id, mime_type)
+                    values ($1, $2, $3, $4) returning *
+                "#,
+            )
+            .bind(file.id)
+            .bind(file.name)
+            .bind(submission_id)
+            .bind(file.mime_type)
+            .execute(&mut *tx)
+            .await
+            .unwrap();
+        }
+        tx.commit().await.unwrap();
+
         if let Some(redirect) = query.redirect {
             Redirect::to(&redirect).into_response()
         } else {
@@ -366,10 +397,10 @@ async fn form_submit(
 async fn extract_form_body(
     multipart: &mut Multipart,
     form: &Form,
-    db: PgPool,
     submission_id: &Uuid,
-) -> Value {
+) -> (Value, Vec<SubmissionFile>) {
     let mut body = serde_json::Map::new();
+    let mut files = Vec::new();
     while let Some(field) = multipart.next_field().await.unwrap() {
         let name = field.name().unwrap().to_string();
         let form_field = form.props.0.iter().find(|&f| match f {
@@ -419,23 +450,18 @@ async fn extract_form_body(
             }
             Some(Property::Button(_)) => None,
             Some(Property::File(_)) => {
-                let file_storage_path = PathBuf::from(
-                    env::var("FILE_STORAGE_PATH").unwrap_or("/var/form-plugin".to_string()),
-                );
-                std::fs::create_dir_all(&file_storage_path).unwrap();
-                let db_file: SubmissionFile = sqlx::query_as(
-                    r#"
-                    insert into submission_file (name, submission_id) values ($1, $2) returning *
-                    "#,
-                )
-                .bind(field.name())
-                .bind(submission_id)
-                .fetch_one(&db)
-                .await
-                .unwrap();
-                let file_path = file_storage_path.join(db_file.id.to_string());
+                std::fs::create_dir_all(get_file_storage_path()).unwrap();
+                let mime_type = field.content_type().unwrap().to_string();
+                let file_id = Uuid::new_v4();
+                let file_path = get_file_path(&file_id);
+                files.push(SubmissionFile {
+                    id: file_id,
+                    name: field.name().map(|s| s.to_string()),
+                    submission_id: *submission_id,
+                    mime_type,
+                });
                 stream_to_file(&file_path, field).await.unwrap();
-                Some(serde_json::to_value(&db_file).unwrap())
+                None
             }
             Some(Property::Date(prop)) => {
                 let text = field.text().await.unwrap();
@@ -468,7 +494,7 @@ async fn extract_form_body(
             body.insert(name, content);
         }
     }
-    Value::Object(body)
+    (Value::Object(body), files)
 }
 
 fn parse_month(value: &str) -> Option<NaiveDate> {

@@ -1,6 +1,6 @@
 [package]
 name = "form-plugin"
-version = "3.0.5"
+version = "3.2.0"
 edition = "2024"
 
 [workspace]
@@ -10,6 +10,8 @@ default-run = "form-plugin"
 
 [dependencies]
 anyhow = "1"
+async-tempfile = "0.7"
+async_zip = { version = "0.0.18", features = ["full"] }
 axum = { version = "0.8", features = ["multipart"] }
 chrono = { version = "0.4", features = ["serde"] }
 csv = "1"

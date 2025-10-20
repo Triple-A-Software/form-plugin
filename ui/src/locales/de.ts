@@ -177,6 +177,7 @@ export default {
             sendEmail: "E-mail an diesen User senden",
             exportSubmissions:
                 "Alle Einsendungen mit dem aktuellen filter exportieren",
+            downloadAttachments: "Dateien von dieser Einsendung herunterladen",
         },
     },
     builder: {

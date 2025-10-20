@@ -4,13 +4,14 @@ import type { TableColumn } from "@nuxt/ui";
 import InputDate from "@/components/input/Date.vue";
 import { computed, ref, shallowRef, watch } from "vue";
 import { useI18n } from "vue-i18n";
-import type { Submission } from "../../../bindings";
+import type { SubmissionApiResponse } from "../../../bindings";
 import { useForms } from "@/store/forms";
 import { CalendarDate, getLocalTimeZone } from "@internationalized/date";
+import { submissionFileDownloadLink } from "@/utils";
 
 const { t, locale } = useI18n();
 
-const columns = computed<TableColumn<Submission>[]>(() => [
+const columns = computed<TableColumn<SubmissionApiResponse>[]>(() => [
     {
         id: "expand",
     },
@@ -182,6 +183,14 @@ const deleteMutation = useApiMutation(
 
         <template #actions-cell="{ row }">
             <div class="flex flex-row gap-2 items-center">
+                <UTooltip v-if="row.original.file_count > 0" :text="$t('field.tooltip.downloadAttachments')">
+                    <UButton
+                        variant="ghost"
+                        color="neutral"
+                        @click="submissionFileDownloadLink(row.original)"
+                        icon="i-tabler-download"
+                    />
+                </UTooltip>
                 <SendEmailModal :submission="row.original" />
                 <DeleteModal
                     :name="$t('deleteName.email')"

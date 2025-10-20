@@ -23,6 +23,7 @@
         "neverthrow": "^8.2.0",
         "pinia": "^3.0.1",
         "typescript-utils": "git+ssh://git@codeberg.org/blechlawine/typescript-utils.git#ad7dc82947",
+        "ufo": "^1.6.1",
         "unplugin-vue-router": "^0.12.0",
         "vite-plugin-vue-layouts": "^0.11.0",
         "vue": "^3.5.13",

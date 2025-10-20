@@ -1,4 +1,4 @@
-use std::{collections::HashMap, env, fmt::Display};
+use std::{collections::HashMap, env, fmt::Display, path::PathBuf};
 
 #[cfg(feature = "seed")]
 use fake::{
@@ -77,6 +77,15 @@ pub struct Submission {
     pub data: Json<Value>,
 }
 
+#[derive(Serialize, TS, FromRow)]
+#[ts(export, export_to = "index.ts")]
+pub struct SubmissionApiResponse {
+    #[serde(flatten)]
+    #[sqlx(flatten)]
+    pub submission: Submission,
+    pub file_count: i64,
+}
+
 #[cfg_attr(feature = "seed", derive(Dummy))]
 #[derive(Deserialize, Serialize, Clone, Debug, TS, FromRow)]
 #[ts(export, export_to = "index.ts")]
@@ -144,7 +153,12 @@ pub struct Email {
 }
 
 impl Email {
-    pub async fn send(&self, receiver: &str, render_context: Context) -> anyhow::Result<()> {
+    pub async fn send(
+        &self,
+        receiver: &str,
+        render_context: Context,
+        attachments: Option<Vec<EmailAttachment>>,
+    ) -> anyhow::Result<()> {
         let internal_backend_port = env::var("INTERNAL_BACKEND_PORT")?;
         reqwest::Client::new()
             .post(format!(
@@ -154,6 +168,7 @@ impl Email {
                 receiver,
                 subject: self.subject.clone(),
                 content: tera::Tera::one_off(&self.content, &render_context, true).unwrap(),
+                attachments,
             })
             .send()
             .await?;
@@ -162,10 +177,19 @@ impl Email {
 }
 
 #[derive(Serialize)]
+pub struct EmailAttachment {
+    pub name: String,
+    /// this needs to be the full path to the file
+    pub path: PathBuf,
+    pub mime_type: String,
+}
+
+#[derive(Serialize)]
 pub struct EmailSendRequest<'a> {
     pub receiver: &'a str,
     pub subject: String,
     pub content: String,
+    pub attachments: Option<Vec<EmailAttachment>>,
 }
 
 #[cfg_attr(feature = "seed", derive(Dummy))]
@@ -510,4 +534,5 @@ pub struct SubmissionFile {
     pub id: Uuid,
     pub name: Option<String>,
     pub submission_id: Uuid,
+    pub mime_type: String,
 }

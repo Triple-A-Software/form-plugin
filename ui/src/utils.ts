@@ -1,4 +1,5 @@
-import type { Property } from "../../bindings";
+import { cleanDoubleSlashes } from "ufo";
+import type { Property, Submission } from "../../bindings";
 
 export type PropertyType = Property["type"];
 export type PropertySelector<TType extends PropertyType> = Extract<
@@ -205,4 +206,13 @@ function createCaptcha(): PropertySelector<"captcha"> {
         callback: "",
         expiredCallback: "",
     };
+}
+
+export function submissionFileDownloadLink(submission: Submission) {
+    const a = document.createElement("a");
+    a.href = cleanDoubleSlashes(
+        `${__API_BASE__}/api/submissions/download-files?id=${submission.id}`,
+    );
+    a.click();
+    a.remove();
 }

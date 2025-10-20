@@ -1,8 +1,9 @@
 use axum::{BoxError, body::Bytes};
 use futures::{Stream, TryStreamExt};
-use std::{io, path::PathBuf};
+use std::{env, io, path::PathBuf};
 use tokio::fs::File;
 use tokio_util::io::StreamReader;
+use uuid::Uuid;
 
 // from https://github.com/tokio-rs/axum/blob/main/examples/stream-to-file/src/main.rs
 // Save a `Stream` to a file
@@ -23,4 +24,12 @@ where
     tokio::io::copy(&mut body_reader, &mut file).await?;
 
     Ok(())
+}
+
+pub fn get_file_storage_path() -> PathBuf {
+    PathBuf::from(env::var("FILE_STORAGE_PATH").unwrap_or("/var/form-plugin".to_string()))
+}
+
+pub fn get_file_path(file_id: &Uuid) -> PathBuf {
+    get_file_storage_path().join(file_id.to_string())
 }

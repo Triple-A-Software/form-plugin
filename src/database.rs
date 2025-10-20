@@ -1,4 +1,4 @@
-use sqlx::{Executor, Postgres, postgres::PgQueryResult};
+use sqlx::{Executor, Postgres};
 
 use crate::model::{Email, Form, Submission};
 
@@ -131,11 +131,11 @@ pub async fn create_email(
 pub async fn create_submission(
     submission: Submission,
     db: impl Executor<'_, Database = Postgres>,
-) -> sqlx::Result<PgQueryResult> {
-    sqlx::query(r#"insert into submission (id, form_id, data) values ($1, $2, $3)"#)
+) -> sqlx::Result<Submission> {
+    sqlx::query_as(r#"insert into submission (id, form_id, data) values ($1, $2, $3) returning *"#)
         .bind(submission.id)
         .bind(submission.form_id)
         .bind(submission.data)
-        .execute(db)
+        .fetch_one(db)
         .await
 }

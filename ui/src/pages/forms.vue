@@ -153,10 +153,12 @@ function editForm(id: number) {
             </template>
         </UModal>
     </div>
+
     <UTable :columns="columns" :data="formStore.forms.data" v-model:expanded="expanded">
         <template #expanded="{ row }">
             <pre>{{ row.original }}</pre>
         </template>
+
         <template #expand-cell="{ row }">
             <UButton
                 color="neutral"
@@ -168,6 +170,7 @@ function editForm(id: number) {
                 @click="row.toggleExpanded()"
             />
         </template>
+
         <template #actions-cell="{ row }">
             <UModal :title="t('modal.edit.form')" fullscreen v-model:open="editModalOpen">
                 <UButton color="neutral" variant="ghost" icon="i-tabler-pencil" @click="editForm(row.original.id)" />

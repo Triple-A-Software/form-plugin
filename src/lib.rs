@@ -7,11 +7,11 @@ use chrono::{DateTime, Utc};
 use cleverreach::Cleverreach;
 use model::{Email, Form};
 use serde_json::Value;
-use sqlx::PgPool;
+use sqlx::{PgConnection, PgPool};
 use tera::Tera;
 use tokio::sync::RwLock;
 
-use crate::model::Submission;
+use crate::model::{EmailAttachment, Submission};
 
 pub mod captcha;
 pub mod cleverreach;
@@ -45,7 +45,14 @@ pub async fn create_db() -> PgPool {
     db
 }
 
-pub async fn send_email(db: &PgPool, id: i32, form: &Form, body: &Value, to: &str) {
+pub async fn send_email(
+    db: &mut PgConnection,
+    id: i32,
+    form: &Form,
+    body: &Value,
+    to: &str,
+    attachments: Option<Vec<EmailAttachment>>,
+) {
     let email: Email = sqlx::query_as(r#"select * from email where id = $1"#)
         .bind(id)
         .fetch_one(db)
@@ -54,7 +61,7 @@ pub async fn send_email(db: &PgPool, id: i32, form: &Form, body: &Value, to: &st
     let mut context = tera::Context::new();
     context.insert("form", &form);
     context.insert("submission", &body);
-    email.send(to, context).await.unwrap();
+    email.send(to, context, attachments).await.unwrap();
 }
 
 pub fn extract_field_as_string(data: &Value, field_name: Option<&str>) -> Option<String> {

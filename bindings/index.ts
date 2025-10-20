@@ -35,7 +35,9 @@ export type DeleteEmailBody = { id: number, };
 
 export type DeleteFormBody = { id: number, };
 
-export type DeleteSubmissionBody = { id: number, };
+export type DeleteSubmissionBody = { id: string, };
+
+export type DownloadFilesQuery = { id: string, };
 
 export type Email = { id: number, subject: string, 
 /**
@@ -74,6 +76,8 @@ export type Settings = { cleverreachClientId: string | undefined, cleverreachSec
 export type StatusResponse = { success: boolean, };
 
 export type Submission = { id: string, form_id: number, timestamp: string, data: JsonValue, };
+
+export type SubmissionApiResponse = { file_count: bigint, id: string, form_id: number, timestamp: string, data: JsonValue, };
 
 export type SubmissionStats = { total: number, graph: Array<{ date: string } & Record<string, number>>, };
 
