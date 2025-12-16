@@ -1,6 +1,13 @@
 import type en from "./en";
 
 export default {
+    alert: {
+        missingCaptchaSettings: {
+            title: "Fehlende Captcha Einstellungen",
+            description:
+                "Wenn du ein Captcha verwenden möchtest, musst du das entsprechende Captcha Secret und den Captcha Sitekey in den Einstellungen konfigurieren",
+        },
+    },
     hint: {
         preview:
             "Das ist nur eine grobe Vorschau, das eingebundene Formular auf deiner Seite wird wahrscheinlich etwas unterschiedlich aussehen.",
@@ -24,6 +31,7 @@ export default {
             forms: "Formulare verwalten",
             emails: "Erreiche deine User",
             submissions: "Siehe Einsendungen",
+            settings: "Gehe zu den Einstellungen",
         },
         create: {
             field: "Feld erstellen",
