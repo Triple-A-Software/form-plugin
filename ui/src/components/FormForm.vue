@@ -90,10 +90,10 @@ const emails = useApiQuery("/api/emails", {
                             label-key="label"
                         />
                     </UFormField>
-                    <UFormField :label="$t('field.label.captchaCallback')" required>
+                    <UFormField :label="$t('field.label.captchaCallback')">
                         <UInput v-model="model.captcha_callback" />
                     </UFormField>
-                    <UFormField :label="$t('field.label.captchaExpiredCallback')" required>
+                    <UFormField :label="$t('field.label.captchaExpiredCallback')">
                         <UInput v-model="model.captcha_expired_callback" />
                     </UFormField>
                 </UCard>
