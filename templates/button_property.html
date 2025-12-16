@@ -47,4 +47,6 @@
     {{ property.class }}">
     {{ property.label[language] }}
 </button>
+{% elif property.variant == "unstyled" %}
+<button type="{{ property.button_type }}" class="{{ property.class }}">{{ property.label[language] }}</button>
 {% endif %}

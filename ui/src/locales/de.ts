@@ -162,6 +162,7 @@ export default {
             variant: {
                 solid: "Ausgefüllt",
                 alternative: "Alternativ",
+                unstyled: "Ohne Styling",
             },
             default_value: {
                 nothing: "Nichts",

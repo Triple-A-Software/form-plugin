@@ -506,6 +506,7 @@ pub enum TailwindColor {
 pub enum Variant {
     Solid,
     Alternative,
+    Unstyled,
 }
 
 #[derive(Deserialize, Serialize, FromRow, Clone, Debug, TS)]

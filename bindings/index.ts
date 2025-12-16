@@ -89,4 +89,4 @@ export type TextProperty = { max: number | undefined, placeholder: Record<string
 
 export type TextareaProperty = { max_length: number | undefined, placeholder: Record<string, string>, rows: number | undefined, columns: number | undefined, input_class: string | undefined, label_class: string | undefined, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | undefined, class: string, name: string, required: boolean, color: TailwindColor, };
 
-export type Variant = "solid" | "alternative";
+export type Variant = "solid" | "alternative" | "unstyled";

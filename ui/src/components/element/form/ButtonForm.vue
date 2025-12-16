@@ -32,6 +32,10 @@ const variantOptions = computed(() => [
         label: t("field.option.variant.alternative"),
         value: "alternative",
     },
+    {
+        label: t("field.option.variant.unstyled"),
+        value: "unstyled",
+    },
 ]);
 </script>
 <template>

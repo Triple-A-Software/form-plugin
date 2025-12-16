@@ -163,6 +163,7 @@ export default {
             variant: {
                 solid: "Solid",
                 alternative: "Alternative",
+                unstyled: "Unstyled",
             },
             default_value: {
                 nothing: "Nothing",
