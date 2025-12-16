@@ -1,8 +1,21 @@
 <script setup lang="ts">
 import { useApiQuery } from "@/utils/api";
 import type { Form } from "../../../bindings";
+import { computed } from "vue";
 
 const model = defineModel<Form>({ required: true });
+
+const settings = useApiQuery("/api/settings", {
+    method: "GET",
+});
+const showCaptchaAlert = computed(() => {
+    if (!settings.data.value) return false;
+    return (
+        !settings.data.value.captchaSitekey ||
+        (!settings.data.value.hCaptchaSecret && model.value.captcha_type === "h-captcha") ||
+        (!settings.data.value.reCaptchaSecret && model.value.captcha_type === "re-captcha")
+    );
+});
 
 const emails = useApiQuery("/api/emails", {
     method: "GET",
@@ -71,8 +84,22 @@ const emails = useApiQuery("/api/emails", {
             <UButton color="neutral" variant="ghost" :icon="model.activate_captcha ? 'i-tabler-square-check' : 'i-tabler-square'">
                 {{ $t("field.label.activateCaptcha") }}
             </UButton>
-            <template #content v-if="model.captcha_type">
+            <template #content>
                 <UCard class="m-1" :ui="{ body: 'space-y-2' }">
+                    <UAlert
+                        v-if="showCaptchaAlert"
+                        color="error"
+                        :title="$t('alert.missingCaptchaSettings.title')"
+                        :description="$t('alert.missingCaptchaSettings.description')"
+                        variant="subtle"
+                        :actions="[
+                            {
+                                label: $t('action.goto.settings'),
+                                icon: 'tabler:settings',
+                                to: '/settings',
+                            },
+                        ]"
+                    />
                     <UFormField :label="$t('field.label.captchaType')" required>
                         <USelect
                             v-model="model.captcha_type"
@@ -86,6 +113,7 @@ const emails = useApiQuery("/api/emails", {
                                     label: $t('field.option.captchaType.reCaptcha'),
                                 },
                             ]"
+                            class="w-full"
                             value-key="value"
                             label-key="label"
                         />

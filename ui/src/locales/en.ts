@@ -1,6 +1,13 @@
 import type { API } from "@/utils/types/api";
 
 export default {
+    alert: {
+        missingCaptchaSettings: {
+            title: "Missing captcha settings",
+            description:
+                "If you want to use a captcha, you need to configure the corresponding captcha secret and the captcha sitekey in the settings",
+        },
+    },
     hint: {
         preview:
             "This is just a rough preview, it is not exactly how the form will be rendered on your page.",
@@ -25,6 +32,7 @@ export default {
             forms: "Manage forms",
             emails: "Reach your users",
             submissions: "See submissions",
+            settings: "Go to settings",
         },
         create: {
             field: "Create field",
