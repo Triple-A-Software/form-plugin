@@ -1,7 +1,11 @@
-import { createApiToolkit } from "api-toolkit";
-import { nullToUndefined, undefinedToNull } from "typescript-utils";
+import { createApiToolkit } from "@blechlawine/api-toolkit";
+import {
+    nullToUndefined,
+    undefinedToNull,
+} from "@blechlawine/typescript-utils";
 import type { ApiError } from "../../../bindings";
 import type { API } from "./types/api";
+import { useI18n } from "vue-i18n";
 
 function isError(v: unknown): v is ApiError {
     if (
@@ -15,10 +19,7 @@ function isError(v: unknown): v is ApiError {
     return false;
 }
 
-export const { useApiMutation, useApiQuery, fetchApi } = createApiToolkit<
-    API,
-    ApiError
->({
+export const { useApiMutation, useApiQuery } = createApiToolkit<API, ApiError>({
     baseUrl: __API_BASE__,
     createError(s) {
         return {
@@ -29,6 +30,32 @@ export const { useApiMutation, useApiQuery, fetchApi } = createApiToolkit<
     transformer: {
         serialize: (data) => undefinedToNull(data),
         deserialize: (object) => nullToUndefined(object),
+    },
+    toastBuilder: () => {
+        const toast = useToast();
+        const { t, te } = useI18n();
+        return {
+            success: (path, method) => {
+                const tKey = `toast.${path}.${String(method)}.success`;
+                if (te(tKey)) {
+                    toast.add({
+                        title: t(tKey),
+                        color: "success",
+                        icon: "i-tabler-check",
+                    });
+                }
+            },
+            error: (path, method) => {
+                const tKey = `toast.${path}.${String(method)}.error`;
+                if (te(tKey)) {
+                    toast.add({
+                        title: t(tKey),
+                        color: "error",
+                        icon: "i-tabler-alert-circle",
+                    });
+                }
+            },
+        };
     },
     errorFromStatusCode: (statusCode: number, json: unknown) => {
         if (isError(json)) {

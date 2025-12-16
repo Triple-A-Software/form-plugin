@@ -102,7 +102,7 @@ const deleteMutation = useApiMutation(
             <USelectMenu
                 v-model="filterByForm"
                 :placeholder="$t('field.placeholder.filterByForm')"
-                :items="forms.forms.data"
+                :items="forms.forms.data.value"
                 value-key="id"
                 label-key="name"
                 class="w-full"
@@ -123,7 +123,7 @@ const deleteMutation = useApiMutation(
                         <USelectMenu
                             v-model="onlyExportForm"
                             :placeholder="$t('field.placeholder.selectForm')"
-                            :items="forms.forms.data"
+                            :items="forms.forms.data.value"
                             value-key="id"
                             label-key="name"
                             class="w-full"

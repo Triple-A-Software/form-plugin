@@ -1,3 +1,5 @@
+import type { API } from "@/utils/types/api";
+
 export default {
     hint: {
         preview:
@@ -254,38 +256,66 @@ export default {
         stone: "Stone",
     },
     toast: {
-        success: {
-            "/api/emails": {
-                POST: "Email created successfully",
-                PUT: "Email updated successfully",
-                DELETE: "Email deleted successfully",
+        "/api/emails": {
+            GET: {
+                error: "Failed to fetch emails",
             },
-            "/api/forms": {
-                POST: "Form created successfully",
-                PUT: "Form updated successfully",
-                DELETE: "Form deleted successfully",
+            POST: {
+                success: "Email created successfully",
+                error: "Failed to create email",
             },
-            "/api/settings": {
-                PUT: "Settings saved successfully",
+            PUT: {
+                success: "Email updated successfully",
+                error: "Failed to update email",
             },
-        },
-        error: {
-            "/api/emails": {
-                GET: "Failed to fetch emails",
-                POST: "Failed to create email",
-                PUT: "Failed to update email",
-                DELETE: "Failed to delete email",
-            },
-            "/api/forms": {
-                GET: "Failed to fetch forms",
-                POST: "Failed to create form",
-                PUT: "Failed to update form",
-                DELETE: "Failed to delete form",
-            },
-            "/api/settings": {
-                GET: "Failed to load settings",
-                PUT: "Failed to save settings",
+            DELETE: {
+                success: "Email deleted successfully",
+                error: "Failed to delete email",
             },
         },
-    },
+        "/api/forms": {
+            GET: {
+                error: "Failed to fetch forms",
+            },
+            POST: {
+                success: "Form created successfully",
+                error: "Failed to create form",
+            },
+            PUT: {
+                success: "Form updated successfully",
+                error: "Failed to update form",
+            },
+            DELETE: {
+                success: "Form deleted successfully",
+                error: "Failed to delete form",
+            },
+        },
+        "/api/settings": {
+            GET: {
+                error: "Failed to load settings",
+            },
+            PUT: {
+                success: "Settings saved successfully",
+                error: "Failed to save settings",
+            },
+        },
+        "/api/submissions": {
+            GET: {
+                error: "Failed to fetch submissions",
+            },
+        },
+        "/api/submissions/send-email": {
+            POST: {
+                success: "Email sent successfully",
+                error: "Failed to send email",
+            },
+        },
+    } satisfies Partial<{
+        [key in keyof API]: {
+            [method in keyof API[key]]?: {
+                success?: string;
+                error?: string;
+            };
+        };
+    }>,
 };

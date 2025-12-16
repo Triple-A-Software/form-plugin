@@ -255,37 +255,58 @@ export default {
         stone: "Stein",
     },
     toast: {
-        success: {
-            "/api/emails": {
-                POST: "Email erfolgreich erstellt",
-                PUT: "Email erfolgreich gespeichert",
-                DELETE: "Email erfolgreich gelöscht",
+        "/api/emails": {
+            GET: {
+                error: "Emails konnten nicht geladen werden",
             },
-            "/api/forms": {
-                POST: "Formular erfolgreich erstellt",
-                PUT: "Formular erfolgreich gespeichert",
-                DELETE: "Formular erfolgreich gelöscht",
+            POST: {
+                success: "Email erfolgreich erstellt",
+                error: "Email konnte nicht erstellt werden",
             },
-            "/api/settings": {
-                PUT: "Einstellungen erfolgreich gespeichert",
+            PUT: {
+                success: "Email erfolgreich gespeichert",
+                error: "Email konnte nicht gespeichert werden",
+            },
+            DELETE: {
+                success: "Email erfolgreich gelöscht",
+                error: "Email konnte nicht gelöscht werden",
             },
         },
-        error: {
-            "/api/emails": {
-                GET: "Emails konnten nicht geladen werden",
-                POST: "Email konnte nicht erstellt werden",
-                PUT: "Email konnte nicht gespeichert werden",
-                DELETE: "Email konnte nicht gelöscht werden",
+        "/api/forms": {
+            GET: {
+                error: "Formulare konnten nicht geladen werden",
             },
-            "/api/forms": {
-                GET: "Formulare konnten nicht geladen werden",
-                POST: "Formular konnte nicht erstellt werden",
-                PUT: "Formular konnte nicht gespeichert werden",
-                DELETE: "Formular konnte nicht gelöscht werden",
+            POST: {
+                success: "Formular erfolgreich erstellt",
+                error: "Formular konnte nicht erstellt werden",
             },
-            "/api/settings": {
-                GET: "Einstellungen konnten nicht geladen werden",
-                PUT: "Einstellungen konnten nicht gespeichert werden",
+            PUT: {
+                success: "Formular erfolgreich gespeichert",
+                error: "Formular konnte nicht gespeichert werden",
+            },
+            DELETE: {
+                success: "Formular erfolgreich gelöscht",
+                error: "Formular konnte nicht gelöscht werden",
+            },
+        },
+        "/api/settings": {
+            GET: {
+                error: "Einstellungen konnten nicht geladen werden",
+            },
+            PUT: {
+                success: "Einstellungen erfolgreich gespeichert",
+                error: "Einstellungen konnten nicht gespeichert werden",
+            },
+        },
+        "/api/submissions": {
+            GET: {
+                error: "Einsendungen konnten nicht geladen werden",
+            },
+        },
+        "/api/submissions/send-email": {
+            POST: {
+                success: "E-mail erfolgreich gesendet",
+                error: "E-mail konnte nicht gesendet werden",
             },
         },
     },

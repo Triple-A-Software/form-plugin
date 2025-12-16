@@ -1,8 +1,9 @@
+import { CreateApi } from "@blechlawine/api-toolkit";
 import type * as T from "../../../../bindings";
 
 export type API = FormsApi & EmailsApi & SubmissionsApi & SettingsApi;
 
-type FormsApi = {
+type FormsApi = CreateApi<{
     "/api/forms": {
         GET: {
             response: Array<T.Form>;
@@ -28,9 +29,9 @@ type FormsApi = {
             body: T.Form;
         };
     };
-};
+}>;
 
-type EmailsApi = {
+type EmailsApi = CreateApi<{
     "/api/emails": {
         GET: {
             response: Array<T.Email>;
@@ -48,9 +49,9 @@ type EmailsApi = {
             body: T.DeleteEmailBody;
         };
     };
-};
+}>;
 
-type SubmissionsApi = {
+type SubmissionsApi = CreateApi<{
     "/api/submissions": {
         GET: {
             response: Array<T.SubmissionApiResponse>;
@@ -83,9 +84,9 @@ type SubmissionsApi = {
             response: T.SubmissionStats;
         };
     };
-};
+}>;
 
-type SettingsApi = {
+type SettingsApi = CreateApi<{
     "/api/settings": {
         GET: {
             response: T.Settings;
@@ -95,4 +96,4 @@ type SettingsApi = {
             response: T.StatusResponse;
         };
     };
-};
+}>;
