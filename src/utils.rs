@@ -1,6 +1,6 @@
 use axum::{BoxError, body::Bytes};
 use futures::{Stream, TryStreamExt};
-use std::{env, io, path::PathBuf};
+use std::{env, fmt::Display, io, path::PathBuf};
 use tokio::fs::File;
 use tokio_util::io::StreamReader;
 use uuid::Uuid;
@@ -32,4 +32,22 @@ pub fn get_file_storage_path() -> PathBuf {
 
 pub fn get_file_path(file_id: &Uuid) -> PathBuf {
     get_file_storage_path().join(file_id.to_string())
+}
+
+pub trait ErrorReport {
+    fn report_err(self, file: impl Display, line: impl Display) -> Self;
+}
+
+impl<T, E> ErrorReport for std::result::Result<T, E>
+where
+    E: Display,
+{
+    fn report_err(self, file: impl Display, line: impl Display) -> Self {
+        if let Err(err) = self.as_ref() {
+            tracing::error!("[{}:{}] {}", file, line, err.to_string());
+            self
+        } else {
+            self
+        }
+    }
 }

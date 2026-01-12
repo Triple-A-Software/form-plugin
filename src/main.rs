@@ -267,6 +267,8 @@ async fn form_submit(
             if let Some(captcha_response) = captcha_response {
                 if !captcha_response.success {
                     return StatusCode::UNAUTHORIZED.into_response();
+                } else {
+                    tracing::error!("{:?}", &captcha_response.error_codes);
                 }
             } else {
                 return StatusCode::UNAUTHORIZED.into_response();
@@ -414,9 +416,10 @@ async fn extract_form_body(
             Property::Button(prop) => prop.common.name == name,
             Property::File(prop) => prop.common.name == name,
             Property::Date(prop) => prop.common.name == name,
-            Property::Captcha(prop) => match prop.captcha_type {
-                CaptchaType::HCaptcha => name == "h-captcha-response",
-                CaptchaType::ReCaptcha => name == "g-recaptcha-response",
+            Property::Captcha(_) => match form.captcha_type {
+                Some(CaptchaType::HCaptcha) => name == "h-captcha-response",
+                Some(CaptchaType::ReCaptcha) => name == "g-recaptcha-response",
+                None => false,
             },
         });
         let content = match form_field {

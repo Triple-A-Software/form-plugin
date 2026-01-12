@@ -5,7 +5,7 @@ use serde_json::Value;
 use sqlx::prelude::Type;
 use ts_rs::TS;
 
-use crate::model::Settings;
+use crate::{model::Settings, utils::ErrorReport};
 
 pub struct Captcha<'a> {
     pub body: &'a Value,
@@ -25,6 +25,8 @@ pub enum CaptchaType {
 #[derive(Deserialize)]
 pub struct CaptchaResponse {
     pub success: bool,
+    #[serde(rename = "error-codes")]
+    pub error_codes: Option<Vec<String>>,
 }
 
 impl Captcha<'_> {
@@ -37,19 +39,26 @@ impl Captcha<'_> {
             CaptchaType::ReCaptcha => "https://www.google.com/recaptcha/api/siteverify",
         };
         let response = match self.r#type {
-            CaptchaType::HCaptcha => self.body.get("g-recaptcha-response"),
-            CaptchaType::ReCaptcha => self.body.get("h-captcha-response"),
+            CaptchaType::HCaptcha => self.body.get("h-captcha-response"),
+            CaptchaType::ReCaptcha => self.body.get("g-recaptcha-response"),
         };
         if let (Some(Value::String(response)), Some(secret)) = (response, secret) {
             reqwest::Client::new()
                 .post(url)
-                .body(format!("secret={secret}&response={response}"))
+                .body(format!(
+                    "secret={}&response={}",
+                    urlencoding::encode(secret),
+                    urlencoding::encode(response)
+                ))
                 .header("Content-type", "application/x-www-form-urlencoded")
+                .header("Accept", "application/json")
                 .send()
                 .await
+                .report_err(file!(), line!())
                 .ok()?
                 .json::<CaptchaResponse>()
                 .await
+                .report_err(file!(), line!())
                 .ok()
         } else {
             None
