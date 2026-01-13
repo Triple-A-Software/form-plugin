@@ -1,4 +1,4 @@
-import { CreateApi } from "@blechlawine/api-toolkit";
+import type { CreateApi } from "@blechlawine/api-toolkit";
 import type * as T from "../../../../bindings";
 
 export type API = FormsApi & EmailsApi & SubmissionsApi & SettingsApi;
