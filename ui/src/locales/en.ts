@@ -19,6 +19,7 @@ export default {
         submissionEmail: "This email will be sent to the specified email address for every submission",
         submissionEmailRecipient: "This email address will receive every submission",
         additionalHtml: "This HTML will be added to the end of form",
+        emailContent: "Format: HTML, with {{ submission.<field name> }} for accessing values of the submission",
     },
     action: {
         goto: {
@@ -208,8 +209,7 @@ export default {
         },
         forms: {
             title: "Forms",
-            description:
-                "Manage forms visitors of your website can fill out to send information to you, or sign up to anything",
+            description: "Manage forms visitors of your website can fill out to send information to you, or sign up to anything",
         },
         submissions: {
             title: "Submissions",

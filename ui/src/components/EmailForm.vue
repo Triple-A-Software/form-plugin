@@ -8,7 +8,7 @@ const model = defineModel<Email>({ required: true });
         <UFormField :label="$t('field.label.subject')" required>
             <UInput v-model="model.subject" class="w-full" />
         </UFormField>
-        <UFormField :label="$t('field.label.content')">
+        <UFormField :label="$t('field.label.content')" :help="$t('hint.emailContent')">
             <UTextarea v-model="model.content" class="w-full" autoresize />
         </UFormField>
     </div>
