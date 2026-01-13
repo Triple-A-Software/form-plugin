@@ -1,0 +1,58 @@
+#!/bin/bash
+
+# Check if a version argument is provided
+if [ "$#" -ne 1 ]; then
+    echo "Usage: $0 <version>"
+    exit 1
+fi
+
+NEW_VERSION="$1"
+
+# Check for unstaged changes
+if ! git diff --quiet; then
+    echo "Error: There are unstaged changes. Please commit or stash them before updating the version."
+    exit 1
+fi
+
+# Check for staged changes
+if ! git diff --cached --quiet; then
+    echo "Error: There are staged changes. Please commit or stash them before updating the version."
+    exit 1
+fi
+
+# Update version in Cargo.toml
+if [ -f "Cargo.toml" ]; then
+    sed -i "s/^version = \".*\"/version = \"$NEW_VERSION\"/" Cargo.toml
+    cargo update --workspace
+    echo "Updated version in Cargo.toml to $NEW_VERSION"
+else
+    echo "Error: Cargo.toml not found."
+    exit 1
+fi
+
+# Update version in plugin.json
+if [ -f "plugin.json" ]; then
+    sed -i "s/\"version\": \".*\"/\"version\": \"$NEW_VERSION\"/" plugin.json
+    echo "Updated version in plugin.json to $NEW_VERSION"
+else
+    echo "Error: plugin.json not found."
+    exit 1
+fi
+
+# Stage the changes
+git add Cargo.toml plugin.json Cargo.lock
+
+# Commit the changes
+git commit -m "chore: bump version to $NEW_VERSION"
+
+# Check if the tag already exists
+if git rev-parse "$NEW_VERSION" >/dev/null 2>&1; then
+    echo "Tag $NEW_VERSION already exists. Deleting and recreating it..."
+    git tag -d "$NEW_VERSION"
+fi
+
+# Create a tag
+git tag "$NEW_VERSION"
+
+echo "Version updated, committed, and tagged as $NEW_VERSION."
+
