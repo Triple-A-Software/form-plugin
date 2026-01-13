@@ -265,6 +265,7 @@ async fn form_submit(
                 None => None,
             };
             if let Some(captcha_response) = captcha_response {
+                dbg!(&captcha_response.error_codes);
                 if !captcha_response.success {
                     return StatusCode::UNAUTHORIZED.into_response();
                 } else {

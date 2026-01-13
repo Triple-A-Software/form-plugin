@@ -43,14 +43,11 @@ impl Captcha<'_> {
             CaptchaType::ReCaptcha => self.body.get("g-recaptcha-response"),
         };
         if let (Some(Value::String(response)), Some(secret)) = (response, secret) {
+            let body = format!("secret={}&response={}", secret, response);
             reqwest::Client::new()
                 .post(url)
-                .body(format!(
-                    "secret={}&response={}",
-                    urlencoding::encode(secret),
-                    urlencoding::encode(response)
-                ))
-                .header("Content-type", "application/x-www-form-urlencoded")
+                .form(&[("secret", secret), ("response", response)])
+                .header("Content-Length", body.len().to_string())
                 .header("Accept", "application/json")
                 .send()
                 .await
