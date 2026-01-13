@@ -9,23 +9,16 @@ export default {
         },
     },
     hint: {
-        preview:
-            "This is just a rough preview, it is not exactly how the form will be rendered on your page.",
-        cleverreachClientId:
-            "This is the client id for your cleverreach account",
-        cleverreachSecret:
-            "This secret is used to authenticate api calls to cleverreach",
-        cleverreach_condition:
-            "When should the user be added to the cleverreach group?",
-        reCaptchaSecret:
-            "This secret will be used to authenticate api calls to reCaptcha",
-        hCaptchaSecret:
-            "This secret will be used to authenticate api calls to hCaptcha",
+        preview: "This is just a rough preview, it is not exactly how the form will be rendered on your page.",
+        cleverreachClientId: "This is the client id for your cleverreach account",
+        cleverreachSecret: "This secret is used to authenticate api calls to cleverreach",
+        cleverreach_condition: "When should the user be added to the cleverreach group?",
+        reCaptchaSecret: "This secret will be used to authenticate api calls to reCaptcha",
+        hCaptchaSecret: "This secret will be used to authenticate api calls to hCaptcha",
         captchaSitekey: "",
-        submissionEmail:
-            "This email will be sent to the specified email address for every submission",
-        submissionEmailRecipient:
-            "This email address will receive every submission",
+        submissionEmail: "This email will be sent to the specified email address for every submission",
+        submissionEmailRecipient: "This email address will receive every submission",
+        additionalHtml: "This HTML will be added to the end of form",
     },
     action: {
         goto: {
@@ -59,8 +52,7 @@ export default {
         },
         delete: {
             title: "Delete {name}",
-            description:
-                "Are you sure you want to delete this {name}? This action cannot be undone",
+            description: "Are you sure you want to delete this {name}? This action cannot be undone",
         },
         sendEmail: {
             title: "Sending email",
@@ -75,6 +67,7 @@ export default {
     },
     field: {
         label: {
+            additionalHtml: "Additional HTML",
             formbuilder: "Form-builder",
             type: "Type",
             max: "Max",
@@ -185,8 +178,7 @@ export default {
         },
         tooltip: {
             sendEmail: "Send email to this user",
-            exportSubmissions:
-                "Export all submissions matching the current filter",
+            exportSubmissions: "Export all submissions matching the current filter",
             downloadAttachments: "Download files from this submission",
         },
     },

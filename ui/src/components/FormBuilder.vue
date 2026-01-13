@@ -43,6 +43,7 @@
         </USlideover>
     </div>
 </template>
+
 <script setup lang="ts">
 import { VueDraggableNext as Draggable } from "vue-draggable-next";
 import { computed, ref, watch } from "vue";

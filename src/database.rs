@@ -30,10 +30,11 @@ pub async fn create_form(
             captcha_type,
             captcha_callback,
             captcha_expired_callback,
-            props
+            props,
+            additional_html
         ) values (
             $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
-            $11, $12, $13, $14, $15, $16, $17, $18, $19
+            $11, $12, $13, $14, $15, $16, $17, $18, $19, $20
         ) returning *"#,
     )
     .bind(form.name)
@@ -55,6 +56,7 @@ pub async fn create_form(
     .bind(form.captcha_callback)
     .bind(form.captcha_expired_callback)
     .bind(form.props)
+    .bind(form.additional_html)
     .fetch_one(db)
     .await
 }
@@ -84,8 +86,9 @@ pub async fn update_form(
             captcha_type = $16,
             captcha_callback = $17,
             captcha_expired_callback = $18,
-            props = $19
-        where id = $20
+            props = $19,
+            additional_html = $20
+        where id = $21
         returning *"#,
     )
     .bind(form.name)
@@ -107,6 +110,7 @@ pub async fn update_form(
     .bind(form.captcha_callback)
     .bind(form.captcha_expired_callback)
     .bind(form.props)
+    .bind(form.additional_html)
     .bind(id)
     .fetch_one(db)
     .await

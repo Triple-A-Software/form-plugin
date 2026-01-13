@@ -126,6 +126,7 @@ pub struct Form {
     #[ts(as = "Vec<Property>")]
     #[cfg_attr(feature = "seed", dummy(faker = "CustomFaker"))]
     pub props: Json<Vec<Property>>,
+    pub additional_html: String,
 }
 
 #[cfg_attr(feature = "seed", derive(Dummy))]

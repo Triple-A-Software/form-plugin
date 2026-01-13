@@ -12,19 +12,14 @@ export default {
         preview:
             "Das ist nur eine grobe Vorschau, das eingebundene Formular auf deiner Seite wird wahrscheinlich etwas unterschiedlich aussehen.",
         cleverreachClientId: "Die Client ID für deinen Cleverreach acccount",
-        cleverreachSecret:
-            "Dieses Secret wird verwendet, um API-calls zu Cleverreach zu authentifizieren",
-        cleverreach_condition:
-            "Wann der User zur Cleverreach gruppe hinzugefügt werden soll",
-        reCaptchaSecret:
-            "Dieses Secret wird verwendet, um API-calls zu reCaptcha zu authentifizieren",
-        hCaptchaSecret:
-            "Dieses Secret wird verwendet, um API-calls zu hCaptcha zu authentifizieren",
+        cleverreachSecret: "Dieses Secret wird verwendet, um API-calls zu Cleverreach zu authentifizieren",
+        cleverreach_condition: "Wann der User zur Cleverreach gruppe hinzugefügt werden soll",
+        reCaptchaSecret: "Dieses Secret wird verwendet, um API-calls zu reCaptcha zu authentifizieren",
+        hCaptchaSecret: "Dieses Secret wird verwendet, um API-calls zu hCaptcha zu authentifizieren",
         captchaSitekey: "",
-        submissionEmail:
-            "Diese E-Mail wird für jede Einsendung an die festgelegte E-Mail-Adresse gesendet",
-        submissionEmailRecipient:
-            "An diese E-Mail-Adresse wird jede Einsendung gesendet",
+        submissionEmail: "Diese E-Mail wird für jede Einsendung an die festgelegte E-Mail-Adresse gesendet",
+        submissionEmailRecipient: "An diese E-Mail-Adresse wird jede Einsendung gesendet",
+        additionalHtml: "Dieses HTML wird am Ende des Formulars hinzugefügt",
     },
     action: {
         goto: {
@@ -74,6 +69,7 @@ export default {
     },
     field: {
         label: {
+            additionalHtml: "Zusätzliches HTML",
             formbuilder: "Form-builder",
             type: "Typ",
             max: "Max",
@@ -184,8 +180,7 @@ export default {
         },
         tooltip: {
             sendEmail: "E-mail an diesen User senden",
-            exportSubmissions:
-                "Alle Einsendungen mit dem aktuellen filter exportieren",
+            exportSubmissions: "Alle Einsendungen mit dem aktuellen filter exportieren",
             downloadAttachments: "Dateien von dieser Einsendung herunterladen",
         },
     },

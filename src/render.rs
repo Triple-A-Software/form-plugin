@@ -48,6 +48,7 @@ pub fn render_form(
             prop.render(&renderer, &mut output);
         }
     }
+    output.write_all(form.additional_html.as_bytes()).unwrap();
     output.write_all(suffix.as_ref()).unwrap();
     String::from_utf8(output.into_inner().unwrap()).unwrap()
 }

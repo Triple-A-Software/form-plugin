@@ -21,11 +21,13 @@ const emails = useApiQuery("/api/emails", {
     method: "GET",
 });
 </script>
+
 <template>
     <div class="grid gap-4">
         <UFormField :label="$t('field.label.name')" required>
             <UInput v-model="model.name" />
         </UFormField>
+
         <UCollapsible v-model:open="model.send_confirmation_email">
             <UButton
                 color="neutral"
@@ -51,6 +53,7 @@ const emails = useApiQuery("/api/emails", {
                 </UCard>
             </template>
         </UCollapsible>
+
         <UCollapsible v-model:open="model.send_submission_as_email_enabled">
             <UButton
                 color="neutral"
@@ -80,6 +83,7 @@ const emails = useApiQuery("/api/emails", {
                 </UCard>
             </template>
         </UCollapsible>
+
         <UCollapsible v-model:open="model.activate_captcha">
             <UButton color="neutral" variant="ghost" :icon="model.activate_captcha ? 'i-tabler-square-check' : 'i-tabler-square'">
                 {{ $t("field.label.activateCaptcha") }}
@@ -127,6 +131,7 @@ const emails = useApiQuery("/api/emails", {
                 </UCard>
             </template>
         </UCollapsible>
+
         <UCollapsible v-model:open="model.activate_cleverreach">
             <UButton
                 color="neutral"
@@ -181,6 +186,11 @@ const emails = useApiQuery("/api/emails", {
                 </UCard>
             </template>
         </UCollapsible>
+
+        <UFormField :label="$t('field.label.additionalHtml')" :help="$t('hint.additionalHtml')">
+            <UTextarea v-model="model.additional_html" class="w-full" autoresize />
+        </UFormField>
+
         <UFormField :label="$t('field.label.formbuilder')">
             <FormBuilder v-model="model.props" />
         </UFormField>

@@ -1,19 +1,11 @@
 import { createApiToolkit } from "@blechlawine/api-toolkit";
-import {
-    nullToUndefined,
-    undefinedToNull,
-} from "@blechlawine/typescript-utils";
+import { nullToUndefined, undefinedToNull } from "@blechlawine/typescript-utils";
+import { useI18n } from "vue-i18n";
 import type { ApiError } from "../../../bindings";
 import type { API } from "./types/api";
-import { useI18n } from "vue-i18n";
 
 function isError(v: unknown): v is ApiError {
-    if (
-        typeof v === "object" &&
-        v &&
-        "error_message" in v &&
-        typeof v.error_message === "string"
-    ) {
+    if (typeof v === "object" && v && "error_message" in v && typeof v.error_message === "string") {
         return true;
     }
     return false;

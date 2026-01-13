@@ -49,6 +49,7 @@ const emptyForm: Form = {
     captcha_type: "h-captcha",
     captcha_callback: undefined,
     captcha_expired_callback: undefined,
+    additional_html: "",
 };
 function create() {
     editingForm.value = clone(emptyForm);
