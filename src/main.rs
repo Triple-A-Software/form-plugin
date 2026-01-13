@@ -34,6 +34,7 @@ use form_plugin::{
     database::create_submission,
     model::{CleverreachFormCondition, Form, Settings, Submission},
 };
+use reqwest::Url;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use tera::Tera;
@@ -267,10 +268,21 @@ async fn form_submit(
             if let Some(captcha_response) = captcha_response {
                 dbg!(&captcha_response.error_codes);
                 if !captcha_response.success {
-                    return StatusCode::UNAUTHORIZED.into_response();
+                    if let Some(redirect) = query.redirect {
+                        let redirect =
+                            Url::parse_with_params(&redirect, &[("error", "captcha_error")])
+                                .unwrap();
+                        return Redirect::to(redirect.as_str()).into_response();
+                    } else {
+                        return StatusCode::UNAUTHORIZED.into_response();
+                    }
                 } else {
                     tracing::error!("{:?}", &captcha_response.error_codes);
                 }
+            } else if let Some(redirect) = query.redirect {
+                let redirect =
+                    Url::parse_with_params(&redirect, &[("error", "captcha_missing")]).unwrap();
+                return Redirect::to(redirect.as_str()).into_response();
             } else {
                 return StatusCode::UNAUTHORIZED.into_response();
             }
