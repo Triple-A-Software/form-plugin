@@ -21,7 +21,10 @@ use form_plugin::{
         submission::submission_router,
     },
     captcha::CaptchaType,
-    model::{DateInputType, EmailAttachment, Property, SelectDataType, SubmissionFile},
+    create_cms_db,
+    model::{
+        CMSSettings, DateInputType, EmailAttachment, Property, SelectDataType, SubmissionFile,
+    },
     utils::{get_file_path, get_file_storage_path, stream_to_file},
 };
 use form_plugin::{api::dashboard::dashboard_router, render::render_form};
@@ -55,6 +58,7 @@ async fn main() {
         .init();
 
     let db = create_db().await;
+    let cms_db = create_cms_db().await;
 
     // this query needs the do update part, because otherwise we would need another query to fetch
     // the settings, because insert on conflict do nothing only returns something when inserting,
@@ -70,6 +74,7 @@ async fn main() {
 
     let state = AppState {
         db,
+        cms_db,
         tera,
         cleverreach: Arc::new(RwLock::new(Cleverreach::new(
             settings.cleverreach_client_id,
@@ -127,9 +132,14 @@ async fn test_page(
         .fetch_one(&state.db)
         .await
         .unwrap();
+    let cms_settings: CMSSettings =
+        sqlx::query_as(r#"select * from settings where id = 'settings'"#)
+            .fetch_one(&state.cms_db)
+            .await
+            .unwrap();
     let rendered = render_form(
         state,
-        "en".to_string(),
+        cms_settings.default_language,
         form,
         format!(
             r#"<form action="/form-plugin/submit?id={id}&redirect=/test" method="POST" enctype="multipart/form-data">"#,
@@ -202,9 +212,15 @@ async fn render_form_helper(
                     .await
                     .unwrap();
 
+            let cms_settings: CMSSettings =
+                sqlx::query_as(r#"select * from settings where id = 'settings'"#)
+                    .fetch_one(&state.cms_db)
+                    .await
+                    .unwrap();
+
             let rendered = render_form(
                 state,
-                body.page.language.unwrap_or("en".to_string()),
+                body.page.language.unwrap_or(cms_settings.default_language),
                 form,
                 format!(
                     r#"<form action="/form-plugin/submit?id={id}&redirect={route}" method="POST" enctype="multipart/form-data">"#,

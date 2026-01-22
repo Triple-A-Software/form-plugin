@@ -31,6 +31,7 @@ pub mod api {
 #[derive(Clone)]
 pub struct AppState {
     pub db: PgPool,
+    pub cms_db: PgPool,
     pub tera: Tera,
     pub cleverreach: Arc<RwLock<Cleverreach>>,
 }
@@ -43,6 +44,11 @@ pub async fn create_db() -> PgPool {
         .await
         .expect("Failed to run migrations");
     db
+}
+
+pub async fn create_cms_db() -> PgPool {
+    let db_url = env::var("CMS_DATABASE_URL").expect("CMS_DATABASE_URL must be set");
+    sqlx::PgPool::connect(&db_url).await.unwrap()
 }
 
 pub async fn send_email(

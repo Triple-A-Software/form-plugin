@@ -10,7 +10,7 @@ use ts_rs::TS;
 
 use crate::{
     AppState, database,
-    model::{Form, Settings, StatusResponse},
+    model::{CMSSettings, Form, Settings, StatusResponse},
     render::render_form,
 };
 
@@ -71,9 +71,16 @@ async fn preview_form(State(state): State<AppState>, Json(form): Json<Form>) -> 
         .fetch_one(&state.db)
         .await
         .unwrap();
+
+    let cms_settings: CMSSettings =
+        sqlx::query_as(r#"select * from settings where id = 'settings'"#)
+            .fetch_one(&state.cms_db)
+            .await
+            .unwrap();
+
     let rendered = render_form(
         state,
-        "en",
+        cms_settings.default_language,
         form,
         br#"
 <!DOCTYPE html>

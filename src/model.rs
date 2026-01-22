@@ -538,3 +538,15 @@ pub struct SubmissionFile {
     pub submission_id: Uuid,
     pub mime_type: String,
 }
+
+#[derive(Debug, Clone, FromRow)]
+pub struct CMSSettings {
+    pub languages: Json<Vec<SettingsLanguage>>,
+    pub default_language: String,
+}
+
+#[derive(Debug, Clone, Deserialize)]
+pub struct SettingsLanguage {
+    pub value: String,
+    pub label: String,
+}
