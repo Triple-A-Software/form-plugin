@@ -90,9 +90,7 @@ const createModalOpen = ref(false);
     <UTable :columns="columns" :data="emails.data.value" v-model:expanded="expanded">
         <template #expanded="{ row }">
             <div v-for="(value, key) in row.original">
-                <p class="pl-2 -indent-2">
-                    <span class="font-bold">{{ key }}:</span> {{ value }}
-                </p>
+                <p class="pl-2 -indent-2"><span class="font-bold">{{ key }}:</span> {{ value }}</p>
             </div>
         </template>
         <template #expand-cell="{ row }">

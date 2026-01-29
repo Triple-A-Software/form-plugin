@@ -19,7 +19,7 @@ export default {
         submissionEmail: "This email will be sent to the specified email address for every submission",
         submissionEmailRecipient: "This email address will receive every submission",
         additionalHtml: "This HTML will be added to the end of form",
-        emailContent: "Format: HTML, with {{ submission.<field name> }} for accessing values of the submission",
+        emailContent: "Format: HTML, with {'{{ submission.<field name> }}'} for accessing values of the submission",
     },
     action: {
         goto: {
