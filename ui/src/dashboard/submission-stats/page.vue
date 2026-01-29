@@ -61,7 +61,7 @@ const winSize = useWindowSize();
         :x-num-ticks="stats.data.value.graph.length - 1 /* i don't know why -1 but otherwise theres always some empty columns */"
         :radius="4"
         :x-formatter="xFormatter"
-        :legend-position="LegendPosition.Top"
+        :legend-position="LegendPosition.TopRight"
         y-grid-line
     />
 </template>

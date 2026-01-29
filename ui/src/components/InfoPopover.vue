@@ -8,7 +8,7 @@
             icon="i-tabler-info-small"
             class="text-neutral-500 dark:text-neutral-400"
         />
-        <template #panel>
+        <template #content>
             <div class="py-1 px-2 text-neutral-900 dark:text-white max-w-xs">
                 <p>{{ text }}</p>
             </div>

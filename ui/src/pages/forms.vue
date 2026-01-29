@@ -4,8 +4,8 @@ import type { Form } from "../../../bindings";
 import { useI18n } from "vue-i18n";
 import { useApiMutation } from "@/utils/api";
 import clone from "just-clone";
-import { useForms } from "@/store/forms";
 import { useUrlSearchParams } from "@vueuse/core";
+import { useForms } from "@/composables/useForms";
 
 const { t } = useI18n();
 
@@ -23,7 +23,7 @@ const columns = computed(() => [
 ]);
 const expanded = ref({});
 
-const formStore = useForms();
+const forms = useForms();
 
 const editingForm = ref<Form | undefined>(undefined);
 const emptyForm: Form = {
@@ -59,14 +59,14 @@ const saveCreateMutation = useApiMutation(
     "/api/forms",
     { method: "POST" },
     {
-        invalidate: [formStore.forms],
+        invalidate: [forms],
     },
 );
 const saveEditMutation = useApiMutation(
     "/api/forms",
     { method: "PUT" },
     {
-        invalidate: [formStore.forms],
+        invalidate: [forms],
     },
 );
 async function saveForm() {
@@ -87,7 +87,7 @@ const deleteMutation = useApiMutation(
         method: "DELETE",
     },
     {
-        invalidate: [formStore.forms],
+        invalidate: [forms],
     },
 );
 
@@ -122,7 +122,7 @@ const createModalOpen = computed({
 });
 
 watch(
-    () => [search.id, formStore.forms.data] as const,
+    () => [search.id, forms.data.value] as const,
     ([id, data]) => {
         if (id && data) {
             const form = data.find((f) => f.id === Number(id));
@@ -155,7 +155,7 @@ function editForm(id: number) {
         </UModal>
     </div>
 
-    <UTable :columns="columns" :data="formStore.forms.data" v-model:expanded="expanded">
+    <UTable :columns="columns" :data="forms.data.value" v-model:expanded="expanded">
         <template #expanded="{ row }">
             <pre>{{ row.original }}</pre>
         </template>

@@ -4,7 +4,7 @@ import type { TableColumn } from "@nuxt/ui";
 import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Submission } from "../../../../bindings";
-import { useForms } from "@/store/forms";
+import { useForms } from "@/composables/useForms";
 
 const { t, locale } = useI18n();
 
@@ -48,21 +48,17 @@ const deleteMutation = useApiMutation(
         invalidate: [submissions],
     },
 );
-const formStore = useForms();
+const forms = useForms();
 </script>
 
 <template>
     <UTable :columns="columns" :data="submissions.data.value" v-model:expanded="expanded">
         <template #expanded="{ row }">
             <div v-for="(value, key) in row.original.data">
-                <p class="pl-2 -indent-2">
-                    <span class="font-bold">{{ key }}:</span> {{ value }}
-                </p>
+                <p class="pl-2 -indent-2"><span class="font-bold">{{ key }}:</span> {{ value }}</p>
             </div>
         </template>
-        <template #form-cell="{ row }">
-            {{ formStore.forms.data?.find((f) => f.id === row.original.form_id)?.name }}
-        </template>
+        <template #form-cell="{ row }">{{ forms.data.value?.find((f) => f.id === row.original.form_id)?.name }}</template>
         <template #expand-cell="{ row }">
             <UButton
                 color="neutral"

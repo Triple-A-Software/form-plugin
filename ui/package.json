@@ -10,7 +10,7 @@
         "preview": "vite preview"
     },
     "dependencies": {
-        "@biomejs/biome": "^2.3.11",
+        "@biomejs/biome": "^2.3.13",
         "@blechlawine/api-toolkit": "npm:@jsr/blechlawine__api-toolkit@0.1.6",
         "@blechlawine/typescript-utils": "npm:@jsr/blechlawine__typescript-utils",
         "@internationalized/date": "^3.10.1",

@@ -5,9 +5,9 @@ import InputDate from "@/components/input/Date.vue";
 import { computed, ref, shallowRef, watch } from "vue";
 import { useI18n } from "vue-i18n";
 import type { SubmissionApiResponse } from "../../../bindings";
-import { useForms } from "@/store/forms";
 import { CalendarDate, getLocalTimeZone } from "@internationalized/date";
 import { submissionFileDownloadLink } from "@/utils";
+import { useForms } from "@/composables/useForms";
 
 const { t, locale } = useI18n();
 
@@ -102,7 +102,7 @@ const deleteMutation = useApiMutation(
             <USelectMenu
                 v-model="filterByForm"
                 :placeholder="$t('field.placeholder.filterByForm')"
-                :items="forms.forms.data.value"
+                :items="forms.data.value"
                 value-key="id"
                 label-key="name"
                 class="w-full"
@@ -112,9 +112,7 @@ const deleteMutation = useApiMutation(
 
         <UModal :title="$t('modal.exportSubmissions.title')" :ui="{ body: 'space-y-4' }">
             <UTooltip :text="$t('field.tooltip.exportSubmissions')">
-                <UButton color="neutral" icon="i-tabler-table-export">
-                    {{ $t("action.exportSubmissions") }}
-                </UButton>
+                <UButton color="neutral" icon="i-tabler-table-export">{{ $t("action.exportSubmissions") }}</UButton>
             </UTooltip>
 
             <template #body>
@@ -123,7 +121,7 @@ const deleteMutation = useApiMutation(
                         <USelectMenu
                             v-model="onlyExportForm"
                             :placeholder="$t('field.placeholder.selectForm')"
-                            :items="forms.forms.data.value"
+                            :items="forms.data.value"
                             value-key="id"
                             label-key="name"
                             class="w-full"
@@ -147,9 +145,7 @@ const deleteMutation = useApiMutation(
             </template>
 
             <template #footer>
-                <UButton @click="exportSubmissions" icon="i-tabler-table-export">
-                    {{ $t("action.exportSubmissions") }}
-                </UButton>
+                <UButton @click="exportSubmissions" icon="i-tabler-table-export">{{ $t("action.exportSubmissions") }}</UButton>
             </template>
         </UModal>
 
@@ -159,9 +155,7 @@ const deleteMutation = useApiMutation(
     <UTable :columns="columns" :data="submissions.data.value" v-model:expanded="expanded">
         <template #expanded="{ row }">
             <div v-for="(value, key) in row.original.data">
-                <p class="pl-2 -indent-2">
-                    <span class="font-bold">{{ key }}:</span> {{ value }}
-                </p>
+                <p class="pl-2 -indent-2"><span class="font-bold">{{ key }}:</span> {{ value }}</p>
             </div>
         </template>
 

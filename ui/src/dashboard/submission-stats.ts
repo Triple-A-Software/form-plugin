@@ -15,24 +15,24 @@ import SubmissionStatsPage from "./submission-stats/page.vue";
 dayjs.extend(utc);
 
 const router = createRouter({
-	routes: [
-		{
-			path: "/",
-			component: SubmissionStatsPage,
-		},
-	],
-	history: createWebHashHistory(),
+    routes: [
+        {
+            path: "/",
+            component: SubmissionStatsPage,
+        },
+    ],
+    history: createWebHashHistory(),
 });
 
 const i18n = createI18n({
-	legacy: false,
-	availableLocales: ["en", "de"],
-	fallbackLocale: "en",
-	locale: "en",
-	messages: {
-		en,
-		de,
-	},
+    legacy: false,
+    availableLocales: ["en", "de"],
+    fallbackLocale: "en",
+    locale: "en",
+    messages: {
+        en,
+        de,
+    },
 });
 
 const pinia = createPinia();

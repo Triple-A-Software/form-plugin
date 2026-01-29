@@ -49,7 +49,7 @@ export const { useApiMutation, useApiQuery } = createApiToolkit<API, ApiError>({
             },
         };
     },
-    errorFromStatusCode: (statusCode: number, json: unknown) => {
+    errorFromStatusCode: (_statusCode: number, json: unknown) => {
         if (isError(json)) {
             return json;
         }
