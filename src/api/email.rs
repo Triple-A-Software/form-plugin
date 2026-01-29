@@ -1,4 +1,4 @@
-use axum::{Json, Router, extract::State, routing::get};
+use axum::{Json, extract::State};
 use serde::Deserialize;
 use ts_rs::TS;
 
@@ -7,17 +7,7 @@ use crate::{
     model::{Email, StatusResponse},
 };
 
-pub fn email_router() -> Router<AppState> {
-    Router::new().route(
-        "/api/emails",
-        get(list_emails)
-            .post(create_email)
-            .put(update_email)
-            .delete(delete_email),
-    )
-}
-
-async fn list_emails(State(state): State<AppState>) -> Json<Vec<Email>> {
+pub async fn route_list_emails<'src>(State(state): State<AppState<'src>>) -> Json<Vec<Email>> {
     Json(
         sqlx::query_as(r#"select * from email"#)
             .fetch_all(&state.db)
@@ -26,13 +16,16 @@ async fn list_emails(State(state): State<AppState>) -> Json<Vec<Email>> {
     )
 }
 
-async fn create_email(State(state): State<AppState>, Json(body): Json<Email>) -> Json<Email> {
+pub async fn route_create_email<'src>(
+    State(state): State<AppState<'src>>,
+    Json(body): Json<Email>,
+) -> Json<Email> {
     let email = database::create_email(body, &state.db).await.unwrap();
     Json(email)
 }
 
-async fn update_email(
-    State(state): State<AppState>,
+pub async fn route_update_email<'src>(
+    State(state): State<AppState<'src>>,
     Json(body): Json<Email>,
 ) -> Json<StatusResponse> {
     sqlx::query(
@@ -51,11 +44,11 @@ async fn update_email(
 
 #[derive(Deserialize, TS)]
 #[ts(export, export_to = "index.ts")]
-struct DeleteEmailBody {
+pub struct DeleteEmailBody {
     id: i32,
 }
-async fn delete_email(
-    State(state): State<AppState>,
+pub async fn route_delete_email<'src>(
+    State(state): State<AppState<'src>>,
     Json(body): Json<DeleteEmailBody>,
 ) -> Json<StatusResponse> {
     sqlx::query(r#"delete from email where id = $1"#)

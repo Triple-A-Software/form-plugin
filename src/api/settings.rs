@@ -1,15 +1,11 @@
-use axum::{Json, Router, extract::State, routing::get};
+use axum::{Json, extract::State};
 
 use crate::{
     AppState,
     model::{Settings, StatusResponse},
 };
 
-pub fn settings_router() -> Router<AppState> {
-    Router::new().route("/api/settings", get(get_settings).put(update_settings))
-}
-
-async fn get_settings(State(state): State<AppState>) -> Json<Settings> {
+pub async fn route_get_settings<'src>(State(state): State<AppState<'src>>) -> Json<Settings> {
     Json(
         sqlx::query_as(r#"select * from settings where id = 'settings'"#)
             .fetch_one(&state.db)
@@ -18,8 +14,8 @@ async fn get_settings(State(state): State<AppState>) -> Json<Settings> {
     )
 }
 
-async fn update_settings(
-    State(state): State<AppState>,
+pub async fn route_update_settings<'src>(
+    State(state): State<AppState<'src>>,
     Json(body): Json<Settings>,
 ) -> Json<StatusResponse> {
     sqlx::query(

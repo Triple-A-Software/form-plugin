@@ -3,12 +3,11 @@ use std::collections::HashMap;
 use async_tempfile::TempFile;
 use async_zip::{ZipEntryBuilder, tokio::write::ZipFileWriter};
 use axum::{
-    Json, Router,
+    Json,
     body::Body,
     extract::{Query, State},
     http::{HeaderMap, HeaderValue},
     response::{IntoResponse, Response},
-    routing::{get, post},
 };
 use reqwest::{StatusCode, header};
 use serde::{Deserialize, Serialize};
@@ -26,30 +25,13 @@ use crate::{
     utils::get_file_path,
 };
 
-pub fn submission_router() -> Router<AppState> {
-    Router::new()
-        .route(
-            "/api/submissions",
-            get(list_submissions).delete(delete_submission),
-        )
-        .route(
-            "/api/submissions/send-email",
-            post(send_email_to_submission),
-        )
-        .route("/api/submissions/count", get(count_submissions))
-        .route("/api/submissions/recent", get(recent_submissions))
-        .route("/api/submissions/stats", get(submission_stats))
-        .route("/api/submissions/export", get(export_submissions))
-        .route("/api/submissions/download-files", get(download_files))
-}
-
 #[derive(Deserialize, TS)]
 #[ts(export, export_to = "index.ts")]
-struct DownloadFilesQuery {
+pub struct DownloadFilesQuery {
     id: Uuid,
 }
-async fn download_files(
-    State(state): State<AppState>,
+pub async fn route_download_files<'src>(
+    State(state): State<AppState<'src>>,
     Query(query): Query<DownloadFilesQuery>,
 ) -> impl IntoResponse {
     let files: Vec<SubmissionFile> = sqlx::query_as(
@@ -109,7 +91,7 @@ async fn download_files(
 
 #[derive(Serialize, TS)]
 #[ts(export, export_to = "index.ts")]
-struct SubmissionStats {
+pub struct SubmissionStats {
     total: i32,
     #[ts(type = "Array<{ date: string } & Record<string, number>>")]
     graph: Vec<ApiGraphValue>,
@@ -126,7 +108,9 @@ struct GraphValue {
     form_id: i32,
     value: i64,
 }
-async fn submission_stats(State(state): State<AppState>) -> Json<SubmissionStats> {
+pub async fn route_submission_stats<'src>(
+    State(state): State<AppState<'src>>,
+) -> Json<SubmissionStats> {
     let graph: Vec<GraphValue> = sqlx::query_as(
         r#"
         select date_trunc('day', "timestamp") as date, count(timestamp) as value, form_id 
@@ -164,7 +148,9 @@ async fn submission_stats(State(state): State<AppState>) -> Json<SubmissionStats
     })
 }
 
-async fn recent_submissions(State(state): State<AppState>) -> Json<Vec<Submission>> {
+pub async fn route_recent_submissions<'src>(
+    State(state): State<AppState<'src>>,
+) -> Json<Vec<Submission>> {
     let submissions: Vec<Submission> =
         sqlx::query_as(r#"select * from submission order by timestamp desc limit 10"#)
             .fetch_all(&state.db)
@@ -175,13 +161,13 @@ async fn recent_submissions(State(state): State<AppState>) -> Json<Vec<Submissio
 
 #[derive(Deserialize, TS)]
 #[ts(export, export_to = "index.ts")]
-struct SendEmailToSubmissionBody {
+pub struct SendEmailToSubmissionBody {
     email_id: i32,
     submission_id: Uuid,
     email_field_name: Option<String>,
 }
-async fn send_email_to_submission(
-    State(state): State<AppState>,
+pub async fn route_send_email_to_submission<'src>(
+    State(state): State<AppState<'src>>,
     Json(body): Json<SendEmailToSubmissionBody>,
 ) -> Json<StatusResponse> {
     let mut tx = state.db.begin().await.unwrap();
@@ -218,13 +204,13 @@ async fn send_email_to_submission(
 
 #[derive(Deserialize, TS)]
 #[ts(export, export_to = "index.ts")]
-struct ListSubmissionsQuery {
+pub struct ListSubmissionsQuery {
     form_id: Option<i32>,
     page: i32,
     items_per_page: i32,
 }
-async fn list_submissions(
-    State(state): State<AppState>,
+pub async fn route_list_submissions<'src>(
+    State(state): State<AppState<'src>>,
     Query(query): Query<ListSubmissionsQuery>,
 ) -> Json<Vec<SubmissionApiResponse>> {
     if let Some(form_id) = query.form_id {
@@ -264,8 +250,8 @@ async fn list_submissions(
     }
 }
 
-async fn count_submissions(
-    State(state): State<AppState>,
+pub async fn route_count_submissions<'src>(
+    State(state): State<AppState<'src>>,
     Query(query): Query<ListSubmissionsQuery>,
 ) -> Json<i64> {
     if let Some(form_id) = query.form_id {
@@ -288,14 +274,14 @@ async fn count_submissions(
 
 #[derive(Deserialize, TS)]
 #[ts(export, export_to = "index.ts")]
-struct ExportSubmissionsQuery {
+pub struct ExportSubmissionsQuery {
     form_id: Option<i32>,
     start_date: Option<JavascriptDate>,
     end_date: Option<JavascriptDate>,
 }
 
-async fn export_submissions(
-    State(state): State<AppState>,
+pub async fn route_export_submissions<'src>(
+    State(state): State<AppState<'src>>,
     Query(query): Query<ExportSubmissionsQuery>,
 ) -> impl IntoResponse {
     let submissions: Vec<Submission> = sqlx::query_as(
@@ -328,11 +314,11 @@ async fn export_submissions(
 
 #[derive(Deserialize, TS)]
 #[ts(export, export_to = "index.ts")]
-struct DeleteSubmissionBody {
+pub struct DeleteSubmissionBody {
     id: Uuid,
 }
-async fn delete_submission(
-    State(state): State<AppState>,
+pub async fn route_delete_submission<'src>(
+    State(state): State<AppState<'src>>,
     Json(body): Json<DeleteSubmissionBody>,
 ) -> Json<StatusResponse> {
     sqlx::query(r#"delete from submission where id = $1"#)

@@ -16,10 +16,7 @@ use chrono::NaiveDate;
 use chrono::{Datelike, NaiveTime};
 use form_plugin::{
     AppState,
-    api::{
-        email::email_router, form::form_router, settings::settings_router,
-        submission::submission_router,
-    },
+    api::{form::*, settings::*, submission::*},
     captcha::CaptchaType,
     create_cms_db,
     model::{
@@ -27,7 +24,7 @@ use form_plugin::{
     },
     utils::{get_file_path, get_file_storage_path, stream_to_file},
 };
-use form_plugin::{api::dashboard::dashboard_router, render::render_form};
+use form_plugin::{api::email::*, render::render_form};
 use form_plugin::{captcha::Captcha, extract_field_as_string, send_email};
 use form_plugin::{
     cleverreach::{Cleverreach, ReceiverRequest},
@@ -37,10 +34,10 @@ use form_plugin::{
     database::create_submission,
     model::{CleverreachFormCondition, Form, Settings, Submission},
 };
+use minijinja::path_loader;
 use reqwest::Url;
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
-use tera::Tera;
 use tokio::{net::TcpListener, sync::RwLock};
 use tower_http::{
     normalize_path::NormalizePathLayer,
@@ -70,12 +67,14 @@ async fn main() {
     .await
     .unwrap();
 
-    let tera = Tera::new("./templates/*.html").expect("Failed to parse template files");
+    let mut environment = minijinja::Environment::new();
+    environment.set_loader(path_loader("./templates"));
+    // let tera = Tera::new("./templates/*.html").expect("Failed to parse template files");
 
     let state = AppState {
         db,
         cms_db,
-        tera,
+        environment,
         cleverreach: Arc::new(RwLock::new(Cleverreach::new(
             settings.cleverreach_client_id,
             settings.cleverreach_secret,
@@ -83,11 +82,48 @@ async fn main() {
     };
     let router = Router::new()
         .nest_service("/ui", ServeDir::new("ui/dist"))
-        .merge(form_router())
-        .merge(email_router())
-        .merge(submission_router())
-        .merge(settings_router())
-        .merge(dashboard_router())
+        .route(
+            "/api/forms",
+            get(route_list_forms)
+                .post(route_create_form)
+                .put(route_update_form)
+                .delete(route_delete_form),
+        )
+        .route("/api/forms/preview", post(route_preview_form))
+        .route("/api/form-select/list", get(route_list_forms_for_select))
+        .route(
+            "/api/form-select/by-id",
+            get(route_get_form_by_id_for_select),
+        )
+        .route(
+            "/api/submissions",
+            get(route_list_submissions).delete(route_delete_submission),
+        )
+        .route(
+            "/api/submissions/send-email",
+            post(route_send_email_to_submission),
+        )
+        .route("/api/submissions/count", get(route_count_submissions))
+        .route("/api/submissions/recent", get(route_recent_submissions))
+        .route("/api/submissions/stats", get(route_submission_stats))
+        .route("/api/submissions/export", get(route_export_submissions))
+        .route("/api/submissions/download-files", get(route_download_files))
+        .route(
+            "/api/settings",
+            get(route_get_settings).put(route_update_settings),
+        )
+        .route("/dashboard/submission-stats", get(route_submission_stats))
+        .route(
+            "/dashboard/recent-submissions",
+            get(route_recent_submissions),
+        )
+        .route(
+            "/api/emails",
+            get(route_list_emails)
+                .post(route_create_email)
+                .put(route_update_email)
+                .delete(route_delete_email),
+        )
         .route("/helper/render_form", post(render_form_helper))
         .route("/form-plugin/submit", post(form_submit))
         .route("/test", get(test_page))
@@ -119,8 +155,8 @@ async fn main() {
 struct TestPageQuery {
     id: i32,
 }
-async fn test_page(
-    State(state): State<AppState>,
+async fn test_page<'src>(
+    State(state): State<AppState<'src>>,
     Query(TestPageQuery { id }): Query<TestPageQuery>,
 ) -> impl IntoResponse {
     let form: Form = sqlx::query_as(r#"select * from form where id = $1"#)
@@ -177,8 +213,8 @@ where
     Data(T),
 }
 
-async fn render_form_helper(
-    State(state): State<AppState>,
+async fn render_form_helper<'src>(
+    State(state): State<AppState<'src>>,
     Json(body): Json<HelperBody>,
 ) -> impl IntoResponse {
     if let Some(([Value::Number(id), Value::String(route)], _)) =
@@ -250,8 +286,8 @@ struct FormSubmitQuery {
     id: i32,
     redirect: Option<String>,
 }
-async fn form_submit(
-    State(state): State<AppState>,
+async fn form_submit<'src>(
+    State(state): State<AppState<'src>>,
     Query(query): Query<FormSubmitQuery>,
     mut multipart: Multipart,
 ) -> impl IntoResponse {

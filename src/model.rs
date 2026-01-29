@@ -14,7 +14,6 @@ use fake::{
 use serde::{Deserialize, Serialize};
 use serde_json::Value;
 use sqlx::{prelude::*, types::Json};
-use tera::Context;
 use ts_rs::TS;
 use uuid::Uuid;
 
@@ -157,7 +156,7 @@ impl Email {
     pub async fn send(
         &self,
         receiver: &str,
-        render_context: Context,
+        content: String,
         attachments: Option<Vec<EmailAttachment>>,
     ) -> anyhow::Result<()> {
         let internal_backend_port = env::var("INTERNAL_BACKEND_PORT")?;
@@ -168,7 +167,7 @@ impl Email {
             .json(&EmailSendRequest {
                 receiver,
                 subject: self.subject.clone(),
-                content: tera::Tera::one_off(&self.content, &render_context, true).unwrap(),
+                content,
                 attachments,
             })
             .send()

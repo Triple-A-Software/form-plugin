@@ -1,8 +1,7 @@
 use axum::{
-    Json, Router,
+    Json,
     extract::{Query, State},
     response::IntoResponse,
-    routing::{get, post},
 };
 use serde::Deserialize;
 use serde_json::json;
@@ -14,26 +13,12 @@ use crate::{
     render::render_form,
 };
 
-pub fn form_router() -> Router<AppState> {
-    Router::new()
-        .route(
-            "/api/forms",
-            get(list_forms)
-                .post(create_form)
-                .put(update_form)
-                .delete(delete_form),
-        )
-        .route("/api/forms/preview", post(preview_form))
-        .route("/api/form-select/list", get(list_forms_for_select))
-        .route("/api/form-select/by-id", get(get_form_by_id_for_select))
-}
-
 #[derive(Debug, Deserialize)]
-struct SelectFormQuery {
+pub struct SelectFormQuery {
     value: i32,
 }
-async fn get_form_by_id_for_select(
-    State(state): State<AppState>,
+pub async fn route_get_form_by_id_for_select<'src>(
+    State(state): State<AppState<'src>>,
     Query(query): Query<SelectFormQuery>,
 ) -> impl IntoResponse {
     // we need to cast the id to an int with `id::int`, because otherwise we randomly get an error,
@@ -48,7 +33,9 @@ async fn get_form_by_id_for_select(
     Json(form)
 }
 
-async fn list_forms_for_select(State(state): State<AppState>) -> impl IntoResponse {
+pub async fn route_list_forms_for_select<'src>(
+    State(state): State<AppState<'src>>,
+) -> impl IntoResponse {
     let forms: Vec<Form> = sqlx::query_as(r#"select * from form"#)
         .fetch_all(&state.db)
         .await
@@ -66,7 +53,10 @@ async fn list_forms_for_select(State(state): State<AppState>) -> impl IntoRespon
     )
 }
 
-async fn preview_form(State(state): State<AppState>, Json(form): Json<Form>) -> impl IntoResponse {
+pub async fn route_preview_form<'src>(
+    State(state): State<AppState<'src>>,
+    Json(form): Json<Form>,
+) -> impl IntoResponse {
     let settings: Settings = sqlx::query_as(r#"select * from settings where id = 'settings'"#)
         .fetch_one(&state.db)
         .await
@@ -105,13 +95,16 @@ async fn preview_form(State(state): State<AppState>, Json(form): Json<Form>) -> 
     }))
 }
 
-async fn create_form(State(state): State<AppState>, Json(body): Json<Form>) -> Json<Form> {
+pub async fn route_create_form<'src>(
+    State(state): State<AppState<'src>>,
+    Json(body): Json<Form>,
+) -> Json<Form> {
     let created = database::create_form(body, &state.db).await.unwrap();
     Json(created)
 }
 
-async fn update_form(
-    State(state): State<AppState>,
+pub async fn route_update_form<'src>(
+    State(state): State<AppState<'src>>,
     Json(body): Json<Form>,
 ) -> Json<StatusResponse> {
     database::update_form(body.id, body, &state.db)
@@ -122,11 +115,11 @@ async fn update_form(
 
 #[derive(Deserialize, TS)]
 #[ts(export, export_to = "index.ts")]
-struct DeleteFormBody {
+pub struct DeleteFormBody {
     id: i32,
 }
-async fn delete_form(
-    State(state): State<AppState>,
+pub async fn route_delete_form<'src>(
+    State(state): State<AppState<'src>>,
     Json(body): Json<DeleteFormBody>,
 ) -> Json<StatusResponse> {
     sqlx::query(r#"delete from form where id = $1"#)
@@ -137,7 +130,7 @@ async fn delete_form(
     Json(StatusResponse::success())
 }
 
-async fn list_forms(State(state): State<AppState>) -> Json<Vec<Form>> {
+pub async fn route_list_forms<'src>(State(state): State<AppState<'src>>) -> Json<Vec<Form>> {
     Json(
         sqlx::query_as(r#"select * from form"#)
             .fetch_all(&state.db)

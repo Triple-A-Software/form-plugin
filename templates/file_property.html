@@ -11,9 +11,6 @@
         id="{{ property.name }}"
         name="{{ property.name }}"
         class="{{ property.input_class }}"
-        {% if property.placeholder[language] %}
-            placeholder="{{ property.placeholder[language] }}"
-        {%endif%}
         {% if property.default_value %}
             value="{{property.default_value}}"
         {%endif%}

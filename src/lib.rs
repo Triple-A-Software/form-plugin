@@ -5,10 +5,10 @@ use std::sync::Arc;
 
 use chrono::{DateTime, Utc};
 use cleverreach::Cleverreach;
+use minijinja::context;
 use model::{Email, Form};
 use serde_json::Value;
 use sqlx::{PgConnection, PgPool};
-use tera::Tera;
 use tokio::sync::RwLock;
 
 use crate::model::{EmailAttachment, Submission};
@@ -29,10 +29,10 @@ pub mod api {
 }
 
 #[derive(Clone)]
-pub struct AppState {
+pub struct AppState<'src> {
     pub db: PgPool,
     pub cms_db: PgPool,
-    pub tera: Tera,
+    pub environment: minijinja::Environment<'src>,
     pub cleverreach: Arc<RwLock<Cleverreach>>,
 }
 
@@ -64,10 +64,14 @@ pub async fn send_email(
         .fetch_one(db)
         .await
         .unwrap();
-    let mut context = tera::Context::new();
-    context.insert("form", &form);
-    context.insert("submission", &body);
-    email.send(to, context, attachments).await.unwrap();
+    let context = context!(form => form, submission => body);
+    let mut environment = minijinja::Environment::new();
+    environment
+        .add_template("email.html", email.content.as_str())
+        .unwrap();
+    let template = environment.get_template("email.html").unwrap();
+    let rendered = template.render(&context).unwrap();
+    email.send(to, rendered, attachments).await.unwrap();
 }
 
 pub fn extract_field_as_string(data: &Value, field_name: Option<&str>) -> Option<String> {

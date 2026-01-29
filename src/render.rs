@@ -1,7 +1,7 @@
 use std::io::{BufWriter, Write};
 
+use minijinja::context;
 use serde::Serialize;
-use tera::Tera;
 
 use crate::{
     AppState,
@@ -21,7 +21,7 @@ pub fn render_form(
     suffix: impl AsRef<[u8]>,
     settings: Settings,
 ) -> String {
-    let renderer = Renderer::new(language, state.tera);
+    let renderer = Renderer::new(language, state.environment);
     let mut output = BufWriter::new(Vec::new());
     output.write_all(prefix.as_ref()).unwrap();
     for prop in form.props.iter() {
@@ -53,22 +53,19 @@ pub fn render_form(
     String::from_utf8(output.into_inner().unwrap()).unwrap()
 }
 
-pub struct Renderer {
+pub struct Renderer<'src> {
     language: String,
-    tera: Tera,
+    environment: minijinja::Environment<'src>,
 }
-impl Renderer {
-    pub fn new(language: impl Into<String>, tera: Tera) -> Self {
+impl<'src> Renderer<'src> {
+    pub fn new(language: impl Into<String>, environment: minijinja::Environment<'src>) -> Self {
         Self {
             language: language.into(),
-            tera,
+            environment,
         }
     }
-    fn ctx(&self, property: &impl Serialize) -> tera::Context {
-        let mut context = tera::Context::new();
-        context.insert("property", property);
-        context.insert("language", &self.language);
-        context
+    fn ctx(&self, property: &impl Serialize) -> minijinja::Value {
+        context!( property => property, language => &self.language )
     }
 }
 
@@ -99,7 +96,8 @@ macro_rules! impl_render {
         impl Render for $name {
             fn render(&self, renderer: &Renderer, output: impl Write) {
                 let ctx = renderer.ctx(self);
-                renderer.tera.render_to($template, &ctx, output).unwrap()
+                let template = renderer.environment.get_template($template).unwrap();
+                template.render_to_write(&ctx, output).unwrap();
             }
         }
     };
