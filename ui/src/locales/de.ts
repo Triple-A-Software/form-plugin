@@ -171,6 +171,7 @@ export default {
             captchaType: {
                 hCaptcha: "HCaptcha",
                 reCaptcha: "ReCaptcha",
+                reCaptchaDescription: "Deaktiviert, da ReCaptcha noch nicht unterstützt wird",
             },
         },
         placeholder: {

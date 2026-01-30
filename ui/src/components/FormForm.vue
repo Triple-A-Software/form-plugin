@@ -114,6 +114,8 @@ const emails = useApiQuery("/api/emails", {
                                 },
                                 {
                                     value: 're-captcha',
+                                    disabled: true,
+                                    description: $t('field.option.captchaType.reCaptchaDescription'),
                                     label: $t('field.option.captchaType.reCaptcha'),
                                 },
                             ]"
