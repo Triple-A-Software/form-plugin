@@ -16,7 +16,12 @@ use chrono::NaiveDate;
 use chrono::{Datelike, NaiveTime};
 use form_plugin::{
     AppState,
-    api::{form::*, settings::*, submission::*},
+    api::{
+        dashboard::{dashboard_card_recent_submissions, dashboard_card_submission_stats},
+        form::*,
+        settings::*,
+        submission::*,
+    },
     captcha::CaptchaType,
     create_cms_db,
     model::{
@@ -112,10 +117,13 @@ async fn main() {
             "/api/settings",
             get(route_get_settings).put(route_update_settings),
         )
-        .route("/dashboard/submission-stats", get(route_submission_stats))
+        .route(
+            "/dashboard/submission-stats",
+            get(dashboard_card_submission_stats),
+        )
         .route(
             "/dashboard/recent-submissions",
-            get(route_recent_submissions),
+            get(dashboard_card_recent_submissions),
         )
         .route(
             "/api/emails",
