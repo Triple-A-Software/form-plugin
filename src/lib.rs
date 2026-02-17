@@ -11,7 +11,7 @@ use serde_json::Value;
 use sqlx::{PgConnection, PgPool};
 use tokio::sync::RwLock;
 
-use crate::model::{EmailAttachment, Submission};
+use crate::{model::{EmailAttachment, Submission}, utils::AppResult};
 
 pub mod captcha;
 pub mod cleverreach;
@@ -58,20 +58,21 @@ pub async fn send_email(
     body: &Value,
     to: &str,
     attachments: Option<Vec<EmailAttachment>>,
-) {
+) -> AppResult<()> {
     let email: Email = sqlx::query_as(r#"select * from email where id = $1"#)
         .bind(id)
         .fetch_one(db)
         .await
-        .unwrap();
+        ?;
     let context = context!(form => form, submission => body);
     let mut environment = minijinja::Environment::new();
     environment
         .add_template("email.html", email.content.as_str())
-        .unwrap();
-    let template = environment.get_template("email.html").unwrap();
-    let rendered = template.render(&context).unwrap();
-    email.send(to, rendered, attachments).await.unwrap();
+        ?;
+    let template = environment.get_template("email.html")?;
+    let rendered = template.render(&context)?;
+    email.send(to, rendered, attachments).await?;
+    Ok(())
 }
 
 pub fn extract_field_as_string(data: &Value, field_name: Option<&str>) -> Option<String> {
@@ -89,7 +90,7 @@ pub fn extract_field_as_string(data: &Value, field_name: Option<&str>) -> Option
     }
 }
 
-pub fn convert_to_csv(submissions: &[Submission]) -> String {
+pub fn convert_to_csv(submissions: &[Submission]) -> AppResult<String> {
     let mut all_keys = HashSet::from(["id", "form_id", "timestamp"]);
     let mut output = Vec::new();
     {
@@ -116,7 +117,7 @@ pub fn convert_to_csv(submissions: &[Submission]) -> String {
             })
             .collect();
 
-        writer.write_record(&all_keys).unwrap();
+        writer.write_record(&all_keys)?;
         for row in submissions {
             let record = all_keys
                 .iter()
@@ -132,8 +133,8 @@ pub fn convert_to_csv(submissions: &[Submission]) -> String {
                         .unwrap_or_default()
                 })
                 .collect::<Vec<_>>();
-            writer.write_record(&record).unwrap();
+            writer.write_record(&record)?;
         }
     }
-    String::from_utf8(output).unwrap()
+    Ok(String::from_utf8(output)?)
 }

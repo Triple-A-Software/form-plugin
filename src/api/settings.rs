@@ -3,21 +3,23 @@ use axum::{Json, extract::State};
 use crate::{
     AppState,
     model::{Settings, StatusResponse},
+    utils::AppResult,
 };
 
-pub async fn route_get_settings<'src>(State(state): State<AppState<'src>>) -> Json<Settings> {
-    Json(
+pub async fn route_get_settings<'src>(
+    State(state): State<AppState<'src>>,
+) -> AppResult<Json<Settings>> {
+    Ok(Json(
         sqlx::query_as(r#"select * from settings where id = 'settings'"#)
             .fetch_one(&state.db)
-            .await
-            .unwrap(),
-    )
+            .await?,
+    ))
 }
 
 pub async fn route_update_settings<'src>(
     State(state): State<AppState<'src>>,
     Json(body): Json<Settings>,
-) -> Json<StatusResponse> {
+) -> AppResult<Json<StatusResponse>> {
     sqlx::query(
         r#"update settings set
             cleverreach_client_id = $1,
@@ -34,9 +36,8 @@ pub async fn route_update_settings<'src>(
     .bind(body.re_captcha_secret)
     .bind(body.captcha_sitekey)
     .execute(&state.db)
-    .await
-    .unwrap();
+    .await?;
     let mut cleverreach = state.cleverreach.write().await;
     cleverreach.set_client_credentials(body.cleverreach_client_id, body.cleverreach_secret);
-    Json(StatusResponse::success())
+    Ok(Json(StatusResponse::success()))
 }

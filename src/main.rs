@@ -27,7 +27,7 @@ use form_plugin::{
     model::{
         CMSSettings, DateInputType, EmailAttachment, Property, SelectDataType, SubmissionFile,
     },
-    utils::{get_file_path, get_file_storage_path, stream_to_file},
+    utils::{ErrorReport, get_file_path, get_file_storage_path, stream_to_file},
 };
 use form_plugin::{api::email::*, render::render_form};
 use form_plugin::{captcha::Captcha, extract_field_as_string, send_email};
@@ -419,7 +419,8 @@ async fn form_submit<'src>(
                 submission_receiver_email,
                 Some(attachments),
             )
-            .await;
+            .await
+            .report_err(file!(), line!());
         }
 
         if form.send_confirmation_email
@@ -439,7 +440,8 @@ async fn form_submit<'src>(
                 &confirmation_email_recipient,
                 None,
             )
-            .await;
+            .await
+            .report_err(file!(), line!());
         }
 
         create_submission(
