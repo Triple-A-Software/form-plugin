@@ -22,3 +22,8 @@ build:
 
 seed:
     cargo run -p seed
+
+create-release version:
+    ./update_version {{version}}
+    just build
+    plugin-cli package
