@@ -136,5 +136,5 @@ pub fn convert_to_csv(submissions: &[Submission]) -> AppResult<String> {
             writer.write_record(&record)?;
         }
     }
-    Ok(String::from_utf8(output)?)
+    Ok(String::from_utf8_lossy(&output).to_string())
 }
