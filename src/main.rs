@@ -250,29 +250,33 @@ async fn render_form_helper<'src>(
                     )));
                 }
             };
-            let settings: Settings =
-                sqlx::query_as(r#"select * from settings where id = 'settings'"#)
+            if let Ok(settings) =
+                sqlx::query_as::<_, Settings>(r#"select * from settings where id = 'settings'"#)
                     .fetch_one(&state.db)
                     .await
-                    .unwrap();
-
-            let cms_settings: CMSSettings =
-                sqlx::query_as(r#"select * from settings where id = 'settings'"#)
-                    .fetch_one(&state.cms_db)
-                    .await
-                    .unwrap();
-
-            let rendered = render_form(
-                state,
-                body.page.language.unwrap_or(cms_settings.default_language),
-                form,
-                format!(
-                    r#"<form action="/form-plugin/submit?id={id}&redirect={route}" method="POST" enctype="multipart/form-data">"#,
-                ),
-                "</form>",
-                settings,
-            );
-            Json(ServicePluginApiResponse::Data(Value::String(rendered)))
+                && let Ok(cms_settings) = sqlx::query_as::<_, CMSSettings>(
+                    r#"select * from settings where id = 'settings'"#,
+                )
+                .fetch_one(&state.cms_db)
+                .await
+            {
+                let rendered = render_form(
+                    state,
+                    body.page.language.unwrap_or(cms_settings.default_language),
+                    form,
+                    format!(
+                        r#"<form action="/form-plugin/submit?id={id}&redirect={route}" method="POST" enctype="multipart/form-data">"#,
+                    ),
+                    "</form>",
+                    settings,
+                );
+                Json(ServicePluginApiResponse::Data(Value::String(rendered)))
+            } else {
+                tracing::error!("Error when loading settings or cms settings from database");
+                Json(ServicePluginApiResponse::Error(
+                    "internal server error".to_string(),
+                ))
+            }
         } else {
             Json(ServicePluginApiResponse::Error(
                 "invalid i32 argument".to_string(),
@@ -329,10 +333,13 @@ async fn form_submit<'src>(
                 dbg!(&captcha_response.error_codes);
                 if !captcha_response.success {
                     if let Some(redirect) = query.redirect {
-                        let redirect =
+                        if let Ok(redirect) =
                             Url::parse_with_params(&redirect, &[("error", "captcha_error")])
-                                .unwrap();
-                        return Redirect::to(redirect.as_str()).into_response();
+                        {
+                            return Redirect::to(redirect.as_str()).into_response();
+                        } else {
+                            return StatusCode::BAD_REQUEST.into_response();
+                        }
                     } else {
                         return StatusCode::UNAUTHORIZED.into_response();
                     }
@@ -340,9 +347,13 @@ async fn form_submit<'src>(
                     tracing::error!("{:?}", &captcha_response.error_codes);
                 }
             } else if let Some(redirect) = query.redirect {
-                let redirect =
-                    Url::parse_with_params(&redirect, &[("error", "captcha_missing")]).unwrap();
-                return Redirect::to(redirect.as_str()).into_response();
+                if let Ok(redirect) =
+                    Url::parse_with_params(&redirect, &[("error", "captcha_missing")])
+                {
+                    return Redirect::to(redirect.as_str()).into_response();
+                } else {
+                    return StatusCode::BAD_REQUEST.into_response();
+                }
             } else {
                 return StatusCode::UNAUTHORIZED.into_response();
             }
