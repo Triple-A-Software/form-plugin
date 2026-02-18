@@ -2,12 +2,14 @@ use axum::{extract::Request, response::IntoResponse};
 use tower::util::ServiceExt;
 use tower_http::services::ServeFile;
 
-pub async fn dashboard_card_submission_stats(req: Request) -> impl IntoResponse {
+use crate::utils::AppResult;
+
+pub async fn dashboard_card_submission_stats(req: Request) -> AppResult<impl IntoResponse> {
     let service = ServeFile::new("ui/dist/dashboard/submission-stats.html");
-    service.oneshot(req).await.unwrap()
+    Ok(service.oneshot(req).await?)
 }
 
-pub async fn dashboard_card_recent_submissions(req: Request) -> impl IntoResponse {
+pub async fn dashboard_card_recent_submissions(req: Request) -> AppResult<impl IntoResponse> {
     let service = ServeFile::new("ui/dist/dashboard/recent-submissions.html");
-    service.oneshot(req).await.unwrap()
+    Ok(service.oneshot(req).await?)
 }

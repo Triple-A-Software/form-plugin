@@ -9,7 +9,7 @@ use axum::{
     http::{HeaderMap, HeaderValue},
     response::{IntoResponse, Response},
 };
-use reqwest::{StatusCode, header};
+use reqwest::header;
 use serde::{Deserialize, Serialize};
 use sqlx::prelude::FromRow;
 use tokio_util::{compat::FuturesAsyncWriteCompatExt, io::ReaderStream};
@@ -22,7 +22,7 @@ use crate::{
     extract_field_as_string,
     model::{Form, StatusResponse, Submission, SubmissionApiResponse, SubmissionFile},
     send_email,
-    utils::get_file_path,
+    utils::{AppError, AppResult, get_file_path},
 };
 
 #[derive(Deserialize, TS)]
@@ -33,7 +33,7 @@ pub struct DownloadFilesQuery {
 pub async fn route_download_files<'src>(
     State(state): State<AppState<'src>>,
     Query(query): Query<DownloadFilesQuery>,
-) -> impl IntoResponse {
+) -> AppResult<Response> {
     let files: Vec<SubmissionFile> = sqlx::query_as(
         r#"
             select * from submission_file where submission_id = $1
@@ -41,15 +41,14 @@ pub async fn route_download_files<'src>(
     )
     .bind(query.id)
     .fetch_all(&state.db)
-    .await
-    .unwrap();
+    .await?;
     if files.is_empty() {
-        return StatusCode::NOT_FOUND.into_response();
+        return Err(AppError::NotFound("submission files not found".to_string()));
     }
     if files.len() == 1 {
         let file_path = get_file_path(&files[0].id);
-        let file = tokio::fs::File::open(file_path).await.unwrap();
-        Response::builder()
+        let file = tokio::fs::File::open(file_path).await?;
+        Ok(Response::builder()
             .header("Content-Type", files[0].mime_type.as_str())
             .header(
                 "Content-Disposition",
@@ -59,9 +58,9 @@ pub async fn route_download_files<'src>(
                 ),
             )
             .body(Body::from_stream(ReaderStream::new(file)))
-            .unwrap()
+            ?)
     } else {
-        let mut zip_file = TempFile::new().await.unwrap();
+        let mut zip_file = TempFile::new().await?;
         let mut writer = ZipFileWriter::with_tokio(&mut zip_file);
         for file in files {
             let file_path = get_file_path(&file.id);
@@ -69,23 +68,22 @@ pub async fn route_download_files<'src>(
                 file.name.unwrap_or_else(|| file.id.to_string()).into(),
                 async_zip::Compression::Deflate,
             );
-            let entry_writer = writer.write_entry_stream(builder).await.unwrap();
-            let mut file_reader = tokio::fs::File::open(file_path).await.unwrap();
+            let entry_writer = writer.write_entry_stream(builder).await?;
+            let mut file_reader = tokio::fs::File::open(file_path).await?;
             tokio::io::copy(&mut file_reader, &mut entry_writer.compat_write())
-                .await
-                .unwrap();
+                .await?;
         }
-        writer.close().await.unwrap();
-        zip_file.sync_all().await.unwrap();
-        let zip_file = tokio::fs::File::open(zip_file.file_path()).await.unwrap();
-        Response::builder()
+        writer.close().await?;
+        zip_file.sync_all().await?;
+        let zip_file = tokio::fs::File::open(zip_file.file_path()).await?;
+        Ok(Response::builder()
             .header("Content-Type", "application/zip")
             .header(
                 "Content-Disposition",
                 format!("attachment; filename=\"submission_files_{}.zip\"", query.id),
             )
             .body(Body::from_stream(ReaderStream::new(zip_file)))
-            .unwrap()
+            ?)
     }
 }
 
@@ -110,7 +108,7 @@ struct GraphValue {
 }
 pub async fn route_submission_stats<'src>(
     State(state): State<AppState<'src>>,
-) -> Json<SubmissionStats> {
+) -> AppResult<Json<SubmissionStats>> {
     let graph: Vec<GraphValue> = sqlx::query_as(
         r#"
         select date_trunc('day', "timestamp") as date, count(timestamp) as value, form_id 
@@ -119,16 +117,14 @@ pub async fn route_submission_stats<'src>(
         "#,
     )
     .fetch_all(&state.db)
-    .await
-    .unwrap();
+    .await?;
     let total: i64 = sqlx::query_scalar(
         r#"
             select count(*) from "submission"
         "#,
     )
     .fetch_one(&state.db)
-    .await
-    .unwrap();
+    .await?;
     let graph = graph
         .into_iter()
         .fold(Vec::new(), |mut acc: Vec<ApiGraphValue>, g: GraphValue| {
@@ -142,21 +138,20 @@ pub async fn route_submission_stats<'src>(
             }
             acc
         });
-    Json(SubmissionStats {
+    Ok(Json(SubmissionStats {
         graph,
         total: total as i32,
-    })
+    }))
 }
 
 pub async fn route_recent_submissions<'src>(
     State(state): State<AppState<'src>>,
-) -> Json<Vec<Submission>> {
+) -> AppResult<Json<Vec<Submission>>> {
     let submissions: Vec<Submission> =
         sqlx::query_as(r#"select * from submission order by timestamp desc limit 10"#)
             .fetch_all(&state.db)
-            .await
-            .unwrap();
-    Json(submissions)
+            .await?;
+    Ok(Json(submissions))
 }
 
 #[derive(Deserialize, TS)]
@@ -169,18 +164,16 @@ pub struct SendEmailToSubmissionBody {
 pub async fn route_send_email_to_submission<'src>(
     State(state): State<AppState<'src>>,
     Json(body): Json<SendEmailToSubmissionBody>,
-) -> Json<StatusResponse> {
-    let mut tx = state.db.begin().await.unwrap();
+) -> AppResult<Json<StatusResponse>> {
+    let mut tx = state.db.begin().await?;
     let submission: Submission = sqlx::query_as(r#"select * from submission where id = $1"#)
         .bind(body.submission_id)
         .fetch_one(&mut *tx)
-        .await
-        .unwrap();
+        .await?;
     let form: Form = sqlx::query_as(r#"select * from form where id = $1"#)
         .bind(submission.form_id)
         .fetch_one(&mut *tx)
-        .await
-        .unwrap();
+        .await?;
     let email = extract_field_as_string(
         &submission.data,
         Some(body.email_field_name.as_deref().unwrap_or("email")),
@@ -194,11 +187,11 @@ pub async fn route_send_email_to_submission<'src>(
             &email,
             None,
         )
-        .await;
-        tx.commit().await.unwrap();
-        Json(StatusResponse::success())
+        .await?;
+        tx.commit().await?;
+        Ok(Json(StatusResponse::success()))
     } else {
-        Json(StatusResponse::fail())
+        Ok(Json(StatusResponse::fail()))
     }
 }
 
@@ -212,9 +205,9 @@ pub struct ListSubmissionsQuery {
 pub async fn route_list_submissions<'src>(
     State(state): State<AppState<'src>>,
     Query(query): Query<ListSubmissionsQuery>,
-) -> Json<Vec<SubmissionApiResponse>> {
+) -> AppResult<Json<Vec<SubmissionApiResponse>>> {
     if let Some(form_id) = query.form_id {
-        Json(
+        Ok(Json(
             sqlx::query_as(
                 r#"
                 select submission.*, count(submission_file) as file_count from submission
@@ -228,11 +221,10 @@ pub async fn route_list_submissions<'src>(
             .bind(query.items_per_page)
             .bind(query.page * query.items_per_page)
             .fetch_all(&state.db)
-            .await
-            .unwrap(),
-        )
+            .await?,
+        ))
     } else {
-        Json(
+        Ok(Json(
             sqlx::query_as(
                 r#"
                 select submission.*, count(submission_file) as file_count from submission
@@ -244,31 +236,28 @@ pub async fn route_list_submissions<'src>(
             .bind(query.items_per_page)
             .bind(query.page * query.items_per_page)
             .fetch_all(&state.db)
-            .await
-            .unwrap(),
-        )
+            .await?,
+        ))
     }
 }
 
 pub async fn route_count_submissions<'src>(
     State(state): State<AppState<'src>>,
     Query(query): Query<ListSubmissionsQuery>,
-) -> Json<i64> {
+) -> AppResult<Json<i64>> {
     if let Some(form_id) = query.form_id {
-        Json(
+        Ok(Json(
             sqlx::query_scalar(r#"select count(*) from submission where form_id = $1"#)
                 .bind(form_id)
                 .fetch_one(&state.db)
-                .await
-                .unwrap(),
-        )
+                .await?,
+        ))
     } else {
-        Json(
+        Ok(Json(
             sqlx::query_scalar(r#"select count(*) from submission"#)
                 .fetch_one(&state.db)
-                .await
-                .unwrap(),
-        )
+                .await?,
+        ))
     }
 }
 
@@ -283,7 +272,7 @@ pub struct ExportSubmissionsQuery {
 pub async fn route_export_submissions<'src>(
     State(state): State<AppState<'src>>,
     Query(query): Query<ExportSubmissionsQuery>,
-) -> impl IntoResponse {
+) -> AppResult<impl IntoResponse> {
     let submissions: Vec<Submission> = sqlx::query_as(
         r#"
         select * from submission
@@ -297,8 +286,7 @@ pub async fn route_export_submissions<'src>(
     .bind(query.start_date)
     .bind(query.end_date)
     .fetch_all(&state.db)
-    .await
-    .unwrap();
+    .await?;
     let mut headers = HeaderMap::new();
     let date = chrono::Utc::now().format("%Y-%m-%d_%H-%M-%S");
     headers.insert("Content-type", HeaderValue::from_static("text/csv"));
@@ -307,9 +295,9 @@ pub async fn route_export_submissions<'src>(
         HeaderValue::from_str(
             format!("attachment; filename=\"submissions_export_{date}.csv\"").as_str(),
         )
-        .unwrap(),
+        ?,
     );
-    (headers, convert_to_csv(&submissions))
+    Ok((headers, convert_to_csv(&submissions)?))
 }
 
 #[derive(Deserialize, TS)]
@@ -320,11 +308,10 @@ pub struct DeleteSubmissionBody {
 pub async fn route_delete_submission<'src>(
     State(state): State<AppState<'src>>,
     Json(body): Json<DeleteSubmissionBody>,
-) -> Json<StatusResponse> {
+) -> AppResult<Json<StatusResponse>> {
     sqlx::query(r#"delete from submission where id = $1"#)
         .bind(body.id)
         .execute(&state.db)
-        .await
-        .unwrap();
-    Json(StatusResponse::success())
+        .await?;
+    Ok(Json(StatusResponse::success()))
 }

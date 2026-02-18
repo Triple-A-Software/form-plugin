@@ -5,29 +5,31 @@ use ts_rs::TS;
 use crate::{
     AppState, database,
     model::{Email, StatusResponse},
+    utils::AppResult,
 };
 
-pub async fn route_list_emails<'src>(State(state): State<AppState<'src>>) -> Json<Vec<Email>> {
-    Json(
+pub async fn route_list_emails<'src>(
+    State(state): State<AppState<'src>>,
+) -> AppResult<Json<Vec<Email>>> {
+    Ok(Json(
         sqlx::query_as(r#"select * from email"#)
             .fetch_all(&state.db)
-            .await
-            .unwrap(),
-    )
+            .await?,
+    ))
 }
 
 pub async fn route_create_email<'src>(
     State(state): State<AppState<'src>>,
     Json(body): Json<Email>,
-) -> Json<Email> {
-    let email = database::create_email(body, &state.db).await.unwrap();
-    Json(email)
+) -> AppResult<Json<Email>> {
+    let email = database::create_email(body, &state.db).await?;
+    Ok(Json(email))
 }
 
 pub async fn route_update_email<'src>(
     State(state): State<AppState<'src>>,
     Json(body): Json<Email>,
-) -> Json<StatusResponse> {
+) -> AppResult<Json<StatusResponse>> {
     sqlx::query(
         r#"update email set
             subject = $1,
@@ -37,9 +39,8 @@ pub async fn route_update_email<'src>(
     .bind(body.content)
     .bind(body.id)
     .execute(&state.db)
-    .await
-    .unwrap();
-    Json(StatusResponse::success())
+    .await?;
+    Ok(Json(StatusResponse::success()))
 }
 
 #[derive(Deserialize, TS)]
@@ -50,11 +51,10 @@ pub struct DeleteEmailBody {
 pub async fn route_delete_email<'src>(
     State(state): State<AppState<'src>>,
     Json(body): Json<DeleteEmailBody>,
-) -> Json<StatusResponse> {
+) -> AppResult<Json<StatusResponse>> {
     sqlx::query(r#"delete from email where id = $1"#)
         .bind(body.id)
         .execute(&state.db)
-        .await
-        .unwrap();
-    Json(StatusResponse::success())
+        .await?;
+    Ok(Json(StatusResponse::success()))
 }

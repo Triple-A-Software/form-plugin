@@ -23,6 +23,7 @@ sqlx = { version = "0.8", features = [
     "chrono",
     "uuid",
 ] }
+thiserror = "2"
 minijinja = { version = "2", features = ["loader"] }
 tokio = { version = "1", features = ["rt-multi-thread"] }
 tokio-util = "0.7"

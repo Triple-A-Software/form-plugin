@@ -1,13 +1,71 @@
-use axum::{BoxError, body::Bytes};
+use axum::{BoxError, Json, body::Bytes, extract::multipart::MultipartError, http, response::IntoResponse};
 use futures::{Stream, TryStreamExt};
+use serde::Serialize;
 use std::{env, fmt::Display, io, path::PathBuf};
 use tokio::fs::File;
 use tokio_util::io::StreamReader;
 use uuid::Uuid;
 
+#[derive(Debug, thiserror::Error)]
+pub enum AppError {
+    #[error(transparent)]
+    Anyhow(#[from] anyhow::Error),
+    #[error("{0}")]
+    BadRequest(String),
+    #[error("{0}")]
+    NotFound(String),
+    #[error(transparent)]
+    Csv(#[from] csv::Error),
+    #[error(transparent)]
+    Infallible(#[from] std::convert::Infallible),
+    #[error(transparent)]
+    Http(#[from] http::Error),
+    #[error(transparent)]
+    HeaderValue(#[from] http::header::InvalidHeaderValue),
+    #[error(transparent)]
+    Io(#[from] io::Error),
+    #[error(transparent)]
+    Multipart(#[from] MultipartError),
+    #[error(transparent)]
+    Reqwest(#[from] reqwest::Error),
+    #[error(transparent)]
+    Sqlx(#[from] sqlx::Error),
+    #[error(transparent)]
+    Template(#[from] minijinja::Error),
+    #[error(transparent)]
+    TempFile(#[from] async_tempfile::Error),
+    #[error(transparent)]
+    Utf8(#[from] std::string::FromUtf8Error),
+    #[error(transparent)]
+    Zip(#[from] async_zip::error::ZipError),
+}
+
+pub type AppResult<T> = Result<T, AppError>;
+
+#[derive(Serialize)]
+struct ErrorResponse {
+    error: String,
+}
+
+impl IntoResponse for AppError {
+    fn into_response(self) -> axum::response::Response {
+        let status = match self {
+            AppError::BadRequest(_) | AppError::Multipart(_) | AppError::HeaderValue(_) => {
+                http::StatusCode::BAD_REQUEST
+            }
+            AppError::NotFound(_) => http::StatusCode::NOT_FOUND,
+            _ => http::StatusCode::INTERNAL_SERVER_ERROR,
+        };
+        let body = Json(ErrorResponse {
+            error: self.to_string(),
+        });
+        (status, body).into_response()
+    }
+}
+
 // from https://github.com/tokio-rs/axum/blob/main/examples/stream-to-file/src/main.rs
 // Save a `Stream` to a file
-pub async fn stream_to_file<S, E>(path: &PathBuf, stream: S) -> anyhow::Result<()>
+pub async fn stream_to_file<S, E>(path: &PathBuf, stream: S) -> AppResult<()>
 where
     S: Stream<Item = Result<Bytes, E>> + Unpin,
     E: Into<BoxError>,
