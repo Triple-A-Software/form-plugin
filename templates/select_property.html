@@ -1,8 +1,6 @@
-<div  {% if property.class %} class="{{ property.class }}" {%endif%}>
-    <label
-        for="{{ property.name }}"
-        class="block mb-2 font-medium text-gray-900 dark:text-white text-sm {{ property.label_class }}"
-    >
+<div {% if property.class %} class="{{ property.class }}" {%endif%}>
+    <label for="{{ property.name }}"
+        class="block mb-2 font-medium text-gray-900 dark:text-white text-sm {{ property.label_class }}">
         {{ property.label[language] }}
     </label>
     <select id="{{ property.name }}" name="{{ property.name }}" class="{{ property.input_class }}">
