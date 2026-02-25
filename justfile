@@ -17,7 +17,7 @@ reset-db:
     sqlx database reset
 
 build:
-    cargo build --release
+    cargo build --release --target=x86_64-unknown-linux-gnu
     cd ui && bun vite build
 
 seed:

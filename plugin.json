@@ -2,10 +2,10 @@
     "$schema": "https://neleto.io/schemas/main/plugin_manifest_schema.json",
     "name": "form-plugin",
     "version": "3.6.6",
-    "bin": "./target/release/form-plugin",
+    "bin": "./target/x86_64-unknown-linux-gnu/release/form-plugin",
     "include_files": [
         "ui/dist/**/*",
-        "target/release/form-plugin",
+        "target/x86_64-unknown-linux-gnu/release/form-plugin",
         "templates/**/*.html",
         "components/**/*"
     ],
