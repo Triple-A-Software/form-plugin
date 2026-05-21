@@ -155,7 +155,7 @@ function editForm(id: number) {
         </UModal>
     </div>
 
-    <UTable :columns="columns" :data="forms.data.value" v-model:expanded="expanded">
+    <UTable :columns="columns" :data="forms.data.value" v-model:expanded="expanded" :ui="{ td: 'wrap-break-word' }">
         <template #expanded="{ row }">
             <pre>{{ row.original }}</pre>
         </template>
