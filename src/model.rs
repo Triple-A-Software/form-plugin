@@ -159,8 +159,17 @@ impl Email {
         content: String,
         attachments: Option<Vec<EmailAttachment>>,
     ) -> anyhow::Result<()> {
-        let internal_backend_port = env::var("INTERNAL_BACKEND_PORT")?;
-        reqwest::Client::new()
+        let internal_backend_port = match env::var("INTERNAL_BACKEND_PORT") {
+            Ok(port) => port,
+            Err(e) => {
+                tracing::error!("INTERNAL_BACKEND_PORT environment variable is not set: {e}");
+                return Err(e.into());
+            }
+        };
+        let response = reqwest::Client::builder()
+            .timeout(std::time::Duration::from_secs(10))
+            .build()
+            .inspect_err(|e| tracing::error!("Failed to build reqwest client: {e}"))?
             .post(format!(
                 "http://localhost:{internal_backend_port}/email/send"
             ))
@@ -171,7 +180,20 @@ impl Email {
                 attachments,
             })
             .send()
-            .await?;
+            .await
+            .inspect_err(|e| {
+                tracing::error!(
+                    "HTTP request to CMS backend failed for email to {receiver}: {e}"
+                )
+            })?;
+        if !response.status().is_success() {
+            let status = response.status();
+            let body = response.text().await.unwrap_or_default();
+            tracing::error!(
+                "CMS backend returned {status} for email to {receiver}. Response: {body}"
+            );
+            anyhow::bail!("CMS backend returned {status}: {body}");
+        }
         Ok(())
     }
 }

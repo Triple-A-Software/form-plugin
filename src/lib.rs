@@ -63,15 +63,18 @@ pub async fn send_email(
         .bind(id)
         .fetch_one(db)
         .await
-        ?;
+        .inspect_err(|e| tracing::error!("Failed to fetch email template (id={id}) for {to}: {e}"))?;
     let context = context!(form => form, submission => body);
     let mut environment = minijinja::Environment::new();
     environment
         .add_template("email.html", email.content.as_str())
-        ?;
-    let template = environment.get_template("email.html")?;
-    let rendered = template.render(&context)?;
-    email.send(to, rendered, attachments).await?;
+        .inspect_err(|e| tracing::error!("Failed to parse email template (id={id}) for {to}: {e}"))?;
+    let template = environment.get_template("email.html")
+        .inspect_err(|e| tracing::error!("Failed to get email template (id={id}) for {to}: {e}"))?;
+    let rendered = template.render(&context)
+        .inspect_err(|e| tracing::error!("Failed to render email template (id={id}) for {to}: {e}"))?;
+    email.send(to, rendered, attachments).await
+        .inspect_err(|e| tracing::error!("Failed to send email to {to} (template id={id}): {e}"))?;
     Ok(())
 }
 

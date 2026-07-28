@@ -411,7 +411,7 @@ async fn form_submit<'src>(
                     mime_type: f.mime_type.clone(),
                 })
                 .collect();
-            send_email(
+            let _ = send_email(
                 &mut tx,
                 *submissions_email_id,
                 &form,
@@ -423,25 +423,35 @@ async fn form_submit<'src>(
             .report_err(file!(), line!());
         }
 
-        if form.send_confirmation_email
-            && let (Some(confirmation_email_recipient), Some(confirmation_email_id)) = (
-                extract_field_as_string(
-                    &body,
-                    form.confirmation_email_recipient_field_name.as_deref(),
-                ),
-                &form.confirmation_email_id,
-            )
-        {
-            send_email(
-                &mut tx,
-                *confirmation_email_id,
-                &form,
+        if form.send_confirmation_email {
+            let confirmation_email_recipient = extract_field_as_string(
                 &body,
-                &confirmation_email_recipient,
-                None,
-            )
-            .await
-            .report_err(file!(), line!());
+                form.confirmation_email_recipient_field_name.as_deref(),
+            );
+            let recipient_field_missing = form
+                .confirmation_email_recipient_field_name
+                .is_some()
+                && confirmation_email_recipient.is_none();
+
+            if let (Some(recipient), Some(confirmation_email_id)) =
+                (confirmation_email_recipient, &form.confirmation_email_id)
+            {
+                let _ = send_email(
+                    &mut tx,
+                    *confirmation_email_id,
+                    &form,
+                    &body,
+                    &recipient,
+                    None,
+                )
+                .await
+                .report_err(file!(), line!());
+            } else if recipient_field_missing {
+                tracing::warn!(
+                    "Confirmation email enabled but recipient field '{}' not found in submission data",
+                    form.confirmation_email_recipient_field_name.as_deref().unwrap()
+                );
+            }
         }
 
         create_submission(
