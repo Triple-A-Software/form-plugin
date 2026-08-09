@@ -152,10 +152,10 @@ const deleteMutation = useApiMutation(
         <UPagination v-model:page="page" :total="submissionCount.data.value" :items-per-page="itemsPerPage" />
     </div>
 
-    <UTable :columns="columns" :data="submissions.data.value" v-model:expanded="expanded" :ui="{ td: 'wrap-break-word' }">
+    <UTable :columns="columns" :data="submissions.data.value" v-model:expanded="expanded" :ui="{ td: 'whitespace-normal wrap-anywhere' }">
         <template #expanded="{ row }">
             <div v-for="(value, key) in row.original.data">
-                <p class="pl-2 -indent-2 wrap-break-word"><span class="font-bold">{{ key }}:</span> {{ value }}</p>
+                <p class="pl-2 -indent-2 whitespace-normal wrap-anywhere"><span class="font-bold">{{ key }}:</span> {{ value }}</p>
             </div>
         </template>
 

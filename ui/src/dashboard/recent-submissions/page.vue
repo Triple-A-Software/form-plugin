@@ -52,10 +52,10 @@ const forms = useForms();
 </script>
 
 <template>
-    <UTable :columns="columns" :data="submissions.data.value" v-model:expanded="expanded" :ui="{ td: 'wrap-break-word' }">
+    <UTable :columns="columns" :data="submissions.data.value" v-model:expanded="expanded" :ui="{ td: 'whitespace-normal wrap-anywhere' }">
         <template #expanded="{ row }">
             <div v-for="(value, key) in row.original.data">
-                <p class="pl-2 -indent-2 wrap-break-word"><span class="font-bold">{{ key }}:</span> {{ value }}</p>
+                <p class="pl-2 -indent-2 whitespace-normal wrap-anywhere"><span class="font-bold">{{ key }}:</span> {{ value }}</p>
             </div>
         </template>
         <template #form-cell="{ row }">{{ forms.data.value?.find((f) => f.id === row.original.form_id)?.name }}</template>
