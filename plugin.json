@@ -23,55 +23,53 @@
   "api": [
     {
       "route": "/api/forms",
-      "allowed_roles": ["admin", "developer"]
+      "allowed_permissions": ["settings.update"]
     },
     {
       "route": "/api/forms/preview",
-      "allowed_roles": ["admin", "developer"]
+      "allowed_permissions": ["settings.update"]
     },
     {
-      "route": "/api/form-select/list",
-      "allowed_roles": ["admin", "developer", "editor", "author"]
+      "route": "/api/form-select/list"
     },
     {
-      "route": "/api/form-select/by-id",
-      "allowed_roles": ["admin", "developer", "editor", "author"]
+      "route": "/api/form-select/by-id"
     },
     {
       "route": "/api/emails",
-      "allowed_roles": ["admin", "developer"]
+      "allowed_permissions": ["settings.update"]
     },
     {
       "route": "/api/settings",
-      "allowed_roles": ["admin", "developer"]
+      "allowed_permissions": ["settings.update"]
     },
     {
       "route": "/api/submissions",
-      "allowed_roles": ["admin", "developer"]
+      "allowed_permissions": ["settings.update"]
     },
     {
       "route": "/api/submissions/count",
-      "allowed_roles": ["admin", "developer"]
+      "allowed_permissions": ["settings.update"]
     },
     {
       "route": "/api/submissions/send-email",
-      "allowed_roles": ["admin", "developer"]
+      "allowed_permissions": ["settings.update"]
     },
     {
       "route": "/api/submissions/stats",
-      "allowed_roles": ["admin", "developer"]
+      "allowed_permissions": ["settings.update"]
     },
     {
       "route": "/api/submissions/export",
-      "allowed_roles": ["admin", "developer"]
+      "allowed_permissions": ["settings.update"]
     },
     {
       "route": "/api/submissions/recent",
-      "allowed_roles": ["admin", "developer"]
+      "allowed_permissions": ["settings.update"]
     },
     {
       "route": "/api/submissions/download-files",
-      "allowed_roles": ["admin", "developer"]
+      "allowed_permissions": ["settings.update"]
     }
   ],
   "helpers": [
