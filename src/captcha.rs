@@ -20,6 +20,7 @@ pub struct Captcha<'a> {
 pub enum CaptchaType {
     HCaptcha,
     ReCaptcha,
+    Turnstile,
 }
 
 #[derive(Deserialize)]
@@ -37,17 +38,22 @@ impl Captcha<'_> {
         let url = match self.r#type {
             CaptchaType::HCaptcha => "https://api.hcaptcha.com/siteverify",
             CaptchaType::ReCaptcha => "https://www.google.com/recaptcha/api/siteverify",
+            CaptchaType::Turnstile => "https://challenges.cloudflare.com/turnstile/v0/siteverify",
         };
         let response = match self.r#type {
             CaptchaType::HCaptcha => self.body.get("h-captcha-response"),
             CaptchaType::ReCaptcha => self.body.get("g-recaptcha-response"),
+            CaptchaType::Turnstile => self.body.get("cf-turnstile-response"),
         };
         if let (Some(Value::String(response)), Some(secret)) = (response, secret) {
-            let body = format!("secret={}&response={}", secret, response);
+            // `.form(...)` url-encodes the body and sets the correct Content-Type and
+            // Content-Length. We must NOT set Content-Length manually: a hand-computed length of
+            // the un-encoded string is too short once the token contains characters that get
+            // percent-encoded (common for reCaptcha tokens), which truncates the request body and
+            // makes siteverify reject the token.
             reqwest::Client::new()
                 .post(url)
                 .form(&[("secret", secret), ("response", response)])
-                .header("Content-Length", body.len().to_string())
                 .header("Accept", "application/json")
                 .send()
                 .await

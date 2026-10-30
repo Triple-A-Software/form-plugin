@@ -26,7 +26,10 @@ pub async fn route_update_settings<'src>(
             cleverreach_secret = $2,
             h_captcha_secret = $3,
             re_captcha_secret = $4,
-            captcha_sitekey = $5
+            turnstile_secret = $5,
+            captcha_provider = $6,
+            captcha_sitekey = $7,
+            clamav_address = $8
         where id = 'settings'
         "#,
     )
@@ -34,7 +37,10 @@ pub async fn route_update_settings<'src>(
     .bind(&body.cleverreach_secret)
     .bind(body.h_captcha_secret)
     .bind(body.re_captcha_secret)
+    .bind(body.turnstile_secret)
+    .bind(body.captcha_provider)
     .bind(body.captcha_sitekey)
+    .bind(body.clamav_address)
     .execute(&state.db)
     .await?;
     let mut cleverreach = state.cleverreach.write().await;

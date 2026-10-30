@@ -6,4 +6,6 @@
 <script src="https://js.hcaptcha.com/1/api.js" async defer></script>
 {%elif property.captchaType == "re-captcha" %}
 <script src="https://www.google.com/recaptcha/api.js" async defer></script>
+{%elif property.captchaType == "turnstile" %}
+<script src="https://challenges.cloudflare.com/turnstile/v0/api.js" async defer></script>
 {%endif%}

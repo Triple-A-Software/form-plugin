@@ -14,10 +14,12 @@ use tokio::sync::RwLock;
 use crate::{model::{EmailAttachment, Submission}, utils::AppResult};
 
 pub mod captcha;
+pub mod clamav;
 pub mod cleverreach;
 pub mod database;
 pub mod date;
 pub mod model;
+pub mod rate_limit;
 pub mod render;
 pub mod utils;
 pub mod api {
@@ -34,6 +36,7 @@ pub struct AppState<'src> {
     pub cms_db: PgPool,
     pub environment: minijinja::Environment<'src>,
     pub cleverreach: Arc<RwLock<Cleverreach>>,
+    pub rate_limiter: Arc<rate_limit::SubmissionRateLimiter>,
 }
 
 pub async fn create_db() -> PgPool {

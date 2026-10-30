@@ -71,13 +71,6 @@
 						"Union": ["Nullish", "String"]
 					},
 					"activate_captcha": "Boolean",
-					"captcha_type": {
-						"Union": [
-							"Nullish",
-							{ "Literal": "h-captcha" },
-							{ "Literal": "re-captcha" }
-						]
-					},
 					"captcha_fallback": {
 						"Union": ["Nullish", "String"]
 					},

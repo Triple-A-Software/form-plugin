@@ -10,11 +10,13 @@ const settings = useApiQuery("/api/settings", {
 });
 const showCaptchaAlert = computed(() => {
     if (!settings.data.value) return false;
-    return (
-        !settings.data.value.captchaSitekey ||
-        (!settings.data.value.hCaptchaSecret && model.value.captcha_type === "h-captcha") ||
-        (!settings.data.value.reCaptchaSecret && model.value.captcha_type === "re-captcha")
-    );
+    const provider = settings.data.value.captchaProvider;
+    if (!provider) return true;
+    if (!settings.data.value.captchaSitekey) return true;
+    if (provider === "h-captcha" && !settings.data.value.hCaptchaSecret) return true;
+    if (provider === "turnstile" && !settings.data.value.turnstileSecret) return true;
+    if (provider === "re-captcha" && !settings.data.value.reCaptchaSecret) return true;
+    return false;
 });
 
 const emails = useApiQuery("/api/emails", {
@@ -80,6 +82,9 @@ const emails = useApiQuery("/api/emails", {
                     >
                         <UInput v-model="model.send_submission_as_email" />
                     </UFormField>
+                    <UFormField :label="$t('field.label.emailAttachFiles')" :help="$t('hint.emailAttachFiles')">
+                        <UCheckbox v-model="model.email_attach_files" />
+                    </UFormField>
                 </UCard>
             </template>
         </UCollapsible>
@@ -104,26 +109,6 @@ const emails = useApiQuery("/api/emails", {
                             },
                         ]"
                     />
-                    <UFormField :label="$t('field.label.captchaType')" required>
-                        <USelect
-                            v-model="model.captcha_type"
-                            :items="[
-                                {
-                                    value: 'h-captcha',
-                                    label: $t('field.option.captchaType.hCaptcha'),
-                                },
-                                {
-                                    value: 're-captcha',
-                                    disabled: true,
-                                    description: $t('field.option.captchaType.reCaptchaDescription'),
-                                    label: $t('field.option.captchaType.reCaptcha'),
-                                },
-                            ]"
-                            class="w-full"
-                            value-key="value"
-                            label-key="label"
-                        />
-                    </UFormField>
                     <UFormField :label="$t('field.label.captchaCallback')">
                         <UInput v-model="model.captcha_callback" />
                     </UFormField>

@@ -2,7 +2,7 @@ use axum::{BoxError, Json, body::Bytes, extract::multipart::MultipartError, http
 use futures::{Stream, TryStreamExt};
 use serde::Serialize;
 use std::{env, fmt::Display, io, path::PathBuf};
-use tokio::fs::File;
+use tokio::{fs::File, io::AsyncReadExt};
 use tokio_util::io::StreamReader;
 use uuid::Uuid;
 
@@ -64,8 +64,8 @@ impl IntoResponse for AppError {
 }
 
 // from https://github.com/tokio-rs/axum/blob/main/examples/stream-to-file/src/main.rs
-// Save a `Stream` to a file
-pub async fn stream_to_file<S, E>(path: &PathBuf, stream: S) -> AppResult<()>
+// Save a `Stream` to a file, failing with `BadRequest` once it grows beyond `max_bytes`
+pub async fn stream_to_file<S, E>(path: &PathBuf, stream: S, max_bytes: u64) -> AppResult<u64>
 where
     S: Stream<Item = Result<Bytes, E>> + Unpin,
     E: Into<BoxError>,
@@ -78,10 +78,13 @@ where
     // Create the file. `File` implements `AsyncWrite`.
     let mut file = File::create(path).await?;
 
-    // Copy the body into the file.
-    tokio::io::copy(&mut body_reader, &mut file).await?;
+    // Copy the body into the file, reading one byte past the limit to detect oversized files.
+    let written = tokio::io::copy(&mut body_reader.take(max_bytes + 1), &mut file).await?;
+    if written > max_bytes {
+        return Err(AppError::BadRequest("file too large".to_string()));
+    }
 
-    Ok(())
+    Ok(written)
 }
 
 pub fn get_file_storage_path() -> PathBuf {

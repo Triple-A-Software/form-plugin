@@ -121,6 +121,9 @@ export function createFile(): PropertySelector<"file"> {
         color: "neutral",
         label_class: undefined,
         input_class: undefined,
+        multiple: undefined,
+        accept: undefined,
+        max_file_size_mb: undefined,
     };
 }
 

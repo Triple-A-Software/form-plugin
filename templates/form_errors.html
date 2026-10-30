@@ -1,0 +1,27 @@
+<div class="form-plugin-errors">
+    {% for code, message in messages|items %}
+    <p
+        class="form-plugin-error"
+        data-error="{{ code }}"
+        role="alert"
+        hidden
+        style="margin: 0 0 1rem; padding: 0.75rem 1rem; border: 1px solid #f87171; border-radius: 0.375rem; background: #fef2f2; color: #991b1b"
+    >
+        {{ message }}
+    </p>
+    {% endfor %}
+</div>
+<script>
+    (() => {
+        const params = new URLSearchParams(location.search);
+        const error = params.get("error");
+        const form = params.get("form");
+        // the params name the form that failed, other forms on the same page stay untouched
+        if (!error || (form && form !== "{{ form_id }}")) return;
+        const root = document.currentScript.previousElementSibling;
+        const message = [...root.children].find((el) => el.dataset.error === error)
+            ?? root.querySelector('[data-error="generic"]');
+        message.hidden = false;
+        message.scrollIntoView({ block: "center" });
+    })();
+</script>

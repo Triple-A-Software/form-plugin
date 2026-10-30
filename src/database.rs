@@ -27,11 +27,11 @@ pub async fn create_form(
             cleverreach_lastname_field_name,
             cleverreach_salutation,
             activate_captcha,
-            captcha_type,
             captcha_callback,
             captcha_expired_callback,
             props,
-            additional_html
+            additional_html,
+            email_attach_files
         ) values (
             $1, $2, $3, $4, $5, $6, $7, $8, $9, $10,
             $11, $12, $13, $14, $15, $16, $17, $18, $19, $20
@@ -52,11 +52,11 @@ pub async fn create_form(
     .bind(form.cleverreach_lastname_field_name)
     .bind(form.cleverreach_salutation)
     .bind(form.activate_captcha)
-    .bind(form.captcha_type)
     .bind(form.captcha_callback)
     .bind(form.captcha_expired_callback)
     .bind(form.props)
     .bind(form.additional_html)
+    .bind(form.email_attach_files)
     .fetch_one(db)
     .await
 }
@@ -83,11 +83,11 @@ pub async fn update_form(
             cleverreach_lastname_field_name = $13,
             cleverreach_salutation = $14,
             activate_captcha = $15,
-            captcha_type = $16,
-            captcha_callback = $17,
-            captcha_expired_callback = $18,
-            props = $19,
-            additional_html = $20
+            captcha_callback = $16,
+            captcha_expired_callback = $17,
+            props = $18,
+            additional_html = $19,
+            email_attach_files = $20
         where id = $21
         returning *"#,
     )
@@ -106,11 +106,11 @@ pub async fn update_form(
     .bind(form.cleverreach_lastname_field_name)
     .bind(form.cleverreach_salutation)
     .bind(form.activate_captcha)
-    .bind(form.captcha_type)
     .bind(form.captcha_callback)
     .bind(form.captcha_expired_callback)
     .bind(form.props)
     .bind(form.additional_html)
+    .bind(form.email_attach_files)
     .bind(id)
     .fetch_one(db)
     .await

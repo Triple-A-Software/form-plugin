@@ -102,6 +102,7 @@ pub struct Form {
     pub send_submission_as_email: Option<String>,
     #[cfg_attr(feature = "seed", dummy(expr = "Some(1)"))]
     pub submissions_email_id: Option<i32>,
+    pub email_attach_files: bool,
     pub activate_cleverreach: bool,
     #[ts(as = "CleverreachFormCondition")]
     #[cfg_attr(feature = "seed", dummy(faker = "CustomFaker"))]
@@ -117,7 +118,6 @@ pub struct Form {
     #[cfg_attr(feature = "seed", dummy(faker = "Word()"))]
     pub cleverreach_salutation: Option<String>,
     pub activate_captcha: bool,
-    pub captcha_type: Option<CaptchaType>,
     #[cfg_attr(feature = "seed", dummy(faker = "DirPath()"))]
     pub captcha_callback: Option<String>,
     #[cfg_attr(feature = "seed", dummy(faker = "DirPath()"))]
@@ -259,6 +259,43 @@ pub struct FileProperty {
     pub common: PropertyCommon,
     label_class: Option<String>,
     input_class: Option<String>,
+    pub multiple: Option<bool>,
+    /// same syntax as the html `accept` attribute, e.g. `.pdf,.zip,image/*`; also enforced server side
+    pub accept: Option<String>,
+    /// per file; falls back to [`FileProperty::DEFAULT_MAX_FILE_SIZE_MB`]
+    pub max_file_size_mb: Option<u32>,
+}
+
+impl FileProperty {
+    pub const DEFAULT_MAX_FILE_SIZE_MB: u32 = 20;
+
+    pub fn max_file_size_bytes(&self) -> u64 {
+        self.max_file_size_mb
+            .unwrap_or(Self::DEFAULT_MAX_FILE_SIZE_MB) as u64
+            * 1024
+            * 1024
+    }
+
+    pub fn accepts(&self, file_name: &str, mime_type: &str) -> bool {
+        let Some(accept) = self.accept.as_deref().filter(|a| !a.trim().is_empty()) else {
+            return true;
+        };
+        let file_name = file_name.to_lowercase();
+        let mime_type = mime_type.to_lowercase();
+        accept
+            .split(',')
+            .map(|token| token.trim().to_lowercase())
+            .filter(|token| !token.is_empty())
+            .any(|token| {
+                if token.starts_with('.') {
+                    file_name.ends_with(&token)
+                } else if let Some(prefix) = token.strip_suffix("/*") {
+                    mime_type.starts_with(&format!("{prefix}/"))
+                } else {
+                    mime_type == token
+                }
+            })
+    }
 }
 
 #[cfg_attr(feature = "seed", derive(Dummy))]
@@ -539,7 +576,12 @@ pub struct Settings {
     pub cleverreach_secret: Option<String>,
     pub h_captcha_secret: Option<String>,
     pub re_captcha_secret: Option<String>,
+    pub turnstile_secret: Option<String>,
+    /// the globally selected captcha provider; its sitekey/secret are used for all forms
+    pub captcha_provider: Option<CaptchaType>,
     pub captcha_sitekey: Option<String>,
+    /// host:port of clamd; when set, uploads are only accepted if clamd reports them clean
+    pub clamav_address: Option<String>,
 }
 
 impl Settings {
@@ -547,6 +589,7 @@ impl Settings {
         match captcha_type {
             CaptchaType::HCaptcha => self.h_captcha_secret.as_deref(),
             CaptchaType::ReCaptcha => self.re_captcha_secret.as_deref(),
+            CaptchaType::Turnstile => self.turnstile_secret.as_deref(),
         }
     }
 }
@@ -558,6 +601,34 @@ pub struct SubmissionFile {
     pub name: Option<String>,
     pub submission_id: Uuid,
     pub mime_type: String,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    fn file_property(accept: Option<&str>) -> FileProperty {
+        serde_json::from_value(serde_json::json!({
+            "hint": {}, "label": {}, "default_value": null, "class": "", "name": "f",
+            "required": false, "color": "neutral", "label_class": null, "input_class": null,
+            "multiple": null, "accept": accept, "max_file_size_mb": null,
+        }))
+        .unwrap()
+    }
+
+    #[test]
+    fn accept_matches_extensions_and_mime_types() {
+        let prop = file_property(Some(".pdf, .ZIP, image/*, text/plain"));
+        assert!(prop.accepts("Plan.PDF", "application/octet-stream"));
+        assert!(prop.accepts("model.zip", "application/zip"));
+        assert!(prop.accepts("photo", "image/png"));
+        assert!(prop.accepts("notes", "text/plain"));
+        assert!(!prop.accepts("evil.exe", "application/x-msdownload"));
+        assert!(!prop.accepts("pdf", "application/pdf"));
+        assert!(file_property(None).accepts("anything.exe", "x/y"));
+        assert!(file_property(Some(" ")).accepts("anything.exe", "x/y"));
+        assert_eq!(file_property(None).max_file_size_bytes(), 20 * 1024 * 1024);
+    }
 }
 
 #[derive(Debug, Clone, FromRow)]

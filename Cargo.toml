@@ -1,6 +1,6 @@
 [package]
 name = "form-plugin"
-version = "3.6.13"
+version = "3.6.14"
 edition = "2024"
 
 [workspace]
@@ -37,7 +37,6 @@ ts-rs = { version = "11", features = [
     "uuid-impl",
 ] }
 uuid = { version = "1", features = ["v4", "serde"] }
-urlencoding = "2"
 
 fake = { version = "4", features = [
     "derive",

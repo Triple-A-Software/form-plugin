@@ -52,10 +52,7 @@ pub async fn route_download_files<'src>(
             .header("Content-Type", files[0].mime_type.as_str())
             .header(
                 "Content-Disposition",
-                format!(
-                    "attachment; filename=\"{}\"",
-                    files[0].name.as_deref().unwrap_or("file")
-                ),
+                content_disposition(files[0].name.as_deref().unwrap_or("file")),
             )
             .body(Body::from_stream(ReaderStream::new(file)))
             ?)
@@ -84,6 +81,44 @@ pub async fn route_download_files<'src>(
             )
             .body(Body::from_stream(ReaderStream::new(zip_file)))
             ?)
+    }
+}
+
+/// Uploaded file names come from visitors: keep an ascii fallback (header values must be visible
+/// ascii) and pass the real name as RFC 5987 `filename*`.
+fn content_disposition(name: &str) -> String {
+    let fallback: String = name
+        .chars()
+        .map(|c| match c {
+            '"' | '\\' => '_',
+            c if c.is_ascii_graphic() || c == ' ' => c,
+            _ => '_',
+        })
+        .collect();
+    let encoded: String = name
+        .bytes()
+        .map(|b| match b {
+            b'A'..=b'Z' | b'a'..=b'z' | b'0'..=b'9' | b'.' | b'-' | b'_' | b'~' => {
+                (b as char).to_string()
+            }
+            b => format!("%{b:02X}"),
+        })
+        .collect();
+    format!("attachment; filename=\"{fallback}\"; filename*=UTF-8''{encoded}")
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn content_disposition_is_a_valid_header_for_any_name() {
+        let header = content_disposition("Zeichnung \"ä\".zip");
+        assert_eq!(
+            header,
+            "attachment; filename=\"Zeichnung ___.zip\"; filename*=UTF-8''Zeichnung%20%22%C3%A4%22.zip"
+        );
+        assert!(HeaderValue::from_str(&header).is_ok());
     }
 }
 

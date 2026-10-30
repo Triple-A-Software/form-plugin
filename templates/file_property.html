@@ -14,5 +14,7 @@
         {% if property.default_value %}
             value="{{property.default_value}}"
         {%endif%}
+        {% if property.multiple %} multiple {%endif%}
+        {% if property.accept %} accept="{{ property.accept }}" {%endif%}
         {% if property.required %} required {%endif%} />
 </div>

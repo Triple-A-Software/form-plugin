@@ -21,7 +21,7 @@ captchaClass: string,
  */
 sitekey: string, callback: string | undefined, expiredCallback: string | undefined, captchaType: CaptchaType, };
 
-export type CaptchaType = "h-captcha" | "re-captcha";
+export type CaptchaType = "h-captcha" | "re-captcha" | "turnstile";
 
 export type CheckboxProperty = { label_class: string | undefined, input_class: string | undefined, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | undefined, class: string, name: string, required: boolean, color: TailwindColor, };
 
@@ -47,9 +47,17 @@ content: string, };
 
 export type ExportSubmissionsQuery = { form_id: number | undefined, start_date: string | undefined, end_date: string | undefined, };
 
-export type FileProperty = { label_class: string | undefined, input_class: string | undefined, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | undefined, class: string, name: string, required: boolean, color: TailwindColor, };
+export type FileProperty = { label_class: string | undefined, input_class: string | undefined, multiple: boolean | undefined, 
+/**
+ * same syntax as the html `accept` attribute, e.g. `.pdf,.zip,image/*`; also enforced server side
+ */
+accept: string | undefined, 
+/**
+ * per file; falls back to [`FileProperty::DEFAULT_MAX_FILE_SIZE_MB`]
+ */
+max_file_size_mb: number | undefined, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | undefined, class: string, name: string, required: boolean, color: TailwindColor, };
 
-export type Form = { id: number, name: string, send_confirmation_email: boolean, confirmation_email_id: number | undefined, confirmation_email_recipient_field_name: string | undefined, send_submission_as_email_enabled: boolean, send_submission_as_email: string | undefined, submissions_email_id: number | undefined, activate_cleverreach: boolean, cleverreach_condition: CleverreachFormCondition, cleverreach_group_id: string | undefined, cleverreach_email_field_name: string | undefined, cleverreach_firstname_field_name: string | undefined, cleverreach_lastname_field_name: string | undefined, cleverreach_salutation: string | undefined, activate_captcha: boolean, captcha_type: CaptchaType | undefined, captcha_callback: string | undefined, captcha_expired_callback: string | undefined, props: Array<Property>, additional_html: string, };
+export type Form = { id: number, name: string, send_confirmation_email: boolean, confirmation_email_id: number | undefined, confirmation_email_recipient_field_name: string | undefined, send_submission_as_email_enabled: boolean, send_submission_as_email: string | undefined, submissions_email_id: number | undefined, email_attach_files: boolean, activate_cleverreach: boolean, cleverreach_condition: CleverreachFormCondition, cleverreach_group_id: string | undefined, cleverreach_email_field_name: string | undefined, cleverreach_firstname_field_name: string | undefined, cleverreach_lastname_field_name: string | undefined, cleverreach_salutation: string | undefined, activate_captcha: boolean, captcha_callback: string | undefined, captcha_expired_callback: string | undefined, props: Array<Property>, additional_html: string, };
 
 export type ListSubmissionsQuery = { form_id: number | undefined, page: number, items_per_page: number, };
 
@@ -71,7 +79,15 @@ export type SelectProperty = { multiple: boolean | undefined, data_type: SelectD
 
 export type SendEmailToSubmissionBody = { email_id: number, submission_id: string, email_field_name: string | undefined, };
 
-export type Settings = { cleverreachClientId: string | undefined, cleverreachSecret: string | undefined, hCaptchaSecret: string | undefined, reCaptchaSecret: string | undefined, captchaSitekey: string | undefined, };
+export type Settings = { cleverreachClientId: string | undefined, cleverreachSecret: string | undefined, hCaptchaSecret: string | undefined, reCaptchaSecret: string | undefined, turnstileSecret: string | undefined, 
+/**
+ * the globally selected captcha provider; its sitekey/secret are used for all forms
+ */
+captchaProvider: CaptchaType | undefined, captchaSitekey: string | undefined, 
+/**
+ * host:port of clamd; when set, uploads are only accepted if clamd reports them clean
+ */
+clamavAddress: string | undefined, };
 
 export type StatusResponse = { success: boolean, };
 
