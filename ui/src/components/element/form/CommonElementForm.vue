@@ -1,12 +1,22 @@
 <script setup lang="ts">
 import LocalizedTextInput from "@/components/input/LocalizedTextInput.vue";
 import type { PropertyCommon, TailwindColor } from "../../../../../bindings";
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
+import { slugify } from "@/utils";
 import { useI18n } from "vue-i18n";
 
 const model = defineModel<PropertyCommon>({ required: true });
 
 const { t } = useI18n();
+
+// suggest a name from the label for new fields, until the user types one themselves
+const autoName = ref(!model.value.name);
+watch(
+    () => Object.values(model.value.label).find(Boolean),
+    (label) => {
+        if (autoName.value && label) model.value.name = slugify(label);
+    },
+);
 
 type ColorOption = { label: string; value: TailwindColor };
 const colorOptions = computed<ColorOption[]>(
@@ -24,7 +34,7 @@ const colorOptions = computed<ColorOption[]>(
             { label: t("color.sky"), value: "sky" },
             { label: t("color.blue"), value: "blue" },
             { label: t("color.indigo"), value: "indigo" },
-            { label: t("color.violett"), value: "violet" },
+            { label: t("color.violet"), value: "violet" },
             { label: t("color.purple"), value: "purple" },
             { label: t("color.fuchsia"), value: "fuchsia" },
             { label: t("color.pink"), value: "pink" },
@@ -48,8 +58,8 @@ const colorOptions = computed<ColorOption[]>(
     <UFormField :label="$t('field.label.class')">
         <UInput v-model="model.class" class="w-full" />
     </UFormField>
-    <UFormField :label="$t('field.label.name')" required>
-        <UInput v-model="model.name" class="w-full" />
+    <UFormField :label="$t('field.label.name')" required :help="$t('hint.fieldName', { name: model.name || 'name' })">
+        <UInput v-model="model.name" class="w-full font-mono" @update:model-value="autoName = false" />
     </UFormField>
     <UFormField :label="$t('field.label.required')">
         <UCheckbox v-model="model.required" class="w-full" />

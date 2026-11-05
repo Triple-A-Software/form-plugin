@@ -1,10 +1,11 @@
 use axum::{Json, extract::State};
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use ts_rs::TS;
 
 use crate::{
     AppState, database,
-    model::{Email, StatusResponse},
+    model::{Email, Form, StatusResponse},
+    render_email,
     utils::AppResult,
 };
 
@@ -57,4 +58,47 @@ pub async fn route_delete_email<'src>(
         .execute(&state.db)
         .await?;
     Ok(Json(StatusResponse::success()))
+}
+
+#[derive(Deserialize, TS)]
+#[ts(export, export_to = "index.ts")]
+pub struct PreviewEmailBody {
+    content: String,
+    /// sample values, the editor fills in the field labels
+    #[ts(type = "Record<string, string>")]
+    submission: serde_json::Value,
+    form_id: Option<i32>,
+}
+#[derive(Serialize, TS)]
+#[ts(export, export_to = "index.ts")]
+pub struct PreviewEmailResponse {
+    html: Option<String>,
+    /// template errors, which would otherwise only show up in the log when the email fails to send
+    error: Option<String>,
+}
+pub async fn route_preview_email<'src>(
+    State(state): State<AppState<'src>>,
+    Json(body): Json<PreviewEmailBody>,
+) -> AppResult<Json<PreviewEmailResponse>> {
+    let form: Option<Form> = match body.form_id {
+        Some(id) => {
+            sqlx::query_as(r#"select * from form where id::int = $1"#)
+                .bind(id)
+                .fetch_optional(&state.db)
+                .await?
+        }
+        None => None,
+    };
+    Ok(Json(
+        match render_email(&body.content, form.as_ref(), &body.submission) {
+            Ok(html) => PreviewEmailResponse {
+                html: Some(html),
+                error: None,
+            },
+            Err(e) => PreviewEmailResponse {
+                html: None,
+                error: Some(e.to_string()),
+            },
+        },
+    ))
 }

@@ -1,14 +1,74 @@
 import type en from "./en";
 
 export default {
+    empty: {
+        forms: "Noch keine Formulare. Erstelle dein erstes Formular, um Einsendungen zu sammeln.",
+        emails: "Noch keine E-Mail-Vorlagen. Erstelle eine, um dich zu benachrichtigen oder Einsendungen zu bestätigen.",
+        submissions: "Keine Einsendungen gefunden.",
+    },
+    copyOf: "{name} (Kopie)",
+    badge: {
+        new: "Neu",
+    },
+    checklist: {
+        title: "Einrichtung abschließen",
+        progress: "{done} von {total} erledigt",
+        go: "Einrichten",
+        createForm: "Erstelle dein erstes Formular",
+        createEmail: "Erstelle eine E-Mail-Vorlage für Benachrichtigungen oder Bestätigungen",
+        notify: "Erhalte eine E-Mail bei neuen Einsendungen",
+        captcha: "Richte einen Captcha-Anbieter gegen Spam ein",
+        virusScan: "Richte den Virenscan ein, ein Formular erlaubt Datei-Uploads",
+        cleverreach: "Trage die Cleverreach-Zugangsdaten ein, ein Formular nutzt Cleverreach",
+    },
+    tab: {
+        fields: "Felder",
+        notifications: "Benachrichtigungen",
+        integrations: "Integrationen",
+        advanced: "Erweitert",
+    },
     alert: {
+        testRequestFailed: "Der Test konnte nicht ausgeführt werden",
+        connectionOk: "Verbindung funktioniert",
+        templateError: "Die Vorlage enthält einen Fehler, diese E-Mail könnte nicht versendet werden",
+        formHasSubmissions: "Dieses Formular hat 1 Einsendung. Lösche oder exportiere sie zuerst, sonst ginge sie verloren. | Dieses Formular hat {count} Einsendungen. Lösche oder exportiere sie zuerst, sonst gingen sie verloren.",
+        emailInUse: "Diese E-Mail wird noch von {forms} verwendet. Entferne sie zuerst aus diesen Formularen.",
+        noEmails: {
+            title: "Noch keine E-Mail-Vorlagen",
+            description: "Erstelle zuerst eine E-Mail-Vorlage, dann kannst du sie bei jeder Einsendung verschicken",
+        },
+        missingCleverreachSettings: {
+            title: "Fehlende Cleverreach Einstellungen",
+            description: "Trage die Cleverreach Client ID und das Secret in den Einstellungen ein, sonst werden keine Kontakte angelegt",
+        },
         missingCaptchaSettings: {
             title: "Fehlende Captcha Einstellungen",
             description:
                 "Wenn du ein Captcha verwenden möchtest, musst du das entsprechende Captcha Secret und den Captcha Sitekey in den Einstellungen konfigurieren",
         },
     },
+    validation: {
+        captchaMissing: "Das Captcha ist aktiviert, aber das Formular hat kein Captcha-Feld, daher würde jede Einsendung abgelehnt",
+        captchaUnchecked: "Das Formular zeigt ein Captcha, es wird aber nicht geprüft, da das Captcha deaktiviert ist",
+        noRecipient: "Diese Einsendung hat in diesem Feld keine E-Mail-Adresse",
+        title: "Bitte behebe diese Probleme vor dem Speichern",
+        count: "1 Problem ist unten markiert | {count} Probleme sind unten markiert",
+        required: "Dieses Feld ist erforderlich",
+        fieldName: "Dieses Feld hat keinen Namen",
+        duplicateName: "Der Name \"{name}\" wird von mehreren Feldern verwendet",
+        unknownField: "In diesem Formular gibt es kein Feld \"{name}\"",
+        invalidEmail: "Das ist keine gültige E-Mail-Adresse",
+        multipleCaptchas: "Ein Formular kann nur ein Captcha enthalten",
+    },
     hint: {
+        fieldName: "Technischer Name, in E-Mails nutzbar als {'{{'} submission.{name} {'}}'} und im Export",
+        unsavedChanges: "Ungespeicherte Änderungen",
+        sendConfirmationEmail: "Sende eine E-Mail an die Person, die das Formular ausgefüllt hat",
+        sendSubmissionAsEmailSwitch: "Erhalte bei jeder neuen Einsendung eine E-Mail",
+        activateCaptcha: "Fügt dem Formular ein Captcha hinzu und lehnt Einsendungen ab, die es nicht lösen",
+        captchaCallback: "Name einer globalen JavaScript-Funktion, die aufgerufen wird, wenn das Captcha gelöst wurde (optional)",
+        activateCleverreach: "Füge Absender als Kontakte zu einer Cleverreach-Gruppe hinzu, z. B. für Newsletter-Anmeldungen",
+        sendEmailRecipient: "Die E-Mail wird an {recipient} gesendet",
         preview:
             "Das ist nur eine grobe Vorschau, das eingebundene Formular auf deiner Seite wird wahrscheinlich etwas unterschiedlich aussehen.",
         cleverreachClientId: "Die Client ID für deinen Cleverreach acccount",
@@ -45,10 +105,34 @@ export default {
         saveAndClose: "Speichern und Schließen",
         no: "Nein",
         yes: "Ja",
+        clear: "Leeren",
+        edit: "Bearbeiten",
+        duplicate: "Duplizieren",
+        done: "Fertig",
+        keepEditing: "Weiter bearbeiten",
+        discard: "Änderungen verwerfen",
+        selectAll: "Alle auswählen",
+        select: "Auswählen",
+        showDetails: "Details anzeigen",
+        deleteSelected: "1 Einsendung löschen | {count} Einsendungen löschen",
+        downloadFiles: "1 Datei herunterladen | {count} Dateien herunterladen",
+        testConnection: "Verbindung testen",
+        show: "Anzeigen",
+        hide: "Verbergen",
+        cancel: "Abbrechen",
+        delete: "Löschen",
         sendEmail: "E-mail senden",
         exportSubmissions: "Einsendungen exportieren",
     },
     modal: {
+        deleteSelected: {
+            title: "1 Einsendung löschen | {count} Einsendungen löschen",
+            description: "Bist du sicher? Die Einsendung und ihre hochgeladenen Dateien werden gelöscht. Das kann nicht rückgängig gemacht werden. | Bist du sicher? {count} Einsendungen und ihre hochgeladenen Dateien werden gelöscht. Das kann nicht rückgängig gemacht werden.",
+        },
+        discard: {
+            title: "Ungespeicherte Änderungen verwerfen?",
+            description: "Deine Änderungen seit dem letzten Speichern gehen verloren.",
+        },
         edit: {
             field: "Feld bearbeiten: {type}",
             form: "Formular bearbeiten",
@@ -73,9 +157,11 @@ export default {
     deleteName: {
         form: "Formular",
         email: "E-mail",
+        submission: "Einsendung",
     },
     field: {
         label: {
+            insertVariable: "Wert aus der Einsendung einfügen",
             additionalHtml: "Zusätzliches HTML",
             formbuilder: "Form-builder",
             type: "Typ",
@@ -140,6 +226,9 @@ export default {
             endDate: "End Datum",
             noDate: "Kein Datum",
             today: "Heute",
+            tomorrow: "Morgen",
+            oneWeekFromNow: "In einer Woche",
+            oneMonthFromNow: "In einem Monat",
             yesterday: "Gestern",
             oneWeekAgo: "Vor einer Woche",
             oneMonthAgo: "Vor einem Monat",
@@ -189,6 +278,11 @@ export default {
             },
         },
         placeholder: {
+            selectCaptchaProvider: "Kein Captcha",
+            searchForms: "Formulare durchsuchen",
+            searchSubmissions: "Einsendungen durchsuchen",
+            selectField: "Feld auswählen",
+            missingField: "Dieses Feld gibt es im Formular nicht mehr",
             confirmationEmail: "Bestätigungs-Email auswählen",
             selectEmail: "E-mail auswählen",
             filterByForm: "Nach Formular filtern",
@@ -201,6 +295,8 @@ export default {
         },
     },
     builder: {
+        empty: "Dieses Formular hat noch keine Felder. Füge unten eines hinzu.",
+        noLabel: "kein Label",
         item: {
             label: {
                 text: "Textfeld",
@@ -223,6 +319,9 @@ export default {
     pages: {
         home: {
             title: "Home",
+            totalSubmissions: "Einsendungen insgesamt",
+            lastWeek: "Einsendungen der letzten 7 Tage",
+            recentSubmissions: "Neueste Einsendungen",
         },
         forms: {
             title: "Formulare",
@@ -247,6 +346,13 @@ export default {
         },
     },
     table_columns: {
+        summary: "Zusammenfassung",
+        fields: "Felder",
+        submissions: "Einsendungen",
+        lastSubmission: "Letzte Einsendung",
+        features: "Funktionen",
+        usedBy: "Verwendet von",
+        files: "Dateien",
         name: "Name",
         subject: "Betreff",
         form: "Formular",
@@ -321,6 +427,10 @@ export default {
             },
         },
         "/api/submissions": {
+            DELETE: {
+                success: "Einsendung gelöscht",
+                error: "Einsendung konnte nicht gelöscht werden",
+            },
             GET: {
                 error: "Einsendungen konnten nicht geladen werden",
             },

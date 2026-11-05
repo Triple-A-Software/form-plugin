@@ -18,14 +18,14 @@ const model = defineModel<CalendarDate | undefined>({ required: true });
 
         <template #content>
             <div class="border-r border-muted p-2 flex flex-col gap-2">
-                <UButton color="neutral" variant="ghost" icon="i-tabler-calendar-off" @click="model = undefined">
+                <UButton color="neutral" variant="ghost" icon="i-tabler-calendar-off" @click="model = undefined;">
                     {{ $t("field.label.noDate") }}
                 </UButton>
                 <UButton
                     color="neutral"
                     variant="ghost"
                     icon="i-tabler-calendar"
-                    @click="model = new CalendarDate(dayjs().year(), dayjs().month() + 1, dayjs().date())"
+                    @click="model = new CalendarDate(dayjs().year(), dayjs().month() + 1, dayjs().date());"
                 >
                     {{ $t("field.label.today") }}
                 </UButton>
@@ -39,7 +39,7 @@ const model = defineModel<CalendarDate | undefined>({ required: true });
                             dayjs().subtract(1, 'day').year(),
                             dayjs().subtract(1, 'day').month() + 1,
                             dayjs().subtract(1, 'day').date(),
-                        )
+                        );
                     "
                 >
                     {{ $t("field.label.yesterday") }}
@@ -54,7 +54,7 @@ const model = defineModel<CalendarDate | undefined>({ required: true });
                             dayjs().subtract(1, 'week').year(),
                             dayjs().subtract(1, 'week').month() + 1,
                             dayjs().subtract(1, 'week').date(),
-                        )
+                        );
                     "
                 >
                     {{ $t("field.label.oneWeekAgo") }}
@@ -69,7 +69,7 @@ const model = defineModel<CalendarDate | undefined>({ required: true });
                             dayjs().subtract(1, 'month').year(),
                             dayjs().subtract(1, 'month').month() + 1,
                             dayjs().subtract(1, 'month').date(),
-                        )
+                        );
                     "
                 >
                     {{ $t("field.label.oneMonthAgo") }}
@@ -84,7 +84,7 @@ const model = defineModel<CalendarDate | undefined>({ required: true });
                             dayjs().add(1, 'day').year(),
                             dayjs().add(1, 'day').month() + 1,
                             dayjs().add(1, 'day').date(),
-                        )
+                        );
                     "
                 >
                     {{ $t("field.label.tomorrow") }}
@@ -99,7 +99,7 @@ const model = defineModel<CalendarDate | undefined>({ required: true });
                             dayjs().add(1, 'week').year(),
                             dayjs().add(1, 'week').month() + 1,
                             dayjs().add(1, 'week').date(),
-                        )
+                        );
                     "
                 >
                     {{ $t("field.label.oneWeekFromNow") }}
@@ -114,7 +114,7 @@ const model = defineModel<CalendarDate | undefined>({ required: true });
                             dayjs().add(1, 'month').year(),
                             dayjs().add(1, 'month').month() + 1,
                             dayjs().add(1, 'month').date(),
-                        )
+                        );
                     "
                 >
                     {{ $t("field.label.oneMonthFromNow") }}

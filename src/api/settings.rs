@@ -1,7 +1,10 @@
 use axum::{Json, extract::State};
+use serde::{Deserialize, Serialize};
+use ts_rs::TS;
 
 use crate::{
-    AppState,
+    AppState, clamav,
+    cleverreach::Cleverreach,
     model::{Settings, StatusResponse},
     utils::AppResult,
 };
@@ -46,4 +49,38 @@ pub async fn route_update_settings<'src>(
     let mut cleverreach = state.cleverreach.write().await;
     cleverreach.set_client_credentials(body.cleverreach_client_id, body.cleverreach_secret);
     Ok(Json(StatusResponse::success()))
+}
+
+/// tests the values entered in the settings form, before they are saved
+#[derive(Deserialize, TS)]
+#[ts(export, export_to = "index.ts")]
+#[serde(tag = "type")]
+pub enum TestConnectionBody {
+    Clamav { address: String },
+    Cleverreach { client_id: String, client_secret: String },
+}
+#[derive(Serialize, TS)]
+#[ts(export, export_to = "index.ts")]
+pub struct TestConnectionResponse {
+    ok: bool,
+    error: Option<String>,
+}
+pub async fn route_test_connection(
+    Json(body): Json<TestConnectionBody>,
+) -> AppResult<Json<TestConnectionResponse>> {
+    let result = match body {
+        TestConnectionBody::Clamav { address } => {
+            clamav::ping(address.trim()).await.map_err(|e| e.to_string())
+        }
+        TestConnectionBody::Cleverreach {
+            client_id,
+            client_secret,
+        } => Cleverreach::test_credentials(client_id.trim(), client_secret.trim())
+            .await
+            .map_err(|e| e.to_string()),
+    };
+    Ok(Json(TestConnectionResponse {
+        ok: result.is_ok(),
+        error: result.err(),
+    }))
 }

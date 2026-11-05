@@ -1,14 +1,74 @@
 import type { API } from "@/utils/types/api";
 
 export default {
+    empty: {
+        forms: "No forms yet. Create your first form to collect submissions.",
+        emails: "No email templates yet. Create one to notify yourself or confirm submissions.",
+        submissions: "No submissions found.",
+    },
+    copyOf: "{name} (copy)",
+    badge: {
+        new: "New",
+    },
+    checklist: {
+        title: "Finish setting up",
+        progress: "{done} of {total} done",
+        go: "Set up",
+        createForm: "Create your first form",
+        createEmail: "Create an email template for notifications or confirmations",
+        notify: "Get an email for new submissions",
+        captcha: "Set up a captcha provider against spam",
+        virusScan: "Configure virus scanning, a form accepts file uploads",
+        cleverreach: "Enter the Cleverreach credentials, a form uses Cleverreach",
+    },
+    tab: {
+        fields: "Fields",
+        notifications: "Notifications",
+        integrations: "Integrations",
+        advanced: "Advanced",
+    },
     alert: {
+        testRequestFailed: "The test could not be run",
+        connectionOk: "Connection works",
+        templateError: "The template has an error, this email could not be sent",
+        formHasSubmissions: "This form has 1 submission. Delete or export it first, it would be lost otherwise. | This form has {count} submissions. Delete or export them first, they would be lost otherwise.",
+        emailInUse: "This email is still used by {forms}. Remove it from these forms first.",
+        noEmails: {
+            title: "No email templates yet",
+            description: "Create an email template first, then you can send it for every submission",
+        },
+        missingCleverreachSettings: {
+            title: "Missing Cleverreach settings",
+            description: "Enter the Cleverreach client ID and secret in the settings, otherwise no contacts are added",
+        },
         missingCaptchaSettings: {
             title: "Missing captcha settings",
             description:
                 "If you want to use a captcha, you need to configure the corresponding captcha secret and the captcha sitekey in the settings",
         },
     },
+    validation: {
+        captchaMissing: "The captcha is turned on but the form has no captcha field, so every submission would be rejected",
+        captchaUnchecked: "The form shows a captcha, but it is not verified because the captcha is turned off",
+        noRecipient: "This submission has no email address in this field",
+        title: "Please fix these problems before saving",
+        count: "1 problem is highlighted below | {count} problems are highlighted below",
+        required: "This field is required",
+        fieldName: "This field has no name",
+        duplicateName: "The name \"{name}\" is used by more than one field",
+        unknownField: "There is no field named \"{name}\" in this form",
+        invalidEmail: "This is not a valid email address",
+        multipleCaptchas: "A form can only contain one captcha",
+    },
     hint: {
+        fieldName: "Technical name, used in emails as {'{{'} submission.{name} {'}}'} and in exports",
+        unsavedChanges: "Unsaved changes",
+        sendConfirmationEmail: "Send an email to the person who filled out the form",
+        sendSubmissionAsEmailSwitch: "Get an email for every new submission",
+        activateCaptcha: "Adds a captcha to the form and rejects submissions that don't solve it",
+        captchaCallback: "Name of a global JavaScript function that is called when the captcha is solved (optional)",
+        activateCleverreach: "Add submitters as contacts to a Cleverreach group, e.g. for newsletter sign-ups",
+        sendEmailRecipient: "The email will be sent to {recipient}",
         preview: "This is just a rough preview, it is not exactly how the form will be rendered on your page.",
         cleverreachClientId: "This is the client id for your cleverreach account",
         cleverreachSecret: "This secret is used to authenticate api calls to cleverreach",
@@ -44,10 +104,34 @@ export default {
         saveAndClose: "Save and close",
         no: "No",
         yes: "Yes",
+        clear: "Clear",
+        edit: "Edit",
+        duplicate: "Duplicate",
+        done: "Done",
+        keepEditing: "Keep editing",
+        discard: "Discard changes",
+        selectAll: "Select all",
+        select: "Select",
+        showDetails: "Show details",
+        deleteSelected: "Delete 1 submission | Delete {count} submissions",
+        downloadFiles: "Download 1 file | Download {count} files",
+        testConnection: "Test connection",
+        show: "Show",
+        hide: "Hide",
+        cancel: "Cancel",
+        delete: "Delete",
         sendEmail: "Send email",
         exportSubmissions: "Export submissions",
     },
     modal: {
+        deleteSelected: {
+            title: "Delete 1 submission | Delete {count} submissions",
+            description: "Are you sure? The submission and its uploaded files will be deleted. This cannot be undone. | Are you sure? {count} submissions and their uploaded files will be deleted. This cannot be undone.",
+        },
+        discard: {
+            title: "Discard unsaved changes?",
+            description: "Your changes since the last save will be lost.",
+        },
         edit: {
             field: "Editing field: {type}",
             form: "Editing form",
@@ -71,9 +155,11 @@ export default {
     deleteName: {
         form: "form",
         email: "email",
+        submission: "submission",
     },
     field: {
         label: {
+            insertVariable: "Insert a value from the submission",
             additionalHtml: "Additional HTML",
             formbuilder: "Form-builder",
             type: "Type",
@@ -138,6 +224,9 @@ export default {
             endDate: "End date",
             noDate: "No date",
             today: "Today",
+            tomorrow: "Tomorrow",
+            oneWeekFromNow: "In one week",
+            oneMonthFromNow: "In one month",
             yesterday: "Yesterday",
             oneWeekAgo: "One week ago",
             oneMonthAgo: "One month ago",
@@ -187,6 +276,11 @@ export default {
             },
         },
         placeholder: {
+            selectCaptchaProvider: "No captcha",
+            searchForms: "Search forms",
+            searchSubmissions: "Search submissions",
+            selectField: "Select a field",
+            missingField: "This field doesn't exist in the form anymore",
             confirmationEmail: "Select confirmation email",
             selectEmail: "Select an email",
             filterByForm: "Filter by form",
@@ -199,6 +293,8 @@ export default {
         },
     },
     builder: {
+        empty: "This form has no fields yet. Add one below.",
+        noLabel: "no label",
         item: {
             label: {
                 text: "Textfield",
@@ -221,6 +317,9 @@ export default {
     pages: {
         home: {
             title: "Home",
+            totalSubmissions: "Submissions in total",
+            lastWeek: "Submissions in the last 7 days",
+            recentSubmissions: "Latest submissions",
         },
         forms: {
             title: "Forms",
@@ -244,6 +343,13 @@ export default {
         },
     },
     table_columns: {
+        summary: "Summary",
+        fields: "Fields",
+        submissions: "Submissions",
+        lastSubmission: "Last submission",
+        features: "Features",
+        usedBy: "Used by",
+        files: "Files",
         name: "Name",
         subject: "Subject",
         form: "Form",
@@ -318,6 +424,10 @@ export default {
             },
         },
         "/api/submissions": {
+            DELETE: {
+                success: "Submission deleted",
+                error: "Failed to delete submission",
+            },
             GET: {
                 error: "Failed to fetch submissions",
             },

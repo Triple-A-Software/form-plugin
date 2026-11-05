@@ -5,6 +5,7 @@ import { computed, ref } from "vue";
 import { useI18n } from "vue-i18n";
 import type { Submission } from "../../../../bindings";
 import { useForms } from "@/composables/useForms";
+import { formatDateTime, submissionEntries } from "@/utils";
 
 const { t, locale } = useI18n();
 
@@ -19,15 +20,7 @@ const columns = computed<TableColumn<Submission>[]>(() => [
     {
         accessorKey: "timestamp",
         header: t("table_columns.timestamp"),
-        cell: ({ row }) =>
-            new Date(row.getValue("timestamp")).toLocaleString(locale.value, {
-                day: "numeric",
-                month: "short",
-                year: "numeric",
-                hour: "2-digit",
-                minute: "2-digit",
-                hour12: false,
-            }),
+        cell: ({ row }) => formatDateTime(row.getValue("timestamp"), locale.value),
     },
     {
         id: "form",
@@ -54,9 +47,20 @@ const forms = useForms();
 <template>
     <UTable :columns="columns" :data="submissions.data.value" v-model:expanded="expanded" :ui="{ td: 'whitespace-normal wrap-anywhere' }">
         <template #expanded="{ row }">
-            <div v-for="(value, key) in row.original.data">
-                <p class="pl-2 -indent-2 whitespace-normal wrap-anywhere"><span class="font-bold">{{ key }}:</span> {{ value }}</p>
-            </div>
+            <dl class="grid grid-cols-[max-content_1fr] gap-x-6 gap-y-1 px-2 text-sm">
+                <template
+                    v-for="entry in submissionEntries(
+                        row.original.data,
+                        forms.data.value?.find((f) => f.id === row.original.form_id),
+                        locale,
+                        { yes: $t('action.yes'), no: $t('action.no') },
+                    )"
+                    :key="entry.name"
+                >
+                    <dt class="font-medium">{{ entry.label }}</dt>
+                    <dd class="whitespace-pre-wrap wrap-anywhere">{{ entry.value }}</dd>
+                </template>
+            </dl>
         </template>
         <template #form-cell="{ row }">{{ forms.data.value?.find((f) => f.id === row.original.form_id)?.name }}</template>
         <template #expand-cell="{ row }">
@@ -74,11 +78,11 @@ const forms = useForms();
             <div class="flex flex-row gap-2 items-center">
                 <SendEmailModal :submission="row.original" />
                 <DeleteModal
-                    :name="$t('deleteName.email')"
+                    :name="$t('deleteName.submission')"
                     :id="row.original.id"
-                    @confirm="deleteMutation.mutate({ id: row.original.id })"
+                    @confirm="deleteMutation.mutate({ ids: [row.original.id] })"
                 >
-                    <UButton color="error" variant="ghost" icon="i-tabler-trash" />
+                    <UButton color="error" variant="ghost" icon="i-tabler-trash" :aria-label="$t('action.delete')" />
                 </DeleteModal>
             </div>
         </template>

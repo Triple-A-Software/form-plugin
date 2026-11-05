@@ -30,5 +30,7 @@
         "./typed-router.d.ts",
         "components.d.ts",
         "vite-env.d.ts"
-    ]
+    ],
+    // tests run with `bun test`, which provides its own types
+    "exclude": ["src/**/*.test.ts"]
 }

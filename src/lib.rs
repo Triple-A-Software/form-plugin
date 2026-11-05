@@ -54,6 +54,19 @@ pub async fn create_cms_db() -> PgPool {
     sqlx::PgPool::connect(&db_url).await.unwrap()
 }
 
+/// Renders an email template, shared by sending and the preview in the editor so both behave the same.
+pub fn render_email(
+    content: &str,
+    form: Option<&Form>,
+    submission: &Value,
+) -> Result<String, minijinja::Error> {
+    let mut environment = minijinja::Environment::new();
+    environment.add_template("email.html", content)?;
+    environment
+        .get_template("email.html")?
+        .render(context!(form => form, submission => submission))
+}
+
 pub async fn send_email(
     db: &mut PgConnection,
     id: i32,
@@ -67,14 +80,7 @@ pub async fn send_email(
         .fetch_one(db)
         .await
         .inspect_err(|e| tracing::error!("Failed to fetch email template (id={id}) for {to}: {e}"))?;
-    let context = context!(form => form, submission => body);
-    let mut environment = minijinja::Environment::new();
-    environment
-        .add_template("email.html", email.content.as_str())
-        .inspect_err(|e| tracing::error!("Failed to parse email template (id={id}) for {to}: {e}"))?;
-    let template = environment.get_template("email.html")
-        .inspect_err(|e| tracing::error!("Failed to get email template (id={id}) for {to}: {e}"))?;
-    let rendered = template.render(&context)
+    let rendered = render_email(&email.content, Some(form), body)
         .inspect_err(|e| tracing::error!("Failed to render email template (id={id}) for {to}: {e}"))?;
     email.send(to, rendered, attachments).await
         .inspect_err(|e| tracing::error!("Failed to send email to {to} (template id={id}): {e}"))?;
@@ -143,4 +149,27 @@ pub fn convert_to_csv(submissions: &[Submission]) -> AppResult<String> {
         }
     }
     Ok(String::from_utf8_lossy(&output).to_string())
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use serde_json::json;
+
+    #[test]
+    fn render_email_fills_in_and_escapes_submission_values() {
+        let rendered = render_email(
+            "<p>Hi {{ submission.name }}</p>",
+            None,
+            &json!({ "name": "<Max>" }),
+        )
+        .unwrap();
+        assert_eq!(rendered, "<p>Hi &lt;Max&gt;</p>");
+    }
+
+    #[test]
+    fn render_email_reports_syntax_errors() {
+        let error = render_email("{{ submission.name ", None, &json!({})).unwrap_err();
+        assert!(error.to_string().contains("syntax error"), "{error}");
+    }
 }

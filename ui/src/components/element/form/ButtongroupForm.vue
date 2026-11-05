@@ -17,7 +17,7 @@ const model = defineModel<PropertySelector<"buttongroup">>({
             <UButton
                 :variant="!model.default_value ? 'solid' : 'subtle'"
                 :color="!model.default_value ? 'primary' : 'neutral'"
-                @click="model.default_value = undefined"
+                @click="model.default_value = undefined;"
             >
                 {{ $t("field.option.default_value.nothing") }}
             </UButton>
@@ -25,7 +25,7 @@ const model = defineModel<PropertySelector<"buttongroup">>({
                 v-for="option in model.options"
                 :variant="model.default_value === option.value ? 'solid' : 'subtle'"
                 :color="model.default_value === option.value ? 'primary' : 'neutral'"
-                @click="model.default_value = option.value"
+                @click="model.default_value = option.value;"
             >
                 {{ option.label[locale] }}
             </UButton>

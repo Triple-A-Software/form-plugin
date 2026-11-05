@@ -2,12 +2,14 @@ use axum::{
     Json,
     extract::{Query, State},
 };
-use serde::Deserialize;
+use serde::{Deserialize, Serialize};
 use serde_json::json;
+use sqlx::prelude::FromRow;
 use ts_rs::TS;
 
 use crate::{
     AppState, database,
+    date::JavascriptDate,
     model::{CMSSettings, Form, Settings, StatusResponse},
     render::render_form,
     utils::AppResult,
@@ -132,4 +134,26 @@ pub async fn route_list_forms<'src>(
             .fetch_all(&state.db)
             .await?,
     ))
+}
+
+#[derive(Serialize, FromRow, TS)]
+#[ts(export, export_to = "index.ts")]
+pub struct FormStats {
+    form_id: i32,
+    submission_count: i32,
+    last_submission: JavascriptDate,
+}
+/// submission count and latest submission per form, forms without submissions are left out
+pub async fn route_form_stats<'src>(
+    State(state): State<AppState<'src>>,
+) -> AppResult<Json<Vec<FormStats>>> {
+    let stats = sqlx::query_as(
+        r#"
+        select form_id, count(*)::int as submission_count, max("timestamp") as last_submission
+        from submission group by form_id
+        "#,
+    )
+    .fetch_all(&state.db)
+    .await?;
+    Ok(Json(stats))
 }

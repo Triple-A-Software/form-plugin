@@ -43,6 +43,25 @@ async fn scan_file_inner(address: &str, path: &Path) -> AppResult<ScanResult> {
     parse_response(&String::from_utf8_lossy(&response))
 }
 
+/// Checks that clamd is reachable and answers, for the connection test in the settings.
+pub async fn ping(address: &str) -> AppResult<()> {
+    tokio::time::timeout(Duration::from_secs(5), async {
+        let mut stream = TcpStream::connect(address).await?;
+        stream.write_all(b"zPING\0").await?;
+        let mut response = Vec::new();
+        stream.read_to_end(&mut response).await?;
+        let response = String::from_utf8_lossy(&response);
+        match response.trim_end_matches(['\0', '\n']) {
+            "PONG" => Ok(()),
+            other => Err(AppError::Anyhow(anyhow::anyhow!(
+                "unexpected clamd response: {other}"
+            ))),
+        }
+    })
+    .await
+    .map_err(|_| AppError::Anyhow(anyhow::anyhow!("clamd did not answer within 5 seconds")))?
+}
+
 fn parse_response(response: &str) -> AppResult<ScanResult> {
     let response = response.trim_end_matches(['\0', '\n']).trim();
     let verdict = response.strip_prefix("stream:").map(str::trim);
@@ -75,5 +94,26 @@ mod tests {
         assert!(parse_response("INSTREAM size limit exceeded. ERROR\0").is_err());
         assert!(parse_response("stream: lstat() failed. ERROR\0").is_err());
         assert!(parse_response("").is_err());
+    }
+
+    async fn fake_clamd(answer: &'static [u8]) -> String {
+        let listener = tokio::net::TcpListener::bind("127.0.0.1:0").await.unwrap();
+        let address = listener.local_addr().unwrap().to_string();
+        tokio::spawn(async move {
+            let (mut socket, _) = listener.accept().await.unwrap();
+            let mut command = [0u8; 6];
+            socket.read_exact(&mut command).await.unwrap();
+            assert_eq!(&command, b"zPING\0");
+            socket.write_all(answer).await.unwrap();
+        });
+        address
+    }
+
+    #[tokio::test]
+    async fn ping_accepts_only_pong() {
+        assert!(ping(&fake_clamd(b"PONG\0").await).await.is_ok());
+        assert!(ping(&fake_clamd(b"UNKNOWN COMMAND\0").await).await.is_err());
+        // nothing listens on this port
+        assert!(ping("127.0.0.1:1").await.is_err());
     }
 }

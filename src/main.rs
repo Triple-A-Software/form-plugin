@@ -112,6 +112,8 @@ async fn main() {
                 .delete(route_delete_form),
         )
         .route("/api/forms/preview", post(route_preview_form))
+        .route("/api/forms/stats", get(route_form_stats))
+        .route("/api/emails/preview", post(route_preview_email))
         .route("/api/form-select/list", get(route_list_forms_for_select))
         .route(
             "/api/form-select/by-id",
@@ -134,6 +136,7 @@ async fn main() {
             "/api/settings",
             get(route_get_settings).put(route_update_settings),
         )
+        .route("/api/settings/test-connection", post(route_test_connection))
         .route(
             "/dashboard/submission-stats",
             get(dashboard_card_submission_stats),

@@ -120,6 +120,20 @@ mod tests {
         );
         assert!(HeaderValue::from_str(&header).is_ok());
     }
+
+    #[test]
+    fn search_pattern_escapes_wildcards() {
+        let query = |search: Option<&str>| ListSubmissionsQuery {
+            form_id: None,
+            search: search.map(str::to_string),
+            page: 0,
+            items_per_page: 10,
+        };
+        assert_eq!(query(None).search_pattern(), None);
+        assert_eq!(query(Some("  ")).search_pattern(), None);
+        assert_eq!(query(Some(" Max ")).search_pattern().as_deref(), Some("%Max%"));
+        assert_eq!(query(Some(r"50%_a\b")).search_pattern().as_deref(), Some(r"%50\%\_a\\b%"));
+    }
 }
 
 #[derive(Serialize, TS)]
@@ -234,66 +248,68 @@ pub async fn route_send_email_to_submission<'src>(
 #[ts(export, export_to = "index.ts")]
 pub struct ListSubmissionsQuery {
     form_id: Option<i32>,
+    /// case insensitive text search over all submitted values
+    search: Option<String>,
     page: i32,
     items_per_page: i32,
 }
+
+impl ListSubmissionsQuery {
+    /// the search as an `ilike` pattern, with the wildcards of the user input escaped
+    fn search_pattern(&self) -> Option<String> {
+        let search = self.search.as_deref()?.trim();
+        if search.is_empty() {
+            return None;
+        }
+        let escaped = search
+            .replace('\\', "\\\\")
+            .replace('%', "\\%")
+            .replace('_', "\\_");
+        Some(format!("%{escaped}%"))
+    }
+}
+
 pub async fn route_list_submissions<'src>(
     State(state): State<AppState<'src>>,
     Query(query): Query<ListSubmissionsQuery>,
 ) -> AppResult<Json<Vec<SubmissionApiResponse>>> {
-    if let Some(form_id) = query.form_id {
-        Ok(Json(
-            sqlx::query_as(
-                r#"
-                select submission.*, count(submission_file) as file_count from submission
-                left join submission_file on submission.id = submission_file.submission_id
-                where form_id = $1
-                group by submission.id, submission_file.id
-                order by timestamp desc limit $2 offset $3
-                "#,
-            )
-            .bind(form_id)
-            .bind(query.items_per_page)
-            .bind(query.page * query.items_per_page)
-            .fetch_all(&state.db)
-            .await?,
-        ))
-    } else {
-        Ok(Json(
-            sqlx::query_as(
-                r#"
-                select submission.*, count(submission_file) as file_count from submission
-                left join submission_file on submission.id = submission_file.submission_id
-                group by submission.id, submission_file.id
-                order by timestamp desc limit $1 offset $2
-                "#,
-            )
-            .bind(query.items_per_page)
-            .bind(query.page * query.items_per_page)
-            .fetch_all(&state.db)
-            .await?,
-        ))
-    }
+    Ok(Json(
+        sqlx::query_as(
+            r#"
+            select submission.*, count(submission_file.id) as file_count from submission
+            left join submission_file on submission.id = submission_file.submission_id
+            where ($1::int is null or form_id = $1)
+            and ($2::text is null or submission.data::text ilike $2)
+            group by submission.id
+            order by timestamp desc limit $3 offset $4
+            "#,
+        )
+        .bind(query.form_id)
+        .bind(query.search_pattern())
+        .bind(query.items_per_page)
+        .bind(query.page * query.items_per_page)
+        .fetch_all(&state.db)
+        .await?,
+    ))
 }
 
 pub async fn route_count_submissions<'src>(
     State(state): State<AppState<'src>>,
     Query(query): Query<ListSubmissionsQuery>,
 ) -> AppResult<Json<i64>> {
-    if let Some(form_id) = query.form_id {
-        Ok(Json(
-            sqlx::query_scalar(r#"select count(*) from submission where form_id = $1"#)
-                .bind(form_id)
-                .fetch_one(&state.db)
-                .await?,
-        ))
-    } else {
-        Ok(Json(
-            sqlx::query_scalar(r#"select count(*) from submission"#)
-                .fetch_one(&state.db)
-                .await?,
-        ))
-    }
+    Ok(Json(
+        sqlx::query_scalar(
+            r#"
+            select count(*) from submission
+            where ($1::int is null or form_id = $1)
+            and ($2::text is null or data::text ilike $2)
+            "#,
+        )
+        .bind(query.form_id)
+        .bind(query.search_pattern())
+        .fetch_one(&state.db)
+        .await?,
+    ))
 }
 
 #[derive(Deserialize, TS)]
@@ -338,15 +354,31 @@ pub async fn route_export_submissions<'src>(
 #[derive(Deserialize, TS)]
 #[ts(export, export_to = "index.ts")]
 pub struct DeleteSubmissionBody {
-    id: Uuid,
+    ids: Vec<Uuid>,
 }
 pub async fn route_delete_submission<'src>(
     State(state): State<AppState<'src>>,
     Json(body): Json<DeleteSubmissionBody>,
 ) -> AppResult<Json<StatusResponse>> {
-    sqlx::query(r#"delete from submission where id = $1"#)
-        .bind(body.id)
-        .execute(&state.db)
+    let mut tx = state.db.begin().await?;
+    let file_ids: Vec<Uuid> =
+        sqlx::query_scalar(r#"select id from submission_file where submission_id = any($1)"#)
+            .bind(&body.ids)
+            .fetch_all(&mut *tx)
+            .await?;
+    // the file rows are deleted by the cascade, the files on disk are removed below
+    sqlx::query(r#"delete from submission where id = any($1)"#)
+        .bind(&body.ids)
+        .execute(&mut *tx)
         .await?;
+    tx.commit().await?;
+    // uploads contain personal data, so they must not outlive their submission
+    for id in file_ids {
+        if let Err(e) = tokio::fs::remove_file(get_file_path(&id)).await
+            && e.kind() != std::io::ErrorKind::NotFound
+        {
+            tracing::error!("Failed to delete file {id} of a deleted submission: {e}");
+        }
+    }
     Ok(Json(StatusResponse::success()))
 }

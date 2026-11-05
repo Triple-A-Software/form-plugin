@@ -21,6 +21,11 @@ type FormsApi = CreateApi<{
             body: T.DeleteFormBody;
         };
     };
+    "/api/forms/stats": {
+        GET: {
+            response: Array<T.FormStats>;
+        };
+    };
     "/api/forms/preview": {
         POST: {
             response: {
@@ -47,6 +52,12 @@ type EmailsApi = CreateApi<{
         DELETE: {
             response: T.StatusResponse;
             body: T.DeleteEmailBody;
+        };
+    };
+    "/api/emails/preview": {
+        POST: {
+            response: T.PreviewEmailResponse;
+            body: T.PreviewEmailBody;
         };
     };
 }>;
@@ -94,6 +105,12 @@ type SettingsApi = CreateApi<{
         PUT: {
             body: T.Settings;
             response: T.StatusResponse;
+        };
+    };
+    "/api/settings/test-connection": {
+        POST: {
+            body: T.TestConnectionBody;
+            response: T.TestConnectionResponse;
         };
     };
 }>;

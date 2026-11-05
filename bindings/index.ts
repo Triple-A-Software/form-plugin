@@ -35,7 +35,7 @@ export type DeleteEmailBody = { id: number, };
 
 export type DeleteFormBody = { id: number, };
 
-export type DeleteSubmissionBody = { id: string, };
+export type DeleteSubmissionBody = { ids: Array<string>, };
 
 export type DownloadFilesQuery = { id: string, };
 
@@ -59,9 +59,27 @@ max_file_size_mb: number | undefined, hint: Record<string, string>, label: Recor
 
 export type Form = { id: number, name: string, send_confirmation_email: boolean, confirmation_email_id: number | undefined, confirmation_email_recipient_field_name: string | undefined, send_submission_as_email_enabled: boolean, send_submission_as_email: string | undefined, submissions_email_id: number | undefined, email_attach_files: boolean, activate_cleverreach: boolean, cleverreach_condition: CleverreachFormCondition, cleverreach_group_id: string | undefined, cleverreach_email_field_name: string | undefined, cleverreach_firstname_field_name: string | undefined, cleverreach_lastname_field_name: string | undefined, cleverreach_salutation: string | undefined, activate_captcha: boolean, captcha_callback: string | undefined, captcha_expired_callback: string | undefined, props: Array<Property>, additional_html: string, };
 
-export type ListSubmissionsQuery = { form_id: number | undefined, page: number, items_per_page: number, };
+export type FormStats = { form_id: number, submission_count: number, last_submission: string, };
+
+export type ListSubmissionsQuery = { form_id: number | undefined, 
+/**
+ * case insensitive text search over all submitted values
+ */
+search: string | undefined, page: number, items_per_page: number, };
 
 export type NumberProperty = { min: number | undefined, max: number | undefined, step: number | undefined, placeholder: Record<string, string>, label_class: string | undefined, input_class: string | undefined, hint: Record<string, string>, label: Record<string, string>, default_value: JsonValue | undefined, class: string, name: string, required: boolean, color: TailwindColor, };
+
+export type PreviewEmailBody = { content: string, 
+/**
+ * sample values, the editor fills in the field labels
+ */
+submission: Record<string, string>, form_id: number | undefined, };
+
+export type PreviewEmailResponse = { html: string | undefined, 
+/**
+ * template errors, which would otherwise only show up in the log when the email fails to send
+ */
+error: string | undefined, };
 
 export type Property = { "type": "textarea" } & TextareaProperty | { "type": "text" } & TextProperty | { "type": "checkbox" } & CheckboxProperty | { "type": "number" } & NumberProperty | { "type": "select" } & SelectProperty | { "type": "range" } & RangeProperty | { "type": "buttongroup" } & ButtongroupProperty | { "type": "button" } & ButtonProperty | { "type": "file" } & FileProperty | { "type": "date" } & DateProperty | { "type": "captcha" } & CaptchaProperty;
 
@@ -98,6 +116,13 @@ export type SubmissionApiResponse = { file_count: bigint, id: string, form_id: n
 export type SubmissionStats = { total: number, graph: Array<{ date: string } & Record<string, number>>, };
 
 export type TailwindColor = "red" | "orange" | "amber" | "yellow" | "lime" | "green" | "emerald" | "teal" | "cyan" | "sky" | "blue" | "indigo" | "violet" | "purple" | "fuchsia" | "pink" | "rose" | "slate" | "gray" | "zinc" | "neutral" | "stone";
+
+/**
+ * tests the values entered in the settings form, before they are saved
+ */
+export type TestConnectionBody = { "type": "Clamav", address: string, } | { "type": "Cleverreach", client_id: string, client_secret: string, };
+
+export type TestConnectionResponse = { ok: boolean, error: string | undefined, };
 
 export type TextInputType = "text" | "email" | "password" | "color" | "tel";
 
