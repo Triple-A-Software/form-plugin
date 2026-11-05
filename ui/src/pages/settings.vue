@@ -23,9 +23,9 @@ watch(
     },
     { immediate: true },
 );
-const dirty = computed(
-    () => form.value !== undefined && JSON.stringify(form.value) !== JSON.stringify(settings.data.value),
-);
+// a cleared input holds "" where the stored value is unset, which is no change
+const normalized = (value: unknown) => JSON.stringify(value, (_, v) => (v === "" ? undefined : v));
+const dirty = computed(() => form.value !== undefined && normalized(form.value) !== normalized(settings.data.value));
 
 const updateMutation = useApiMutation(
     "/api/settings",
@@ -143,21 +143,21 @@ function discard() {
         <section class="flex flex-col gap-2">
             <h2 class="font-bold text-xl">{{ $t("pages.settings.virusScan") }}</h2>
             <UFormField :label="$t('field.label.clamavAddress')" :help="$t('hint.clamavAddress')">
-                <UFieldGroup class="w-full">
-                    <UInput v-model="form.clamavAddress" placeholder="clamav:3310" class="w-full" />
-                    <UButton
-                        color="neutral"
-                        variant="subtle"
-                        icon="i-tabler-plug-connected"
-                        :disabled="!form.clamavAddress"
-                        :loading="testResults.Clamav?.testing"
-                        @click="testClamav"
-                    >
-                        {{ $t("action.testConnection") }}
-                    </UButton>
-                </UFieldGroup>
+                <UInput v-model="form.clamavAddress" placeholder="clamav:3310" class="w-full" />
             </UFormField>
-            <TestResult :result="testResults.Clamav" />
+            <div class="flex flex-wrap items-center gap-3">
+                <UButton
+                    color="neutral"
+                    variant="subtle"
+                    icon="i-tabler-plug-connected"
+                    :disabled="!form.clamavAddress"
+                    :loading="testResults.Clamav?.testing"
+                    @click="testClamav"
+                >
+                    {{ $t("action.testConnection") }}
+                </UButton>
+                <TestResult :result="testResults.Clamav" />
+            </div>
         </section>
 
         <USeparator />
@@ -170,7 +170,7 @@ function discard() {
             <UFormField :label="$t('field.label.cleverreachSecret')" :help="$t('hint.cleverreachSecret')">
                 <SecretInput v-model="form.cleverreachSecret" />
             </UFormField>
-            <div>
+            <div class="flex flex-wrap items-center gap-3">
                 <UButton
                     color="neutral"
                     variant="subtle"
@@ -181,8 +181,8 @@ function discard() {
                 >
                     {{ $t("action.testConnection") }}
                 </UButton>
+                <TestResult :result="testResults.Cleverreach" />
             </div>
-            <TestResult :result="testResults.Cleverreach" />
         </section>
 
         <div class="sticky bottom-0 py-3 bg-default/90 backdrop-blur flex items-center gap-3 border-t border-default">
