@@ -1,4 +1,5 @@
-<div class="form-plugin-errors">
+<!-- hidden as a whole: forms laid out as a grid would otherwise give the empty box a cell -->
+<div class="form-plugin-errors" hidden style="grid-column: 1 / -1">
     {% for code, message in messages|items %}
     <p
         class="form-plugin-error"
@@ -21,6 +22,7 @@
         const root = document.currentScript.previousElementSibling;
         const message = [...root.children].find((el) => el.dataset.error === error)
             ?? root.querySelector('[data-error="generic"]');
+        root.hidden = false;
         message.hidden = false;
         message.scrollIntoView({ block: "center" });
     })();
