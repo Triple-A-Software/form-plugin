@@ -26,6 +26,8 @@ const columns = computed<TableColumn<SubmissionApiResponse>[]>(() => [
     {
         id: "summary",
         header: t("table_columns.summary"),
+        // only the summary may break inside words, long tokens there would otherwise crush the other columns
+        meta: { class: { td: "wrap-anywhere" } },
     },
     {
         id: "actions",
@@ -235,7 +237,7 @@ const isNew = (row: SubmissionApiResponse) => lastSeen !== undefined && new Date
         v-model:row-selection="rowSelection"
         :get-row-id="(row) => row.id"
         :loading="submissions.isLoading.value"
-        :ui="{ td: 'whitespace-normal wrap-anywhere' }"
+        :ui="{ td: 'whitespace-normal' }"
     >
         <template #select-header="{ table }">
             <UCheckbox
@@ -269,14 +271,16 @@ const isNew = (row: SubmissionApiResponse) => lastSeen !== undefined && new Date
         <template #timestamp-cell="{ row }">
             <div class="flex items-center gap-2">
                 <UTooltip :text="formatRelative(row.original.timestamp, locale)">
-                    <span>{{ formatDateTime(row.original.timestamp, locale) }}</span>
+                    <span class="whitespace-nowrap">{{ formatDateTime(row.original.timestamp, locale) }}</span>
                 </UTooltip>
                 <UBadge v-if="isNew(row.original)" size="sm" variant="subtle">{{ $t("badge.new") }}</UBadge>
             </div>
         </template>
 
         <template #form-cell="{ row }">
-            <FormLink :id="row.original.form_id" />
+            <div class="min-w-40">
+                <FormLink :id="row.original.form_id" />
+            </div>
         </template>
 
         <template #summary-cell="{ row }">
